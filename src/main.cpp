@@ -1,5 +1,7 @@
 // Bench firmware, phases 1-2: I2S out, sample-accurate clock, one button.
 // BOOT (GPIO0) plays 04_stab_am, quantised against the loop bed.
+#ifndef PIXEL_TEST   // pixel_test.cpp provides setup()/loop() instead
+
 #include <Arduino.h>
 #include <ESP_I2S.h>
 
@@ -108,3 +110,5 @@ void loop() {
   }
   delay(1);
 }
+
+#endif  // PIXEL_TEST
