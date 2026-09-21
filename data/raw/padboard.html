@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DJ doorbell — pad simulator</title>
+<style>
+:root{--plate:#23272E;--rim:#1A1D22;--cap:#C9C6BE;--bg:#15171B;--edge:#454A54;--txt:#6E737B;--hi:#E6E2D8}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--hi);font-family:system-ui,-apple-system,sans-serif;
+  display:flex;flex-direction:column;align-items:center;padding:32px 16px;min-height:100vh}
+h1{font-size:15px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--txt)}
+#status{font-size:12px;color:var(--txt);margin-top:8px;font-family:ui-monospace,monospace}
+#panel{margin-top:22px;width:330px;height:330px;padding:15px;border-radius:10px;
+  background:var(--plate);border:1px solid var(--edge);
+  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;opacity:.35;transition:opacity .4s}
+#panel.ready{opacity:1}
+.pad{position:relative;border:0;background:transparent;padding:0;cursor:pointer;display:grid;place-items:center}
+.cap{width:84px;height:84px;border-radius:50%;background:var(--cap);
+  box-shadow:0 0 0 5px var(--rim), inset 0 -3px 7px rgba(0,0,0,.35);
+  display:grid;place-items:center;transition:background .13s,box-shadow .13s;position:relative}
+.cap.lit{box-shadow:0 0 0 5px var(--rim),0 0 22px 5px var(--glow),inset 0 -2px 5px rgba(0,0,0,.2)}
+.cap b{font-size:14px;font-weight:600;color:#5A5952;pointer-events:none}
+.cap.lit b{color:rgba(20,22,26,.72)}
+.cap i{position:absolute;bottom:16px;font-size:10px;font-style:normal;color:#8A8781}
+.cap.lit i{color:rgba(20,22,26,.5)}
+#bar{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;justify-content:center}
+button.t{font:500 11px/1 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;
+  padding:9px 14px;border-radius:3px;background:#1C1F25;color:#8A8E96;border:1px solid #363B44;cursor:pointer}
+button.t[aria-pressed="true"]{background:var(--hi);color:#14161A;border-color:var(--hi)}
+#grid{display:flex;gap:3px;margin-top:20px}
+.tk{width:6px;height:7px;border-radius:1px;background:#2A2E35}
+.tk.b{height:12px;background:#363B44}
+.tk.on{background:var(--hi)}
+#note{margin-top:20px;max-width:330px;font-size:12px;line-height:1.6;color:var(--txt);text-align:center}
+</style>
+</head>
+<body>
+<h1>Pad simulator</h1>
+<div id="status">click anywhere to start audio</div>
+
+<div id="panel"></div>
+
+<div id="bar">
+  <button class="t" id="q" aria-pressed="true">quantise</button>
+  <button class="t" id="b" aria-pressed="true">beat bed</button>
+</div>
+<div id="grid"></div>
+<div id="note">Q W E / A S D / Z X C. Pads light when the sound fires, not when you press — with quantise on that gap is the grid latency.</div>
+
+<script>
+const SR = 22050, BPM = 124, S16 = 60/BPM/4;
+const PADS = [
+  ["kick","01_kick","#E09030"], ["clap","02_clap","#E09030"], ["hat","03_hat","#E09030"],
+  ["Am","04_stab_am","#37AFC4"], ["C","05_stab_c","#37AFC4"], ["Em","06_stab_em","#37AFC4"],
+  ["sub","07_sub","#C43F81"], ["pluck","08_pluck","#C43F81"], ["riser","09_riser","#C43F81"]
+];
+const KEYS = "qweasdzxc";
+
+const panel = document.getElementById('panel'), status = document.getElementById('status');
+const caps = [];
+PADS.forEach(([name,,col],i)=>{
+  const btn = document.createElement('button');
+  btn.className='pad'; btn.type='button'; btn.setAttribute('aria-label',name);
+  btn.innerHTML = `<span class="cap" style="--glow:${col}"><b>${name}</b><i>${KEYS[i].toUpperCase()}</i></span>`;
+  btn.onpointerdown = e => { e.preventDefault(); press(i); };
+  panel.appendChild(btn); caps.push(btn.firstElementChild);
+});
+const grid = document.getElementById('grid'), ticks=[];
+for(let i=0;i<16;i++){const t=document.createElement('span');t.className='tk'+(i%4?'':' b');grid.appendChild(t);ticks.push(t);}
+
+let ctx, buffers=[], bed=null, bedSrc=null, bedStart=0, lastPress=0;
+let quantise=true, bedOn=true, ready=false;
+
+async function loadRaw(file){
+  const r = await fetch(`raw/${file}.raw`);
+  if(!r.ok) throw new Error(file);
+  const i16 = new Int16Array(await r.arrayBuffer());
+  const buf = ctx.createBuffer(1, i16.length, SR);
+  const ch = buf.getChannelData(0);
+  for(let i=0;i<i16.length;i++) ch[i] = i16[i]/32768;
+  return buf;
+}
+
+async function init(){
+  if(ctx) return;
+  ctx = new (window.AudioContext||window.webkitAudioContext)();
+  master = ctx.createGain(); master.gain.value = 0.72;
+  const comp = ctx.createDynamicsCompressor();
+  comp.threshold.value=-12; comp.ratio.value=6; comp.attack.value=.004; comp.release.value=.15;
+  master.connect(comp); comp.connect(ctx.destination);
+  status.textContent = 'loading samples…';
+  try{
+    bed = await loadRaw('00_loop');
+    buffers = await Promise.all(PADS.map(p=>loadRaw(p[1])));
+  }catch(err){
+    status.textContent = 'could not load raw/'+err.message+'.raw — is this served from the samples folder?';
+    return;
+  }
+  ready = true; panel.classList.add('ready');
+  status.textContent = `${PADS.length+1} samples · ${SR} Hz · ${BPM} BPM · grid ${(S16*1000).toFixed(0)} ms`;
+}
+
+function startBed(){
+  if(bedSrc || !bedOn) return;
+  bedSrc = ctx.createBufferSource();
+  bedSrc.buffer = bed; bedSrc.loop = true;
+  const g = ctx.createGain(); g.gain.value = 0.8;
+  bedSrc.connect(g); g.connect(master);
+  bedStart = ctx.currentTime + 0.04;
+  bedSrc.start(bedStart);
+  tickLoop();
+}
+function stopBed(){ if(bedSrc){ bedSrc.stop(); bedSrc=null; ticks.forEach(t=>t.classList.remove('on')); } }
+
+function nextGrid(){
+  if(!quantise || !bedSrc) return ctx.currentTime + 0.005;
+  const n = ctx.currentTime - bedStart;
+  return bedStart + Math.ceil((n + 0.004)/S16)*S16;
+}
+
+function press(i){
+  init().then(()=>{
+    if(!ready) return;
+    if(ctx.state==='suspended') ctx.resume();
+    lastPress = ctx.currentTime;
+    startBed();
+    const t = nextGrid();
+    const s = ctx.createBufferSource();
+    s.buffer = buffers[i];
+    const g = ctx.createGain(); g.gain.value = 0.85;
+    s.connect(g); g.connect(master); s.start(t);
+    setTimeout(()=>{
+      caps[i].classList.add('lit');
+      setTimeout(()=>caps[i].classList.remove('lit'),130);
+    }, Math.max(0,(t-ctx.currentTime)*1000));
+  });
+}
+
+function tickLoop(){
+  if(!bedSrc) return;
+  const n = ctx.currentTime - bedStart;
+  const step = Math.floor(n/S16) % 16;
+  ticks.forEach((t,j)=>t.classList.toggle('on', j===step));
+  if(ctx.currentTime - lastPress > 8) stopBed();
+  requestAnimationFrame(tickLoop);
+}
+
+addEventListener('keydown', e=>{
+  if(e.repeat) return;
+  const i = KEYS.indexOf(e.key.toLowerCase());
+  if(i>=0){ e.preventDefault(); press(i); }
+});
+addEventListener('pointerdown', init, {once:true});
+
+const qb=document.getElementById('q'), bb=document.getElementById('b');
+qb.onclick=()=>{quantise=!quantise; qb.setAttribute('aria-pressed',quantise);};
+bb.onclick=()=>{bedOn=!bedOn; bb.setAttribute('aria-pressed',bedOn); if(!bedOn) stopBed(); else if(ctx){lastPress=ctx.currentTime; startBed();}};
+</script>
+</body>
+</html>
