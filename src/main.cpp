@@ -26,7 +26,10 @@ constexpr uint32_t kDebounceMs = 30;
 
 static I2SClass i2s;
 static dj::Engine engine(samples::kBed, samples::kPads);
-static QueueHandle_t pressQueue;
+static QueueHandle_t pressQueue;   // loop() -> audio task: pad index
+static QueueHandle_t fireQueue;    // audio task -> loop(): FireEvent
+
+struct FireEvent { int pad; uint64_t at; };
 
 // Owns the engine. i2s.write() blocks until DMA has room, so this loop is
 // paced by the I2S clock and engine.now() counts I2S samples exactly.
@@ -43,10 +46,11 @@ static void audioTask(void*) {
   }
 }
 
+// Runs on the audio task: never block or print here, just hand off to loop().
+// A full queue drops the event, not audio.
 static void onFire(void*, int pad, uint64_t at) {
-  // Runs on the audio task; keep it cheap. ets_printf avoids Serial's lock
-  // (ROM printf has no %llu; the 32-bit count wraps after 54 h).
-  ets_printf("fire pad %d @ %lu\n", pad + 1, (unsigned long)at);
+  const FireEvent ev{pad, at};
+  xQueueSend(fireQueue, &ev, 0);
 }
 
 void setup() {
@@ -76,6 +80,7 @@ void setup() {
   pinMode(kPinBoot, INPUT_PULLUP);
   engine.onFire(onFire, nullptr);
   pressQueue = xQueueCreate(16, sizeof(int));
+  fireQueue = xQueueCreate(32, sizeof(FireEvent));
   // Core 1 alongside loop(); WiFi/ESP-NOW will live on core 0.
   xTaskCreatePinnedToCore(audioTask, "audio", 4096, nullptr, 10, nullptr, 1);
 
@@ -95,6 +100,11 @@ void loop() {
       const int pad = samples::kStabAm;
       xQueueSend(pressQueue, &pad, 0);
     }
+  }
+
+  FireEvent ev;
+  while (xQueueReceive(fireQueue, &ev, 0) == pdTRUE) {
+    Serial.printf("fire pad %d @ %llu\n", ev.pad + 1, (unsigned long long)ev.at);
   }
   delay(1);
 }
