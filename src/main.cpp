@@ -23,13 +23,15 @@ constexpr uint8_t  kPadPins[dj::kNumPads] = {4, 5, 6, 7, 15, 16, 17, 18, 8};
 constexpr uint32_t kDebounceMs = 5;
 constexpr uint8_t  kPinPixels  = 13;
 
-// Row colours from tools/simulator.py, scaled to the 40% brightness cap.
-constexpr uint8_t lvl(uint8_t c) { return c * 40 / 100; }
-constexpr uint8_t kRowRgb[3][3] = {
-  {lvl(0xE0), lvl(0x90), lvl(0x30)},   // row 1 amber
-  {lvl(0x37), lvl(0xAF), lvl(0xC4)},   // row 2 cyan
-  {lvl(0xC4), lvl(0x3F), lvl(0x81)},   // row 3 magenta
+// Row colours as sRGB hex, from tools/simulator.py.
+constexpr uint32_t kRowHex[3] = {
+  0xE09030,   // row 1 amber
+  0x37AFC4,   // row 2 cyan
+  0xC43F81,   // row 3 magenta
 };
+constexpr uint8_t kBrightnessPct = 40;   // cap: power budget and PTC hold current
+// kRowHex converted for the LEDs in setupInputs().
+static uint32_t rowColour[3];
 constexpr uint32_t kFlashMs = 110;     // as in the simulator
 // Audio is rendered ahead of the speaker by the I2S DMA queue (6 x 240
 // frames) plus about one block; delay the flash by the same so light and
@@ -96,8 +98,19 @@ static dj::Debouncer debouncers[dj::kNumPads] = {
   dj::Debouncer(kDebounceMs), dj::Debouncer(kDebounceMs), dj::Debouncer(kDebounceMs),
 };
 
+// Hex colours are gamma-encoded for screens; WS2812 PWM is linear. Sending
+// them raw over-drives the weaker channels and washes amber out to white.
+// Decode to linear first, then apply the brightness cap.
+static uint32_t ledColour(uint32_t hex) {
+  auto ch = [](uint32_t hex, int shift) -> uint8_t {
+    return Adafruit_NeoPixel::gamma8((hex >> shift) & 0xFF) * kBrightnessPct / 100;
+  };
+  return Adafruit_NeoPixel::Color(ch(hex, 16), ch(hex, 8), ch(hex, 0));
+}
+
 static void setupInputs() {
   for (uint8_t pin : kPadPins) pinMode(pin, INPUT_PULLUP);
+  for (int r = 0; r < 3; ++r) rowColour[r] = ledColour(kRowHex[r]);
   pixels.begin();
   pixels.clear();
   pixels.show();
@@ -124,8 +137,7 @@ static void updatePixels(uint32_t now) {
     const bool lit = flashOff[i] && int32_t(now - flashOn[i]) >= 0 &&
                      int32_t(now - flashOff[i]) < 0;
     if (!lit && flashOff[i] && int32_t(now - flashOff[i]) >= 0) flashOff[i] = 0;
-    const uint8_t* c = kRowRgb[i / 3];
-    const uint32_t want = lit ? pixels.Color(c[0], c[1], c[2]) : 0;
+    const uint32_t want = lit ? rowColour[i / 3] : 0;
     if (pixels.getPixelColor(i) != want) {
       pixels.setPixelColor(i, want);
       changed = true;
@@ -185,6 +197,11 @@ void setup() {
                 (unsigned)kDebounceMs);
   Serial.printf("Pixels:   GPIO%u, flash delayed %u ms to match audio\n",
                 kPinPixels, (unsigned)kOutputLatencyMs);
+  for (int r = 0; r < 3; ++r) {
+    Serial.printf("Row %d:    #%06lX -> LED %3u %3u %3u\n", r + 1, (unsigned long)kRowHex[r],
+                  (unsigned)(rowColour[r] >> 16 & 0xFF), (unsigned)(rowColour[r] >> 8 & 0xFF),
+                  (unsigned)(rowColour[r] & 0xFF));
+  }
   Serial.println("Ready — press a pad.");
 #else
   Serial.println("Ready — press BOOT.");
