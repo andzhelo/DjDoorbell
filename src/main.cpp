@@ -1,30 +1,56 @@
-// Bench firmware, phases 1-2: I2S out, sample-accurate clock, one button.
-// BOOT (GPIO0) plays 04_stab_am, quantised against the loop bed.
+// Bench firmware.
+//   outside (phase 4): nine pads, pixel chain, each press quantised over the bed.
+//   inside  (phase 2): BOOT (GPIO0) plays 04_stab_am, quantised over the bed.
 #ifndef PIXEL_TEST   // pixel_test.cpp provides setup()/loop() instead
 
 #include <Arduino.h>
 #include <ESP_I2S.h>
 
+#include "debounce.h"
 #include "engine.h"
 #include "samples.h"
 
 #if defined(UNIT_OUTSIDE)
+#include <Adafruit_NeoPixel.h>
+
 constexpr int8_t kPinBclk = 12;
 constexpr int8_t kPinWs   = 11;
 constexpr int8_t kPinDout = 10;
 constexpr const char* kUnitName = "outside";
+
+// Pads 1-9 in reading order; pixel index == pad index.
+constexpr uint8_t  kPadPins[dj::kNumPads] = {4, 5, 6, 7, 15, 16, 17, 18, 8};
+constexpr uint32_t kDebounceMs = 5;
+constexpr uint8_t  kPinPixels  = 13;
+
+// Row colours from tools/simulator.py, scaled to the 40% brightness cap.
+constexpr uint8_t lvl(uint8_t c) { return c * 40 / 100; }
+constexpr uint8_t kRowRgb[3][3] = {
+  {lvl(0xE0), lvl(0x90), lvl(0x30)},   // row 1 amber
+  {lvl(0x37), lvl(0xAF), lvl(0xC4)},   // row 2 cyan
+  {lvl(0xC4), lvl(0x3F), lvl(0x81)},   // row 3 magenta
+};
+constexpr uint32_t kFlashMs = 110;     // as in the simulator
+// Audio is rendered ahead of the speaker by the I2S DMA queue (6 x 240
+// frames) plus about one block; delay the flash by the same so light and
+// sound land together.
+constexpr uint32_t kOutputLatencyMs = (6 * 240 + 256 / 2) * 1000 / 22050;
+
+static Adafruit_NeoPixel pixels(dj::kNumPads, kPinPixels, NEO_GRB + NEO_KHZ800);
+
 #elif defined(UNIT_INSIDE)
 constexpr int8_t kPinBclk = 26;
 constexpr int8_t kPinWs   = 25;
 constexpr int8_t kPinDout = 22;
 constexpr const char* kUnitName = "inside";
+
+constexpr uint8_t  kPinBoot    = 0;    // BOOT button, active low
+constexpr uint32_t kDebounceMs = 30;
 #else
 #error "Build with -DUNIT_OUTSIDE or -DUNIT_INSIDE"
 #endif
 
-constexpr uint8_t  kPinBoot   = 0;     // BOOT button, active low
-constexpr size_t   kBlock     = 256;   // frames per render, 11.6 ms
-constexpr uint32_t kDebounceMs = 30;
+constexpr size_t kBlock = 256;         // frames per render, 11.6 ms
 
 static I2SClass i2s;
 static dj::Engine engine(samples::kBed, samples::kPads);
@@ -55,6 +81,74 @@ static void onFire(void*, int pad, uint64_t at) {
   xQueueSend(fireQueue, &ev, 0);
 }
 
+static void press(int pad) {
+  Serial.printf("pad %d\n", pad + 1);
+  xQueueSend(pressQueue, &pad, 0);
+}
+
+// ---- inputs ----------------------------------------------------------------
+// millis() below is for debounce and LED timing only — never the musical clock.
+
+#if defined(UNIT_OUTSIDE)
+static dj::Debouncer debouncers[dj::kNumPads] = {
+  dj::Debouncer(kDebounceMs), dj::Debouncer(kDebounceMs), dj::Debouncer(kDebounceMs),
+  dj::Debouncer(kDebounceMs), dj::Debouncer(kDebounceMs), dj::Debouncer(kDebounceMs),
+  dj::Debouncer(kDebounceMs), dj::Debouncer(kDebounceMs), dj::Debouncer(kDebounceMs),
+};
+
+static void setupInputs() {
+  for (uint8_t pin : kPadPins) pinMode(pin, INPUT_PULLUP);
+  pixels.begin();
+  pixels.clear();
+  pixels.show();
+}
+
+static void pollInputs(uint32_t now) {
+  for (int i = 0; i < dj::kNumPads; ++i) {
+    if (debouncers[i].update(digitalRead(kPadPins[i]) == LOW, now)) press(i);
+  }
+}
+
+// Per-pad flash window, in millis(). Zero = idle.
+static uint32_t flashOn[dj::kNumPads];
+static uint32_t flashOff[dj::kNumPads];
+
+static void onFired(const FireEvent& ev, uint32_t now) {
+  flashOn[ev.pad] = now + kOutputLatencyMs;
+  flashOff[ev.pad] = flashOn[ev.pad] + kFlashMs;
+}
+
+static void updatePixels(uint32_t now) {
+  bool changed = false;
+  for (int i = 0; i < dj::kNumPads; ++i) {
+    const bool lit = flashOff[i] && int32_t(now - flashOn[i]) >= 0 &&
+                     int32_t(now - flashOff[i]) < 0;
+    if (!lit && flashOff[i] && int32_t(now - flashOff[i]) >= 0) flashOff[i] = 0;
+    const uint8_t* c = kRowRgb[i / 3];
+    const uint32_t want = lit ? pixels.Color(c[0], c[1], c[2]) : 0;
+    if (pixels.getPixelColor(i) != want) {
+      pixels.setPixelColor(i, want);
+      changed = true;
+    }
+  }
+  if (changed) pixels.show();
+}
+
+#else  // UNIT_INSIDE
+static dj::Debouncer boot(kDebounceMs);
+
+static void setupInputs() { pinMode(kPinBoot, INPUT_PULLUP); }
+
+static void pollInputs(uint32_t now) {
+  if (boot.update(digitalRead(kPinBoot) == LOW, now)) press(samples::kStabAm);
+}
+
+static void onFired(const FireEvent&, uint32_t) {}
+static void updatePixels(uint32_t) {}
+#endif
+
+// ---- main ------------------------------------------------------------------
+
 void setup() {
   Serial.begin(115200);
   delay(200);
@@ -79,35 +173,34 @@ void setup() {
   Serial.printf("I2S:      BCLK %d, WS %d, DOUT %d @ %u Hz\n", kPinBclk, kPinWs,
                 kPinDout, (unsigned)dj::kSampleRate);
 
-  pinMode(kPinBoot, INPUT_PULLUP);
+  setupInputs();
   engine.onFire(onFire, nullptr);
   pressQueue = xQueueCreate(16, sizeof(int));
   fireQueue = xQueueCreate(32, sizeof(FireEvent));
   // Core 1 alongside loop(); WiFi/ESP-NOW will live on core 0.
   xTaskCreatePinnedToCore(audioTask, "audio", 4096, nullptr, 10, nullptr, 1);
 
+#if defined(UNIT_OUTSIDE)
+  Serial.printf("Pads:     GPIO 4 5 6 7 15 16 17 18 8, debounce %u ms\n",
+                (unsigned)kDebounceMs);
+  Serial.printf("Pixels:   GPIO%u, flash delayed %u ms to match audio\n",
+                kPinPixels, (unsigned)kOutputLatencyMs);
+  Serial.println("Ready — press a pad.");
+#else
   Serial.println("Ready — press BOOT.");
+#endif
 }
 
 void loop() {
-  static bool     wasDown = false;
-  static uint32_t lastEdge = 0;
-
-  const bool down = digitalRead(kPinBoot) == LOW;
-  const uint32_t t = millis();   // debounce only — never the musical clock
-  if (down != wasDown && t - lastEdge >= kDebounceMs) {
-    wasDown = down;
-    lastEdge = t;
-    if (down) {
-      const int pad = samples::kStabAm;
-      xQueueSend(pressQueue, &pad, 0);
-    }
-  }
+  const uint32_t now = millis();
+  pollInputs(now);
 
   FireEvent ev;
   while (xQueueReceive(fireQueue, &ev, 0) == pdTRUE) {
     Serial.printf("fire pad %d @ %llu\n", ev.pad + 1, (unsigned long long)ev.at);
+    onFired(ev, now);
   }
+  updatePixels(now);
   delay(1);
 }
 
