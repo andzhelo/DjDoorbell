@@ -19,10 +19,11 @@ EMBEDDED(02_clap)
 EMBEDDED(03_hat)
 EMBEDDED(04_stab_am)
 EMBEDDED(05_stab_c)
-EMBEDDED(06_stab_em)
+EMBEDDED(06_stab_f)
 EMBEDDED(07_sub)
 EMBEDDED(08_pluck)
 EMBEDDED(09_riser)
+EMBEDDED(10_hat_open)
 
 namespace samples {
 
@@ -30,13 +31,16 @@ const dj::Sample kBed = SAMPLE(00_loop);
 
 const dj::Sample kPads[dj::kNumPads] = {
   SAMPLE(01_kick),    SAMPLE(02_clap),  SAMPLE(03_hat),
-  SAMPLE(04_stab_am), SAMPLE(05_stab_c), SAMPLE(06_stab_em),
+  SAMPLE(04_stab_am), SAMPLE(05_stab_c), SAMPLE(06_stab_f),
   SAMPLE(07_sub),     SAMPLE(08_pluck), SAMPLE(09_riser),
 };
 
+const dj::Sample kHatOpen = SAMPLE(10_hat_open);
+
 void verify() {
-  size_t bytes = kBed.len * 2;
-  bool ok = (reinterpret_cast<uintptr_t>(kBed.data) & 1) == 0;
+  size_t bytes = kBed.len * 2 + kHatOpen.len * 2;
+  bool ok = (reinterpret_cast<uintptr_t>(kBed.data) & 1) == 0 &&
+            (reinterpret_cast<uintptr_t>(kHatOpen.data) & 1) == 0;
   for (const dj::Sample& s : kPads) {
     bytes += s.len * 2;
     ok &= (reinterpret_cast<uintptr_t>(s.data) & 1) == 0;
