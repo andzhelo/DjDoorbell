@@ -24,9 +24,15 @@ void Engine::press(int pad) {
     bedStart_ = now_;
   }
   lastPress_ = now_;
+
+  const bool repeat = padPressed_[pad] && now_ - padLast_[pad] < kRepeatWindow;
+  padPressed_[pad] = true;
+  padLast_[pad] = now_;
+  const Sample* src = (repeat && variants_[pad].len) ? &variants_[pad] : &pads_[pad];
+
   if (pendingCount_ == kMaxPending) return;   // 32 presses inside one 16th: drop
 
-  const Pending p{nextGrid(), pad};
+  const Pending p{nextGrid(), pad, src};
   int i = pendingCount_++;
   // Insert after entries with the same target, keeping press order.
   while (i > 0 && pending_[i - 1].at > p.at) {
@@ -34,6 +40,10 @@ void Engine::press(int pad) {
     --i;
   }
   pending_[i] = p;
+}
+
+void Engine::setRepeatVariant(int pad, const Sample& alt) {
+  if (pad >= 0 && pad < kNumPads) variants_[pad] = alt;
 }
 
 void Engine::setBedEnabled(bool on) {
@@ -50,7 +60,8 @@ void Engine::render(int16_t* out, size_t frames) {
     int fired = 0;
     while (fired < pendingCount_ && pending_[fired].at <= t) {
       const int pad = pending_[fired].pad;
-      voices_[pad] = {0, pads_[pad].len > 0};
+      const Sample* src = pending_[fired].src;
+      voices_[pad] = {src, 0, src->len > 0};
       if (fireFn_) fireFn_(fireCtx_, pad, t);
       ++fired;
     }
@@ -67,14 +78,12 @@ void Engine::render(int16_t* out, size_t frames) {
     for (int i = 0; i < kNumPads; ++i) {
       Voice& v = voices_[i];
       if (!v.active) continue;
-      acc += pads_[i].data[v.pos] * kShotGain;
-      if (++v.pos == pads_[i].len) v.active = false;
+      acc += v.src->data[v.pos] * kShotGain;
+      if (++v.pos == v.src->len) v.active = false;
     }
 
-    // Headroom + soft limit. The curve peaks at 1.15, so hard-clip the rest.
-    float y = std::tanh(acc * (kDrive / 32768.0f)) * kCeiling;
-    if (y > 1.0f) y = 1.0f;
-    if (y < -1.0f) y = -1.0f;
+    // Headroom + soft limit. |tanh| < 1 and kCeiling <= 1, so this never clips.
+    const float y = std::tanh(acc * (kDrive / 32768.0f)) * kCeiling;
     out[n] = static_cast<int16_t>(std::lrintf(y * 32767.0f));
   }
 

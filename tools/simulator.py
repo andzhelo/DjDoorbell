@@ -21,7 +21,7 @@ S16  = BEAT / 4                     # 16th note = the quantise grid
 BLOCK = 256                         # callback size; ~11.6 ms
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-RAW  = os.path.join(HERE, "raw")
+RAW  = os.path.join(os.path.dirname(HERE), "data", "raw")
 
 PADS = [
     ("kick",     "01_kick",     "#E09030"),
@@ -29,12 +29,14 @@ PADS = [
     ("hat",      "03_hat",      "#E09030"),
     ("Am",       "04_stab_am",  "#37AFC4"),
     ("C",        "05_stab_c",   "#37AFC4"),
-    ("Em",       "06_stab_em",  "#37AFC4"),
+    ("F",        "06_stab_f",   "#37AFC4"),
     ("sub",      "07_sub",      "#C43F81"),
     ("pluck",    "08_pluck",    "#C43F81"),
     ("riser",    "09_riser",    "#C43F81"),
 ]
 KEYS = "qweasdzxc"
+VARIANTS = {2: "10_hat_open"}       # pad index -> sample on a rapid repeat
+REPEAT_WINDOW = 2                   # in 16ths
 
 
 def load(name):
@@ -50,6 +52,8 @@ class Engine:
 
     def __init__(self):
         self.samples = [load(f) for _, f, _ in PADS]
+        self.variants = {i: load(f) for i, f in VARIANTS.items()}
+        self.last_pad = {}          # pad -> sample time of its previous press
         self.loop = load("00_loop")
         self.loop_len = len(self.loop)
 
@@ -77,8 +81,12 @@ class Engine:
             self.bed_pos = 0
             self.bed_start = self.now
         self.last_press = self.now
-        self.pending.append((self.next_grid(), idx))
-        self.pending.sort()
+        g = int(S16 * SR)
+        repeat = idx in self.last_pad and self.now - self.last_pad[idx] < REPEAT_WINDOW * g
+        self.last_pad[idx] = self.now
+        data = self.variants[idx] if repeat and idx in self.variants else self.samples[idx]
+        self.pending.append((self.next_grid(), idx, data))
+        self.pending.sort(key=lambda p: p[0])
 
     def toggle_bed(self):
         self.bed_on = not self.bed_on
@@ -100,9 +108,9 @@ class Engine:
 
         # start any one-shots that land inside this block
         while self.pending and self.pending[0][0] < self.now + frames:
-            target, idx = self.pending.pop(0)
+            target, idx, data = self.pending.pop(0)
             delay = max(0, target - self.now)
-            self.voices.append([self.samples[idx], 0, delay])
+            self.voices.append([data, 0, delay])
             self.fired.append((idx, target))
 
         # mix active one-shots
@@ -128,7 +136,7 @@ class Engine:
             self.bed_pos = None
 
         self.now += frames
-        return np.tanh(buf * 0.62) * 1.15      # headroom + soft limit
+        return np.tanh(buf * 0.62)             # headroom + soft limit, never clips
 
 
 # --------------------------------------------------------------------------

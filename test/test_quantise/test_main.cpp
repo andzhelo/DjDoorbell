@@ -154,6 +154,47 @@ void test_simultaneous_presses_fire_on_the_same_sample() {
   for (size_t i = 1; i < gFires.size(); ++i) TEST_ASSERT_EQUAL_UINT64(kGrid, gFires[i].at);
 }
 
+// Pad 2 has a two-sample variant; a repeat inside kRepeatWindow plays it
+// (output 2 samples long), a slower repeat plays the base (1 sample).
+void test_rapid_repeat_plays_variant() {
+  Engine e = makeEngine();
+  static const int16_t kTwo[2] = {16384, 16384};
+  e.setRepeatVariant(2, {kTwo, 2});
+  std::vector<int16_t> out;
+
+  e.press(2);                                   // first: base
+  advance(e, kGrid + 10, out);
+  e.press(2);                                   // ~1 grid later: variant
+  advance(e, kGrid + 10, out);
+  e.press(2);                                   // still inside window: variant
+  advance(e, 3 * kGrid, out);
+  e.press(2);                                   // >2 grids since last: base
+  advance(e, 2 * kGrid, out);
+
+  TEST_ASSERT_EQUAL(4, gFires.size());
+  auto lenAt = [&](uint64_t at) { int n = 0; while (out[at + n] != 0) ++n; return n; };
+  TEST_ASSERT_EQUAL(1, lenAt(gFires[0].at));
+  TEST_ASSERT_EQUAL(2, lenAt(gFires[1].at));
+  TEST_ASSERT_EQUAL(2, lenAt(gFires[2].at));
+  TEST_ASSERT_EQUAL(1, lenAt(gFires[3].at));
+}
+
+void test_output_never_clips() {
+  Engine e = makeEngine();
+  static int16_t loud[4000];
+  for (auto& x : loud) x = 32767;
+  Sample pads[kNumPads];
+  for (auto& p : pads) p = {loud, 4000};
+  Engine hot({loud, 4000}, pads);
+  int16_t buf[4000];
+  for (int p = 0; p < kNumPads; ++p) hot.press(p);   // bed + 9 full-scale shots
+  hot.render(buf, 4000);
+  int16_t peak = 0;
+  for (int16_t x : buf) if (x > peak) peak = x;
+  TEST_ASSERT_TRUE(peak >= 32000 && peak <= 32767);  // saturates, never wraps
+  (void)e;
+}
+
 int main() {
   UNITY_BEGIN();
   RUN_TEST(test_presses_at_arbitrary_offsets_land_on_16th_boundaries);
@@ -162,5 +203,7 @@ int main() {
   RUN_TEST(test_quantise_off_plays_immediately);
   RUN_TEST(test_bed_times_out_and_next_press_reanchors_grid);
   RUN_TEST(test_simultaneous_presses_fire_on_the_same_sample);
+  RUN_TEST(test_rapid_repeat_plays_variant);
+  RUN_TEST(test_output_never_clips);
   return UNITY_END();
 }

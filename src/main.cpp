@@ -187,6 +187,7 @@ void setup() {
 
   setupInputs();
   engine.onFire(onFire, nullptr);
+  engine.setRepeatVariant(samples::kHat, samples::kHatOpen);
   pressQueue = xQueueCreate(16, sizeof(int));
   fireQueue = xQueueCreate(32, sizeof(FireEvent));
   // Core 1 alongside loop(); WiFi/ESP-NOW will live on core 0.

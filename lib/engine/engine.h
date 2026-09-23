@@ -31,8 +31,11 @@ static_assert(kGrid == 2667, "16th grid at 124 BPM / 22050 Hz must be 2667 sampl
 constexpr float    kBedGain    = 0.80f;
 constexpr float    kShotGain   = 0.85f;
 constexpr float    kDrive      = 0.62f;   // tanh(x * kDrive) * kCeiling
-constexpr float    kCeiling    = 1.15f;
+constexpr float    kCeiling    = 1.0f;    // never exceeds full scale, so no hard clip
 constexpr uint64_t kBedTimeout = 8ull * kSampleRate;   // bed stops after 8 s idle
+// A press on the same pad within this window plays the pad's repeat variant
+// (if it has one) — fake dynamics, since the switches are binary.
+constexpr uint64_t kRepeatWindow = 2 * kGrid;   // two 16ths, 242 ms
 
 class Engine {
  public:
@@ -46,6 +49,10 @@ class Engine {
   // is idle, anchoring the grid to this instant.
   void press(int pad);
 
+  // Alternate sample for `pad`, used when it is pressed again within
+  // kRepeatWindow of its previous press.
+  void setRepeatVariant(int pad, const Sample& alt);
+
   // Render `frames` mono samples and advance the clock by the same amount.
   void render(int16_t* out, size_t frames);
 
@@ -58,13 +65,16 @@ class Engine {
   void onFire(FireFn fn, void* ctx) { fireFn_ = fn; fireCtx_ = ctx; }
 
  private:
-  struct Pending { uint64_t at; int pad; };
-  struct Voice   { size_t pos; bool active; };
+  struct Pending { uint64_t at; int pad; const Sample* src; };
+  struct Voice   { const Sample* src; size_t pos; bool active; };
 
   static constexpr int kMaxPending = 32;
 
   Sample bed_;
   Sample pads_[kNumPads];
+  Sample variants_[kNumPads] = {};       // len 0 = none
+  uint64_t padLast_[kNumPads] = {};      // time of previous press per pad
+  bool     padPressed_[kNumPads] = {};   // padLast_ valid
 
   uint64_t now_       = 0;     // master sample counter — the only clock
   uint64_t bedStart_  = 0;     // grid anchor
