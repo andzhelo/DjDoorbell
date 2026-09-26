@@ -15,8 +15,8 @@ Values marked `MEASURE` are placeholders until the real parts are measured.
 Order: print the coupon, snap a button into each tile, set `btn_hole_d` and
 `panel_t`. Then the plate, then the shell. PETG for both.
 
-The buttons are OBSC-24 clones (XW-OBSC): clear plunger and body, microswitch
-clipped under the body, 2.8 mm tab terminals, no lamp holder. The WS2812 sits
+The buttons are OBSC-24 clones (XW-OBSC): frosted plunger, clear body, microswitch
+moulded into the base (not removable), 2.8 mm tabs, no lamp holder. The WS2812 sits
 beside the switch block under the clear body, on an LED carrier layer in the
 shell (to be modelled once the switch offset and depth are measured).
 
