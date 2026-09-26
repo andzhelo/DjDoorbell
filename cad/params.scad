@@ -7,12 +7,14 @@
 $fn = 96;
 
 // ---- arcade buttons (24 mm Sanwa-clone snap-in) ----------------------------
-btn_hole_d      = 24.2;   // MEASURE: pick from the coupon (24.0 / 24.2 / 24.4)
+btn_hole_d      = 24.4;   // MEASURE: pick from the coupon. Spec is 24 +-0.1;
+                          // FDM holes print 0.2-0.4 undersize, so model larger.
 btn_flange_d    = 27.5;   // MEASURE: bezel outer diameter (sets clearances)
 btn_depth       = 32;     // MEASURE: depth behind the panel incl. microswitch
 btn_pitch       = 30;     // spec: 30 mm centre-to-centre
 panel_t         = 3.0;    // MEASURE: within the range the snap tabs accept (spec 2-3)
-coupon_holes    = [24.0, 24.2, 24.4];   // one coupon per diameter
+coupon_holes    = [24.0, 24.2, 24.4, 24.6];   // one tile per diameter...
+coupon_thick    = [2.5, 3.0];                 // ...at each panel thickness
 
 // ---- faceplate -------------------------------------------------------------
 plate_w         = 100;    // spec: 100 mm pad width

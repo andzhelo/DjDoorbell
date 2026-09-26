@@ -8,12 +8,17 @@ Values marked `MEASURE` are placeholders until the real parts are measured.
 
 | Part | What | Print |
 |---|---|---|
-| `coupon.scad` | 3 tiles, one per candidate button hole (24.0/24.2/24.4) at the panel thickness | hole-up, same settings as the plate |
+| `coupon.scad` | 8 tiles: hole 24.0/24.2/24.4/24.6 x panel 2.5/3.0 mm, labelled hole/thickness | hole-up, same settings as the plate |
 | `faceplate.scad` | 100 x 145 plate: 3x3 buttons on 30 mm pitch, speaker grille + retaining ring in the 45 mm bay, locating rib, 4 countersunk M3 | face-down on a smooth bed |
 | `shell.scad` | open box behind the plate: M3 heat-set bosses, rear wire entry + wall-box slots under the pad, board standoffs in the bay | open side up, no supports |
 
 Order: print the coupon, snap a button into each tile, set `btn_hole_d` and
 `panel_t`. Then the plate, then the shell. PETG for both.
+
+The buttons are OBSC-24 clones (XW-OBSC): clear plunger and body, microswitch
+clipped under the body, 2.8 mm tab terminals, no lamp holder. The WS2812 sits
+beside the switch block under the clear body, on an LED carrier layer in the
+shell (to be modelled once the switch offset and depth are measured).
 
 The inside unit reuses the existing chime enclosure (see CLAUDE.md); only a
 carrier tray for the boards may be printed, once that box is open and measured.
