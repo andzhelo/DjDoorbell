@@ -3,3 +3,5 @@
 include/secrets.h
 .DS_Store
 data/preview/
+cad/stl/
+cad/preview/
