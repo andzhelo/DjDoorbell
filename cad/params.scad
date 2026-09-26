@@ -10,7 +10,10 @@ $fn = 96;
 btn_hole_d      = 24.4;   // MEASURE: pick from the coupon. Spec is 24 +-0.1;
                           // FDM holes print 0.2-0.4 undersize, so model larger.
 btn_flange_d    = 27.5;   // MEASURE: bezel outer diameter (sets clearances)
-btn_depth       = 32;     // MEASURE: depth behind the panel incl. microswitch
+// Ruler photo, +-1 mm, all measured from the bezel underside (panel face):
+btn_body_h      = 16;     // bottom of the clear body
+btn_switch_h    = 20;     // bottom of the moulded switch block
+btn_depth       = 26;     // tip of the terminals; solder joints add ~1
 btn_pitch       = 30;     // spec: 30 mm centre-to-centre
 panel_t         = 3.0;    // MEASURE: within the range the snap tabs accept (spec 2-3)
 coupon_holes    = [24.0, 24.2, 24.4, 24.6];   // one tile per diameter...
