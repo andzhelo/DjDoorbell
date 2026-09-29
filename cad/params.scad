@@ -14,12 +14,15 @@ btn_body_h      = 16;     // bottom of the clear body
 btn_switch_h    = 20;     // bottom of the moulded switch block
 btn_depth       = 26;     // tip of the terminals; solder joints add ~1
 btn_pitch       = 30;     // spec: 30 mm centre-to-centre
+btn_body_d      = 23.8;   // clear body below the bezel (snug in the 24.0 hole)
 panel_t         = 2.5;    // coupon result: 24.0/2.5 fit best
 coupon_holes    = [24.0, 24.2, 24.4, 24.6];   // one tile per diameter...
 coupon_thick    = [2.5, 3.0];                 // ...at each panel thickness
 
 // ---- faceplate -------------------------------------------------------------
-plate_w         = 100;    // spec: 100 mm pad width
+// 114, not 100: a 3-LED piece of 30/m strip is 100 mm long and has to fit
+// inside the rib with room for the row-to-row wires at its ends.
+plate_w         = 114;
 pad_h           = 100;    // pad region height (3 x 30 pitch + margins)
 bay_h           = 45;     // electronics + speaker bay below the pad
 plate_h         = pad_h + bay_h;   // 145
@@ -63,15 +66,20 @@ standoff_d      = 6;
 standoff_hole_d = 2.2;    // M2.5 self-tapping
 standoff_h      = 5;
 
-// ---- LED carrier ledges ----------------------------------------------------
-// A separate carrier plate (modelled once the switch footprint is measured)
-// holds the pixel strips just under the clear button bodies. The shell gets
-// ledges on the side walls for it now, so the shell doesn't need reprinting.
-carrier_top     = btn_body_h + 0.5;   // carrier top, measured from the panel face
-carrier_t       = 2;
-ledge_w         = 3;      // how far the ledges stick out from the wall
-ledge_l         = 10;
-ledge_y         = [60, 130];          // positions along the pad region
+// ---- LED strips (side lighting) ---------------------------------------------
+// The switch block covers the bottom of the button, so each row is lit from
+// the side: a 3-LED piece of strip stands on edge in a channel on the plate
+// back, just below its row, LEDs facing up into the clear bodies.
+strip_len       = 100;    // 3 LEDs at 33.33 mm (30/m), cut at the pads
+strip_w         = 10;     // strip width = how far it stands off the plate
+strip_t         = 2.0;    // FPC + 5050 LED + tape
+strip_gap       = 0.8;    // LED face to button body
+fin_t           = 1.2;    // backing wall the strip's adhesive sticks to
+fin_len         = 96;
+lip             = 1.0;    // retaining lip at the fin's free edge
+lip_t           = 1.2;
+// Strip back face, relative to its row centre (negative = below the row).
+function strip_back_y(row_y) = row_y - btn_body_d / 2 - strip_gap - strip_t;
 
 // ---- derived ---------------------------------------------------------------
 pad_cx          = plate_w / 2;

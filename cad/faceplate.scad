@@ -17,6 +17,17 @@ module faceplate() {
             for (p = corner_xy) translate(p) circle(d = boss_d + 2 * fit_clear + 1);
           }
 
+      // LED strip channels, one per row: a fin the strip's back sticks to,
+      // with a lip at the free edge so the strip slides in from the end.
+      for (r = [0 : 2]) {
+        row_y = pad_xy(r * 3)[1];
+        yb = strip_back_y(row_y);
+        translate([pad_cx - fin_len / 2, yb - fin_t, panel_t - 0.01])
+          cube([fin_len, fin_t, strip_w + 0.4 + lip_t]);
+        translate([pad_cx - fin_len / 2, yb - 0.01, panel_t + strip_w + 0.4])
+          cube([fin_len, lip + 0.01, lip_t]);
+      }
+
       // speaker retaining ring
       translate([bay_cx, bay_cy, panel_t])
         difference() {

@@ -15,16 +15,6 @@ module shell() {
       }
       // corner bosses
       for (p = corner_xy) translate([p[0], p[1], 0]) cylinder(d = boss_d, h = shell_h);
-      // LED carrier ledges on both side walls; top face = carrier underside
-      ledge_top = shell_h - (carrier_top + carrier_t - panel_t);
-      for (x = [wall_t - 0.01, plate_w - wall_t - ledge_w + 0.01], y = ledge_y)
-        translate([x, y - ledge_l / 2, ledge_top - 4])
-          hull() {
-            translate([0, 0, 4 - 1.5]) cube([ledge_w, ledge_l, 1.5]);
-            // 45-degree underside so it prints without support
-            translate([x < plate_w / 2 ? 0 : ledge_w - 0.01, 0, 4 - ledge_w - 1.5])
-              cube([0.01, ledge_l, 0.01]);
-          }
       // board standoffs
       for (h = board_holes)
         translate([bay_cx + h[0], bay_cy + h[1], floor_t - 0.01])
