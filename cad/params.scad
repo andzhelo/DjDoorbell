@@ -7,15 +7,14 @@
 $fn = 96;
 
 // ---- arcade buttons (24 mm Sanwa-clone snap-in) ----------------------------
-btn_hole_d      = 24.4;   // MEASURE: pick from the coupon. Spec is 24 +-0.1;
-                          // FDM holes print 0.2-0.4 undersize, so model larger.
+btn_hole_d      = 24.0;   // coupon result: 24.0/2.5 fit best
 btn_flange_d    = 27.5;   // MEASURE: bezel outer diameter (sets clearances)
 // Ruler photo, +-1 mm, all measured from the bezel underside (panel face):
 btn_body_h      = 16;     // bottom of the clear body
 btn_switch_h    = 20;     // bottom of the moulded switch block
 btn_depth       = 26;     // tip of the terminals; solder joints add ~1
 btn_pitch       = 30;     // spec: 30 mm centre-to-centre
-panel_t         = 3.0;    // MEASURE: within the range the snap tabs accept (spec 2-3)
+panel_t         = 2.5;    // coupon result: 24.0/2.5 fit best
 coupon_holes    = [24.0, 24.2, 24.4, 24.6];   // one tile per diameter...
 coupon_thick    = [2.5, 3.0];                 // ...at each panel thickness
 
@@ -36,7 +35,9 @@ grille_d        = 20;     // grille pattern diameter (cone opening)
 // ---- shell -----------------------------------------------------------------
 wall_t          = 2.4;    // 6 perimeters at 0.4 mm
 floor_t         = 2.4;
-inner_depth     = btn_depth + 3;   // clearance behind the deepest part
+// Room behind the terminals for soldered wires to bend over (~8 mm).
+// Measured from the shell floor to the rim (= faceplate back).
+inner_depth     = btn_depth + 8 - panel_t;
 screw_inset     = 6;      // M3 corner screws, from the plate edges
 boss_d          = 7;
 insert_hole_d   = 4.0;    // M3 heat-set insert (4.0 x 5.7 typical)
@@ -48,17 +49,29 @@ fit_clear       = 0.25;   // rib-to-wall clearance
 
 // ---- wall interface --------------------------------------------------------
 wire_hole_d     = 12;     // rear wire entry, centred on the wall box
-wallbox_slot_sp = 60;     // MEASURE: Nisko box screw-lug spacing
+// European 60 mm box standard; horizontal slots take 52-68 mm spacing.
+wallbox_slot_sp = 60;     // MEASURE if the box is non-standard
 wallbox_slot_w  = 4.5;
-wallbox_slot_l  = 10;     // vertical slots: 5 mm of adjustment
+wallbox_slot_l  = 12.5;
 
 // ---- board standoffs in the bay --------------------------------------------
-// MEASURE: ESP32-S3 DevKitC-1 mounting-hole positions relative to the bay
-// centre. Many DevKitC boards have no holes at all; then use rail clips.
-board_holes     = [[-30, -8], [30, -8], [-30, 8], [30, 8]];
+// The DevKitC-1 has no mounting holes, so no standoffs: boards go on the
+// bay floor with foam tape. Add [x, y] offsets from the bay centre here for
+// any board that does have holes.
+board_holes     = [];
 standoff_d      = 6;
 standoff_hole_d = 2.2;    // M2.5 self-tapping
 standoff_h      = 5;
+
+// ---- LED carrier ledges ----------------------------------------------------
+// A separate carrier plate (modelled once the switch footprint is measured)
+// holds the pixel strips just under the clear button bodies. The shell gets
+// ledges on the side walls for it now, so the shell doesn't need reprinting.
+carrier_top     = btn_body_h + 0.5;   // carrier top, measured from the panel face
+carrier_t       = 2;
+ledge_w         = 3;      // how far the ledges stick out from the wall
+ledge_l         = 10;
+ledge_y         = [60, 130];          // positions along the pad region
 
 // ---- derived ---------------------------------------------------------------
 pad_cx          = plate_w / 2;

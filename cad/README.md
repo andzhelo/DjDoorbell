@@ -9,11 +9,13 @@ Values marked `MEASURE` are placeholders until the real parts are measured.
 | Part | What | Print |
 |---|---|---|
 | `coupon.scad` | 8 tiles: hole 24.0/24.2/24.4/24.6 x panel 2.5/3.0 mm, labelled hole/thickness | hole-up, same settings as the plate |
-| `faceplate.scad` | 100 x 145 plate: 3x3 buttons on 30 mm pitch, speaker grille + retaining ring in the 45 mm bay, locating rib, 4 countersunk M3 | face-down on a smooth bed |
-| `shell.scad` | open box behind the plate: M3 heat-set bosses, rear wire entry + wall-box slots under the pad, board standoffs in the bay | open side up, no supports |
+| `faceplate.scad` | 100 x 145 x 2.5 plate: 3x3 Ø24.0 holes on 30 mm pitch, speaker grille + retaining ring in the 45 mm bay, locating rib, 4 countersunk M3 | face-down on a smooth bed |
+| `shell.scad` | open box, 33.9 mm deep: M3 heat-set bosses, rear wire entry + horizontal wall-box slots (52-68 mm) under the pad, ledges for the LED carrier | open side up, no supports |
+| `assembly.scad` | plate on shell, for viewing; `-D interference=true` renders overlaps (must be empty) | not printed |
 
-Order: print the coupon, snap a button into each tile, set `btn_hole_d` and
-`panel_t`. Then the plate, then the shell. PETG for both.
+Coupon result: `24.0/2.5` fit best, so `btn_hole_d = 24.0`, `panel_t = 2.5`.
+Plate and shell are printable; PETG for both. Hardware: 4x M3 heat-set
+inserts (4.0 mm hole), 4x M3 x 8 countersunk screws (x 10 would bottom out in the 6.5 mm insert hole).
 
 The buttons are OBSC-24 clones (XW-OBSC): frosted plunger, clear body, microswitch
 moulded into the base (not removable), 2.8 mm tabs, no lamp holder. The WS2812 sits
@@ -25,9 +27,8 @@ carrier tray for the boards may be printed, once that box is open and measured.
 
 ## Measure before the faceplate
 
-- Button: hole diameter (from the coupon), flange diameter, depth behind the
-  panel with the microswitch, panel thickness range the tabs accept.
-- Speaker frame diameter.
+- Switch block footprint and offset from the button centre (for the LED carrier).
+- Speaker frame diameter (the retaining ring assumes 23.5 mm).
 - Nisko wall box: screw-lug spacing, outer size, depth.
 - DevKitC-1 mounting holes, if any; else the standoffs become rail clips.
 - A cut WS2812 segment must fit the vacated lamp cavity — check first.

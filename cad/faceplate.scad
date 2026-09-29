@@ -8,12 +8,13 @@ module faceplate() {
     union() {
       linear_extrude(panel_t) rounded_rect(plate_w, plate_h, corner_r);
 
-      // locating rib: fits inside the shell wall
+      // locating rib: fits inside the shell wall, notched around the corner bosses
       translate([0, 0, panel_t])
         linear_extrude(rib_h)
           difference() {
             offset(delta = -(wall_t + fit_clear)) rounded_rect(plate_w, plate_h, corner_r);
             offset(delta = -(wall_t + fit_clear + 2)) rounded_rect(plate_w, plate_h, corner_r);
+            for (p = corner_xy) translate(p) circle(d = boss_d + 2 * fit_clear + 1);
           }
 
       // speaker retaining ring
