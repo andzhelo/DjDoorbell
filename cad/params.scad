@@ -28,12 +28,13 @@ bay_h           = 45;     // electronics + speaker bay below the pad
 plate_h         = pad_h + bay_h;   // 145
 corner_r        = 6;
 
-// ---- speaker (23/24 mm 4 ohm 2 W) -----------------------------------------
-spk_d           = 23.5;   // MEASURE: speaker outer diameter (frame)
+// ---- speaker (40 mm 4 ohm 2 W, measured) -----------------------------------
+spk_d           = 40;     // speaker outer diameter (frame)
 spk_ring_h      = 3;      // retaining ring on the back of the plate
+spk_ring_wall   = 1.2;
 grille_hole_d   = 2.0;
 grille_pitch    = 3.2;
-grille_d        = 20;     // grille pattern diameter (cone opening)
+grille_d        = 34;     // grille pattern diameter (cone opening)
 
 // ---- shell -----------------------------------------------------------------
 wall_t          = 2.4;    // 6 perimeters at 0.4 mm
@@ -85,7 +86,12 @@ function strip_back_y(row_y) = row_y - btn_body_d / 2 - strip_gap - strip_t;
 pad_cx          = plate_w / 2;
 pad_cy          = bay_h + pad_h / 2;      // pad grid centre
 bay_cx          = plate_w / 2;
-bay_cy          = bay_h / 2;
+// Speaker centre: midway between the rib (inside the bottom edge) and the
+// row-3 strip fin above it. The 42.8 mm ring has ~0.8 mm to spare each side.
+spk_ring_od     = spk_d + 0.4 + 2 * spk_ring_wall;
+rib_inner_y     = wall_t + fit_clear + 2;
+row3_fin_y      = strip_back_y(bay_h + pad_h / 2 - btn_pitch) - fin_t;
+bay_cy          = (rib_inner_y + row3_fin_y) / 2;
 shell_h         = floor_t + inner_depth;
 
 // Pad centres in reading order (top-left first), pad index 0-8.
@@ -101,3 +107,6 @@ corner_xy = [[screw_inset, screw_inset],
 module rounded_rect(w, h, r) {
   hull() for (x = [r, w - r], y = [r, h - r]) translate([x, y]) circle(r = r);
 }
+
+assert(bay_cy - spk_ring_od / 2 > rib_inner_y + 0.5, "speaker ring hits the bottom rib");
+assert(bay_cy + spk_ring_od / 2 < row3_fin_y - 0.5, "speaker ring hits the row-3 strip fin");

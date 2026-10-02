@@ -10,16 +10,16 @@ exposure. Neighbours in a shared stairwell are the main real-world constraint.
 
 ---
 
-## Hardware (ordered, ~2 weeks out)
+## Hardware (all arrived, 2026-10-02)
 
 ### Outside unit — the pad
 | Part | Notes |
 |---|---|
 | ESP32-S3 DevKitC-1 N16R8 | 16MB flash, 8MB PSRAM. Owns the master clock. |
-| 9x 24mm arcade buttons, clear/frosted white cap | Sanwa-clone snap-in. Lamp holder twists out. |
-| 9x WS2812B segments | Cut from a 30/m IP30 strip already owned. Sits in the vacated lamp cavity, facing the cap. |
+| 9x 24mm arcade buttons, XW-OBSC (OBSC-24 clone) | Frosted plunger, clear body, microswitch moulded into the base (not removable), 2.8 mm tabs. No lamp holder. Fits a 24.0 mm hole in a 2.5 mm panel. |
+| 3x WS2812B strip pieces, 3 LEDs each | Uncut 100 mm pieces of the 30/m IP30 strip already owned. Side-light each row — see Pixels. |
 | MAX98357A I2S amp | |
-| 23/24mm 4ohm 2W speaker | Low-volume feedback only — the visitor must hear what they play. |
+| 40mm 4ohm 2W speaker | Low-volume feedback only — the visitor must hear what they play. |
 | MP1584EN buck | 12V -> 5V at the panel |
 | 330R resistor | Data line into first pixel (already owned) |
 | 1000uF cap | Across 5V/GND at the LED power injection point |
@@ -37,7 +37,9 @@ Reuses the existing chime enclosure — it is already mounted and already rated
 for the mains entering it. Do not 3D-print a replacement for this one.
 
 ### Protection (outside unit, on the wire from the wall)
-SS34 Schottky (reverse polarity), SMAJ15A TVS, 500mA polyfuse, 470uF bulk.
+SS34 Schottky (reverse polarity), SMAJ15A TVS, 470uF bulk, and a glass fuse in
+an inline holder (bought instead of the 500mA polyfuse). Fuse must be 500mA;
+the bag is marked 0313001, which may be 1A — check the cap before fitting.
 
 ---
 
@@ -70,21 +72,28 @@ This reverses an earlier decision. A 3x3 matrix without diodes ghosts on 3+
 simultaneous presses, and simultaneous presses are the entire point of this
 device. The S3 has GPIO to spare; direct wiring costs only wire.
 
-### Pixels — one shared chain
-Board data pin -> 330R -> pad 1 DIN. Pad 1 DOUT -> pad 2 DIN, and so on
-through nine. 5V and GND are shared rails. One GPIO total.
+### Pixels — one shared chain, side-lit
+The switch block covers almost the whole button base, so LEDs can't go under
+or inside the buttons. Each row is lit from the side (hand-tested: the cap
+glows): one uncut 3-LED strip piece stands on edge in a channel on the
+faceplate back, just below its row, LEDs facing up into the clear bodies.
 
-Order the chain to follow grid reading order (top-left to bottom-right) so
-firmware indices match physical position.
+Board data pin -> 330R -> row 1 strip DIN, left to right. Row 1 DOUT (right
+end) -> wire back to row 2 DIN (left end), same for row 3. Arrows on all
+three strips point left to right. 5V and GND shared. One GPIO total.
+Chain order = reading order, so pixel index == pad index.
 
-### Panel geometry
-- 9 buttons, 24mm diameter, 30mm pitch -> 100x100mm faceplate
-- Snap tabs expect 2-3mm panel thickness at the hole; add a recess if printing thicker
-- Build a shell BEHIND the faceplate (100x100x25mm) rather than cramming
-  electronics into the shallow Nisko wall box. The wall box becomes wire entry only.
-- Measure real buttons with calipers before modelling: body diameter, snap-tab
-  thickness, flange width, depth behind panel.
-- Print a single-hole test coupon before the full plate.
+### Enclosure — `cad/` (parametric OpenSCAD; see cad/README.md)
+- Faceplate 114x145x2.5mm: 3x3 holes Ø24.0 on 30mm pitch (from the printed
+  coupon), 3 LED strip channels on the back, 40mm speaker ring + grille in a
+  45mm bay below the pad. 114 wide because a 3-LED strip piece is 100mm.
+- Shell 114x145x34mm behind it; the Nisko wall box is wire entry only.
+  M3 heat-set inserts + 4x M3x8 countersunk screws.
+- Shell is printed. Faceplate printed once, but must be REPRINTED: the
+  speaker ring/grille changed from 23.5mm to 40mm after the speaker arrived.
+- `cad/render.sh` exports STLs; `assembly.scad` has interference checks.
+- Boards have no mounting holes: foam tape on the shell floor, under the
+  speaker.
 
 ---
 
@@ -267,6 +276,10 @@ Confirmed, all zero-cost:
 ---
 
 ## Build order
+
+Status 2026-10-02: 1 and 2 done (bench firmware verified on the S3 with 5 pads,
+quantiser exact on hardware). Enclosure modelled and mostly printed (5).
+**Next: 3, the link test.**
 
 1. **Sound design** (now, while parts ship) — nine samples + loop, A minor,
    converted to raw PCM. No hardware dependency. Deliverable: a folder of

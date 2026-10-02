@@ -30,9 +30,7 @@ Chain order: row 1 left to right, then row 2, then row 3 — pixel index = pad i
 The inside unit reuses the existing chime enclosure (see CLAUDE.md); only a
 carrier tray for the boards may be printed, once that box is open and measured.
 
-## Measure before the faceplate
+## Status
 
-- Speaker frame diameter (the retaining ring assumes 23.5 mm).
-- Nisko wall box: screw-lug spacing, outer size, depth.
-- DevKitC-1 mounting holes, if any; else the standoffs become rail clips.
-- A cut WS2812 segment must fit the vacated lamp cavity — check first.
+Coupon done; shell printed. Faceplate needs a reprint for the 40 mm speaker.
+Nisko wall-box spacing is still assumed (60 mm, slots take 52-68).

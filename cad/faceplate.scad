@@ -31,7 +31,7 @@ module faceplate() {
       // speaker retaining ring
       translate([bay_cx, bay_cy, panel_t])
         difference() {
-          cylinder(d = spk_d + 4, h = spk_ring_h);
+          cylinder(d = spk_ring_od, h = spk_ring_h);
           translate([0, 0, -1]) cylinder(d = spk_d + 0.4, h = spk_ring_h + 2);
         }
     }
@@ -42,7 +42,8 @@ module faceplate() {
 
     // speaker grille: hex-packed holes inside grille_d
     translate([bay_cx, bay_cy, -1])
-      for (r = [-4 : 4], c = [-4 : 4]) {
+      let (n = ceil(grille_d / 2 / grille_pitch) + 1)
+      for (r = [-n : n], c = [-n : n]) {
         x = (c + (r % 2 == 0 ? 0 : 0.5)) * grille_pitch;
         y = r * grille_pitch * 0.866;
         if (sqrt(x * x + y * y) <= grille_d / 2)
