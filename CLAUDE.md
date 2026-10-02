@@ -249,12 +249,16 @@ lib_deps = adafruit/Adafruit NeoPixel
 [env:inside]
 extends = base
 board = esp32dev
-board_build.partitions = huge_app.csv
+board_build.partitions = min_spiffs.csv
 build_flags = -DUNIT_INSIDE
 ```
 
-WROOM-32D needs huge_app.csv — default gives the app 1.25 MB, too small for
-firmware + 557 KB of samples.
+WROOM-32D uses min_spiffs.csv: two 1.9 MB app slots, so the installed unit
+can be updated over WiFi (OTA writes the inactive slot, then switches). The
+default table's 1.25 MB slots are too small for firmware + samples;
+huge_app.csv (one 3 MB slot) has room but cannot do OTA. Budget: firmware +
+samples must stay under 1.9 MB (885 KB today). Changing the partition table
+always needs one USB flash.
 
 Bench phases 1-5 run on USB power only. The full bring-up sequence with pass
 criteria lives in the build guide.
