@@ -1,7 +1,7 @@
 // Bench firmware.
 //   outside (phase 4): nine pads, pixel chain, each press quantised over the bed.
 //   inside  (phase 2): BOOT (GPIO0) plays 04_stab_am, quantised over the bed.
-#ifndef PIXEL_TEST   // pixel_test.cpp provides setup()/loop() instead
+#if !defined(PIXEL_TEST) && !defined(LINK_TEST)   // test builds provide their own setup()/loop()
 
 #include <Arduino.h>
 #include <ESP_I2S.h>
@@ -222,4 +222,4 @@ void loop() {
   delay(1);
 }
 
-#endif  // PIXEL_TEST
+#endif  // !PIXEL_TEST && !LINK_TEST
