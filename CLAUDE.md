@@ -283,7 +283,8 @@ Confirmed, all zero-cost:
 
 Status 2026-10-02: 1 and 2 done (bench firmware verified on the S3 with 5 pads,
 quantiser exact on hardware). Enclosure modelled and mostly printed (5).
-**Next: 3, the link test.**
+**Next: 3, the link test.** Full step-by-step plan for build day, and the
+facts a new session needs: `docs/HANDOFF.md` — read it first.
 
 1. **Sound design** (now, while parts ship) — nine samples + loop, A minor,
    converted to raw PCM. No hardware dependency. Deliverable: a folder of
