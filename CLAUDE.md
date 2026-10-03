@@ -281,7 +281,8 @@ Confirmed, all zero-cost:
 
 ## Build order
 
-Status 2026-10-02: 1 and 2 done (bench firmware verified on the S3 with 5 pads,
+Status 2026-10-03: link test (3) PASSED; two-board firmware working on the
+bench (4, knob still off). Previously: 1 and 2 done (bench firmware verified on the S3 with 5 pads,
 quantiser exact on hardware). Enclosure modelled and mostly printed (5).
 **Next: 3, the link test.** Full step-by-step plan for build day, and the
 facts a new session needs: `docs/HANDOFF.md` — read it first.
