@@ -284,7 +284,7 @@ Confirmed, all zero-cost:
 Status 2026-10-03: link test (3) PASSED; two-board firmware working on the
 bench (4, knob still off). Previously: 1 and 2 done (bench firmware verified on the S3 with 5 pads,
 quantiser exact on hardware). Enclosure modelled and mostly printed (5).
-**Next: 3, the link test.** Full step-by-step plan for build day, and the
+**Next: 6, solder the outside unit (LED strips first).** Full step-by-step plan for build day, and the
 facts a new session needs: `docs/HANDOFF.md` — read it first.
 
 1. **Sound design** (now, while parts ship) — nine samples + loop, A minor,
