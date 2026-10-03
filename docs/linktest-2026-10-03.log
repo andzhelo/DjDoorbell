@@ -1,0 +1,73 @@
+DJ Doorbell — link test, INSIDE (receiver)
+MAC 00:70:07:82:C1:1C, channel 1
+Waiting for the outside unit...
+outside unit found: 14:C1:9F:51:7B:1C — 10 min test started
+   9s  RAW rx    235 lost     8 ( 3.29%)  UNI rx    243 lost    0 ( 0.00%)  RSSI avg -70 min -73 dBm  silence max 45 ms  | sender: UNI ok 242 fail 1  echo 475  rtt avg 4.8 max 59.3 ms
+  19s  RAW rx    471 lost    22 ( 4.46%)  UNI rx    493 lost    0 ( 0.00%)  RSSI avg -70 min -73 dBm  silence max 45 ms  | sender: UNI ok 492 fail 1  echo 961  rtt avg 4.8 max 59.3 ms
+  29s  RAW rx    705 lost    37 ( 4.99%)  UNI rx    743 lost    0 ( 0.00%)  RSSI avg -70 min -73 dBm  silence max 45 ms  | sender: UNI ok 742 fail 1  echo 1445  rtt avg 4.7 max 59.3 ms
+  39s  RAW rx    946 lost    47 ( 4.73%)  UNI rx    993 lost    0 ( 0.00%)  RSSI avg -70 min -73 dBm  silence max 45 ms  | sender: UNI ok 992 fail 1  echo 1936  rtt avg 4.7 max 59.3 ms
+  49s  RAW rx   1174 lost    69 ( 5.55%)  UNI rx   1243 lost    0 ( 0.00%)  RSSI avg -70 min -73 dBm  silence max 46 ms  | sender: UNI ok 1242 fail 1  echo 2414  rtt avg 4.7 max 59.3 ms
+  59s  RAW rx   1393 lost   100 ( 6.70%)  UNI rx   1493 lost    0 ( 0.00%)  RSSI avg -70 min -74 dBm  silence max 46 ms  | sender: UNI ok 1492 fail 1  echo 2883  rtt avg 4.7 max 59.3 ms
+  69s  RAW rx   1620 lost   123 ( 7.06%)  UNI rx   1743 lost    0 ( 0.00%)  RSSI avg -70 min -74 dBm  silence max 46 ms  | sender: UNI ok 1742 fail 1  echo 3360  rtt avg 4.6 max 59.3 ms
+  79s  RAW rx   1843 lost   150 ( 7.53%)  UNI rx   1993 lost    0 ( 0.00%)  RSSI avg -70 min -74 dBm  silence max 47 ms  | sender: UNI ok 1992 fail 1  echo 3833  rtt avg 4.6 max 59.3 ms
+  89s  RAW rx   2072 lost   172 ( 7.66%)  UNI rx   2243 lost    0 ( 0.00%)  RSSI avg -70 min -74 dBm  silence max 49 ms  | sender: UNI ok 2243 fail 1  echo 4312  rtt avg 4.6 max 59.3 ms
+  99s  RAW rx   2297 lost   197 ( 7.90%)  UNI rx   2493 lost    0 ( 0.00%)  RSSI avg -70 min -74 dBm  silence max 49 ms  | sender: UNI ok 2493 fail 1  echo 4787  rtt avg 4.6 max 59.3 ms
+ 109s  RAW rx   2526 lost   218 ( 7.94%)  UNI rx   2743 lost    0 ( 0.00%)  RSSI avg -70 min -74 dBm  silence max 49 ms  | sender: UNI ok 2743 fail 1  echo 5266  rtt avg 4.6 max 59.3 ms
+ 119s  RAW rx   2751 lost   243 ( 8.12%)  UNI rx   2993 lost    0 ( 0.00%)  RSSI avg -71 min -74 dBm  silence max 49 ms  | sender: UNI ok 2993 fail 1  echo 5741  rtt avg 4.6 max 59.3 ms
+ 129s  RAW rx   2971 lost   273 ( 8.42%)  UNI rx   3243 lost    0 ( 0.00%)  RSSI avg -70 min -74 dBm  silence max 49 ms  | sender: UNI ok 3243 fail 1  echo 6211  rtt avg 4.5 max 59.3 ms
+ 139s  RAW rx   3194 lost   300 ( 8.59%)  UNI rx   3493 lost    0 ( 0.00%)  RSSI avg -71 min -74 dBm  silence max 49 ms  | sender: UNI ok 3493 fail 1  echo 6684  rtt avg 4.5 max 59.3 ms
+ 149s  RAW rx   3417 lost   327 ( 8.73%)  UNI rx   3743 lost    0 ( 0.00%)  RSSI avg -70 min -74 dBm  silence max 49 ms  | sender: UNI ok 3743 fail 1  echo 7157  rtt avg 4.5 max 59.3 ms
+ 159s  RAW rx   3656 lost   338 ( 8.46%)  UNI rx   3993 lost    0 ( 0.00%)  RSSI avg -70 min -74 dBm  silence max 49 ms  | sender: UNI ok 3993 fail 1  echo 7646  rtt avg 4.5 max 59.3 ms
+ 169s  RAW rx   3893 lost   351 ( 8.27%)  UNI rx   4243 lost    0 ( 0.00%)  RSSI avg -70 min -75 dBm  silence max 49 ms  | sender: UNI ok 4243 fail 1  echo 8133  rtt avg 4.5 max 59.3 ms
+ 179s  RAW rx   4132 lost   362 ( 8.06%)  UNI rx   4493 lost    0 ( 0.00%)  RSSI avg -70 min -75 dBm  silence max 49 ms  | sender: UNI ok 4493 fail 1  echo 8622  rtt avg 4.5 max 59.3 ms
+ 189s  RAW rx   4376 lost   368 ( 7.76%)  UNI rx   4743 lost    0 ( 0.00%)  RSSI avg -70 min -75 dBm  silence max 49 ms  | sender: UNI ok 4743 fail 1  echo 9116  rtt avg 4.5 max 59.3 ms
+ 199s  RAW rx   4614 lost   380 ( 7.61%)  UNI rx   4993 lost    0 ( 0.00%)  RSSI avg -71 min -75 dBm  silence max 49 ms  | sender: UNI ok 4993 fail 1  echo 9604  rtt avg 4.5 max 59.3 ms
+ 209s  RAW rx   4845 lost   399 ( 7.61%)  UNI rx   5243 lost    0 ( 0.00%)  RSSI avg -71 min -75 dBm  silence max 75 ms  | sender: UNI ok 5243 fail 1  echo 10085  rtt avg 4.5 max 62.5 ms
+ 219s  RAW rx   5081 lost   413 ( 7.52%)  UNI rx   5493 lost    0 ( 0.00%)  RSSI avg -71 min -75 dBm  silence max 75 ms  | sender: UNI ok 5493 fail 1  echo 10571  rtt avg 4.5 max 62.5 ms
+ 229s  RAW rx   5310 lost   434 ( 7.56%)  UNI rx   5743 lost    1 ( 0.02%)  RSSI avg -71 min -75 dBm  silence max 106 ms  | sender: UNI ok 5742 fail 2  echo 11050  rtt avg 4.6 max 187.9 ms
+ 239s  RAW rx   5544 lost   450 ( 7.51%)  UNI rx   5993 lost    1 ( 0.02%)  RSSI avg -71 min -75 dBm  silence max 106 ms  | sender: UNI ok 5992 fail 2  echo 11534  rtt avg 4.6 max 187.9 ms
+ 249s  RAW rx   5788 lost   456 ( 7.30%)  UNI rx   6242 lost    1 ( 0.02%)  RSSI avg -71 min -75 dBm  silence max 106 ms  | sender: UNI ok 6242 fail 2  echo 12027  rtt avg 4.6 max 187.9 ms
+ 259s  RAW rx   6023 lost   471 ( 7.25%)  UNI rx   6493 lost    1 ( 0.02%)  RSSI avg -71 min -75 dBm  silence max 106 ms  | sender: UNI ok 6492 fail 2  echo 12513  rtt avg 4.6 max 187.9 ms
+ 269s  RAW rx   6261 lost   483 ( 7.16%)  UNI rx   6743 lost    1 ( 0.01%)  RSSI avg -71 min -75 dBm  silence max 106 ms  | sender: UNI ok 6742 fail 2  echo 13001  rtt avg 4.6 max 187.9 ms
+ 279s  RAW rx   6506 lost   488 ( 6.98%)  UNI rx   6993 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 6992 fail 2  echo 13496  rtt avg 4.6 max 187.9 ms
+ 289s  RAW rx   6744 lost   500 ( 6.90%)  UNI rx   7243 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 7242 fail 2  echo 13984  rtt avg 4.6 max 187.9 ms
+ 299s  RAW rx   6985 lost   509 ( 6.79%)  UNI rx   7493 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 7492 fail 2  echo 14475  rtt avg 4.6 max 187.9 ms
+ 309s  RAW rx   7220 lost   524 ( 6.77%)  UNI rx   7743 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 7742 fail 2  echo 14960  rtt avg 4.6 max 187.9 ms
+ 319s  RAW rx   7463 lost   531 ( 6.64%)  UNI rx   7993 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 7992 fail 2  echo 15453  rtt avg 4.6 max 187.9 ms
+ 329s  RAW rx   7706 lost   538 ( 6.53%)  UNI rx   8243 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 8242 fail 2  echo 15946  rtt avg 4.6 max 187.9 ms
+ 339s  RAW rx   7947 lost   547 ( 6.44%)  UNI rx   8493 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 8492 fail 2  echo 16437  rtt avg 4.6 max 187.9 ms
+ 349s  RAW rx   8190 lost   554 ( 6.34%)  UNI rx   8743 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 8742 fail 2  echo 16930  rtt avg 4.6 max 187.9 ms
+ 359s  RAW rx   8430 lost   565 ( 6.28%)  UNI rx   8993 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 8993 fail 2  echo 17420  rtt avg 4.6 max 187.9 ms
+ 369s  RAW rx   8669 lost   576 ( 6.23%)  UNI rx   9243 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 9243 fail 2  echo 17909  rtt avg 4.6 max 187.9 ms
+ 379s  RAW rx   8909 lost   586 ( 6.17%)  UNI rx   9493 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 9493 fail 2  echo 18399  rtt avg 4.6 max 187.9 ms
+ 389s  RAW rx   9150 lost   595 ( 6.11%)  UNI rx   9743 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 9743 fail 2  echo 18890  rtt avg 4.6 max 187.9 ms
+ 399s  RAW rx   9395 lost   600 ( 6.00%)  UNI rx   9993 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 9993 fail 2  echo 19385  rtt avg 4.6 max 187.9 ms
+ 409s  RAW rx   9628 lost   617 ( 6.02%)  UNI rx  10243 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 10243 fail 2  echo 19868  rtt avg 4.6 max 187.9 ms
+ 419s  RAW rx   9871 lost   624 ( 5.95%)  UNI rx  10493 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 10493 fail 2  echo 20361  rtt avg 4.6 max 187.9 ms
+ 429s  RAW rx  10116 lost   629 ( 5.85%)  UNI rx  10743 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 10743 fail 2  echo 20856  rtt avg 4.6 max 187.9 ms
+ 439s  RAW rx  10353 lost   642 ( 5.84%)  UNI rx  10993 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 10993 fail 2  echo 21343  rtt avg 4.5 max 187.9 ms
+ 449s  RAW rx  10590 lost   655 ( 5.82%)  UNI rx  11243 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 11243 fail 2  echo 21830  rtt avg 4.5 max 187.9 ms
+ 459s  RAW rx  10831 lost   663 ( 5.77%)  UNI rx  11493 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 11492 fail 2  echo 22321  rtt avg 4.5 max 187.9 ms
+ 469s  RAW rx  11075 lost   670 ( 5.70%)  UNI rx  11743 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 11743 fail 2  echo 22815  rtt avg 4.5 max 187.9 ms
+ 479s  RAW rx  11317 lost   678 ( 5.65%)  UNI rx  11993 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 11993 fail 2  echo 23307  rtt avg 4.5 max 187.9 ms
+ 489s  RAW rx  11555 lost   690 ( 5.63%)  UNI rx  12243 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 12243 fail 2  echo 23795  rtt avg 4.5 max 187.9 ms
+ 499s  RAW rx  11803 lost   692 ( 5.54%)  UNI rx  12494 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 12493 fail 2  echo 24294  rtt avg 4.5 max 187.9 ms
+ 509s  RAW rx  12044 lost   701 ( 5.50%)  UNI rx  12744 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 12743 fail 2  echo 24785  rtt avg 4.5 max 187.9 ms
+ 519s  RAW rx  12285 lost   710 ( 5.46%)  UNI rx  12994 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 12993 fail 2  echo 25276  rtt avg 4.5 max 187.9 ms
+ 529s  RAW rx  12526 lost   719 ( 5.43%)  UNI rx  13244 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 13243 fail 2  echo 25767  rtt avg 4.5 max 187.9 ms
+ 539s  RAW rx  12767 lost   728 ( 5.39%)  UNI rx  13494 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 13493 fail 2  echo 26258  rtt avg 4.5 max 187.9 ms
+ 549s  RAW rx  13012 lost   733 ( 5.33%)  UNI rx  13744 lost    1 ( 0.01%)  RSSI avg -71 min -80 dBm  silence max 106 ms  | sender: UNI ok 13743 fail 2  echo 26753  rtt avg 4.5 max 187.9 ms
+ 559s  RAW rx  13244 lost   750 ( 5.36%)  UNI rx  13994 lost    1 ( 0.01%)  RSSI avg -71 min -96 dBm  silence max 106 ms  | sender: UNI ok 13993 fail 2  echo 27235  rtt avg 4.5 max 187.9 ms
+ 569s  RAW rx  13473 lost   771 ( 5.41%)  UNI rx  14244 lost    1 ( 0.01%)  RSSI avg -71 min -97 dBm  silence max 106 ms  | sender: UNI ok 14243 fail 2  echo 27714  rtt avg 4.5 max 187.9 ms
+ 579s  RAW rx  13705 lost   790 ( 5.45%)  UNI rx  14494 lost    1 ( 0.01%)  RSSI avg -71 min -97 dBm  silence max 106 ms  | sender: UNI ok 14493 fail 2  echo 28196  rtt avg 4.5 max 187.9 ms
+ 589s  RAW rx  13946 lost   799 ( 5.42%)  UNI rx  14744 lost    1 ( 0.01%)  RSSI avg -71 min -97 dBm  silence max 106 ms  | sender: UNI ok 14743 fail 2  echo 28687  rtt avg 4.5 max 187.9 ms
+ 599s  RAW rx  14183 lost   812 ( 5.42%)  UNI rx  14994 lost    1 ( 0.01%)  RSSI avg -71 min -97 dBm  silence max 106 ms  | sender: UNI ok 14993 fail 2  echo 29174  rtt avg 4.5 max 187.9 ms
+ 600s  RAW rx  14188 lost   812 ( 5.41%)  UNI rx  14999 lost    1 ( 0.01%)  RSSI avg -71 min -97 dBm  silence max 106 ms  | sender: UNI ok 14998 fail 2  echo 29184  rtt avg 4.5 max 187.9 ms
+================ LINK TEST RESULT ================
+Unicast delivery   99.987 %   (>= 99.9)    PASS
+Longest silence       106 ms  (< 1000)     PASS
+Average RSSI          -71 dBm (>= -80)     PASS
+Raw broadcast loss   5.41 %   (info: no retries)
+Round trip            4.5 ms avg, 187.9 ms max (info)
+OVERALL: PASS — ESP-NOW is good through the door
+==================================================

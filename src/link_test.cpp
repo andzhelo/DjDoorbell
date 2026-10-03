@@ -50,7 +50,10 @@ static void radioInit() {
     Serial.println("FATAL: esp_now_init failed");
     for (;;) delay(1000);
   }
-  Serial.printf("MAC %s, channel %d\n", WiFi.macAddress().c_str(), LINK_CHANNEL);
+  uint8_t mac[6];
+  esp_wifi_get_mac(WIFI_IF_STA, mac);
+  Serial.printf("MAC %02X:%02X:%02X:%02X:%02X:%02X, channel %d\n", mac[0], mac[1], mac[2],
+                mac[3], mac[4], mac[5], LINK_CHANNEL);
 }
 
 static void addPeer(const uint8_t* mac) {
@@ -163,6 +166,9 @@ static volatile bool haveOutside = false, needPeer = false;
 static int32_t  rssiSum = 0, rssiN = 0, rssiMin = 0;
 static uint32_t lastRxMs = 0, longestSilenceMs = 0, firstRxMs = 0;
 static Packet   lastSeen;     // sender's latest self-report
+static Packet   baseline;     // sender's counters when this test started; the sender keeps
+                              // running across an inside reset, so its totals include
+                              // failures from before the test (e.g. while we rebooted)
 
 static void onRecv(const esp_now_recv_info_t* info, const uint8_t* data, int len) {
   if (len != sizeof(Packet)) return;
@@ -179,9 +185,10 @@ static void onRecv(const esp_now_recv_info_t* info, const uint8_t* data, int len
   const int rssi = info->rx_ctrl->rssi;
   rssiSum += rssi;
   if (rssiN++ == 0 || rssi < rssiMin) rssiMin = rssi;
-  if (firstRxMs == 0) firstRxMs = now;
+  if (firstRxMs == 0) { firstRxMs = now; baseline = p; }
   else if (now - lastRxMs > longestSilenceMs) longestSilenceMs = now - lastRxMs;
   lastRxMs = now;
+  if (p.uniSent < baseline.uniSent) baseline = Packet{};   // sender rebooted mid-test
   lastSeen = p;
   if (!haveOutside) { memcpy(outsideMac, info->src_addr, 6); needPeer = true; }
   portEXIT_CRITICAL(&mux);
@@ -202,6 +209,7 @@ static void report(bool final) {
   uint32_t silence, first;
   portENTER_CRITICAL(&mux);
   s[0] = ks[0];  s[1] = ks[1];  o = lastSeen;
+  o.uniOk -= baseline.uniOk;  o.uniFail -= baseline.uniFail;  o.echoRx -= baseline.echoRx;
   rAvg = rssiN ? rssiSum / rssiN : 0;  rMin = rssiMin;
   silence = longestSilenceMs;  first = firstRxMs;
   if (final && millis() - lastRxMs > silence) silence = millis() - lastRxMs;  // silent at the end
