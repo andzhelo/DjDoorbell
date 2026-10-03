@@ -31,6 +31,9 @@ constexpr uint8_t  kPadPins[dj::kNumPads] = {4, 5, 6, 7, 15, 16, 17, 18, 8};
 constexpr uint32_t kDebounceMs = 5;
 constexpr uint32_t kHoldMs     = 1000;   // centre pad held this long = plain chime
 constexpr uint8_t  kPinPixels  = 13;
+// Bench aids: the DevKit's BOOT button doubles as pad 5 (short = stab, hold =
+// chime), and typing 1-9 on the serial monitor presses that pad, c = chime.
+constexpr uint8_t  kPinBoot    = 0;
 
 // Row colours as sRGB hex, from tools/simulator.py.
 constexpr uint32_t kRowHex[3] = {
@@ -93,6 +96,25 @@ static QueueHandle_t fireQueue;    // audio task -> loop(): pixels, log
 static volatile int32_t volumeQ15 = 32768;
 
 static void sendCmd(const Cmd& c) { xQueueSend(cmdQueue, &c, 0); }
+
+// Samples rendered vs esp_timer (40 MHz crystal), for the measured I2S rate
+// in the status line. The two units' rates differ; the follower absorbs it.
+static volatile uint64_t rateSamples = 0;
+static volatile int64_t  rateUs = 0;
+
+// Averaged since the first call: one 256-sample block is 1160 ppm of a 10 s
+// window, so short windows are mostly block-timing noise.
+static void printRate() {
+  static uint64_t s0 = 0;
+  static int64_t u0 = 0;
+  const uint64_t s1 = rateSamples;
+  const int64_t u1 = rateUs;
+  if (!u0) { s0 = s1; u0 = u1; return; }
+  if (u1 > u0) {
+    const double hz = double(s1 - s0) * 1e6 / double(u1 - u0);
+    Serial.printf("I2S %.2f Hz (%+.0f ppm) | ", hz, (hz / dj::kSampleRate - 1) * 1e6);
+  }
+}
 
 // ---- outside: the leader ---------------------------------------------------
 #if defined(UNIT_OUTSIDE)
@@ -223,6 +245,8 @@ static void audioTask(void*) {
     // ahead of the speaker, so this timestamp and engine.position() belong
     // together — on both units alike.
     const int64_t t = esp_timer_get_time();
+    rateSamples = rateSamples + kBlock;   // played, not rendered: the follower's slews excluded
+    rateUs = t;
     Cmd c;
     while (xQueueReceive(cmdQueue, &c, 0) == pdTRUE) handleCmd(c, t);
     afterCmds(t);
@@ -274,6 +298,7 @@ static uint32_t ledColour(uint32_t hex) {
 
 static void setupInputs() {
   for (uint8_t pin : kPadPins) pinMode(pin, INPUT_PULLUP);
+  pinMode(kPinBoot, INPUT_PULLUP);
   for (int r = 0; r < 3; ++r) rowColour[r] = ledColour(kRowHex[r]);
   pixels.begin();
   pixels.clear();
@@ -285,18 +310,34 @@ static uint32_t flashOn[dj::kNumPads];
 static uint32_t flashOff[dj::kNumPads];
 static uint32_t chimeOn = 0, chimeOff = 0;   // all nine lit while the chime plays
 
+static void chime(uint32_t now) {
+  sendCmd({kCmdChime, 0, {}, 0});
+  chimeOn = now + kOutputLatencyMs;
+  chimeOff = chimeOn + samples::kChime.len * 1000 / dj::kSampleRate;
+}
+
 static void pollInputs(uint32_t now) {
   for (int i = 0; i < dj::kNumPads; ++i) {
-    if (debouncers[i].update(digitalRead(kPadPins[i]) == LOW, now)) {
+    bool raw = digitalRead(kPadPins[i]) == LOW;
+    if (i == samples::kCentre) raw |= digitalRead(kPinBoot) == LOW;
+    if (debouncers[i].update(raw, now)) {
       Serial.printf("pad %d\n", i + 1);
       sendCmd({kCmdPress, i, {}, 0});
     }
   }
   if (centreHold.update(debouncers[samples::kCentre].down(), now)) {
     Serial.println("long press: chime");
-    sendCmd({kCmdChime, 0, {}, 0});
-    chimeOn = now + kOutputLatencyMs;
-    chimeOff = chimeOn + samples::kChime.len * 1000 / dj::kSampleRate;
+    chime(now);
+  }
+  while (Serial.available()) {
+    const int ch = Serial.read();
+    if (ch >= '1' && ch <= '9') {
+      Serial.printf("pad %d (serial)\n", ch - '0');
+      sendCmd({kCmdPress, ch - '1', {}, 0});
+    } else if (ch == 'c') {
+      Serial.println("chime (serial)");
+      chime(now);
+    }
   }
 }
 
@@ -365,7 +406,10 @@ static void updateLink(uint32_t now) {
   }
 }
 
-static void printStatus() { radio::printStatus(); }
+static void printStatus() {
+  printRate();
+  radio::printStatus();
+}
 
 static void onPacket(const dj::Packet&, int64_t) {}   // the outside unit only sends
 
@@ -374,8 +418,7 @@ static dj::Debouncer boot(kDebounceMs);
 
 static void setupInputs() {
   pinMode(kPinBoot, INPUT_PULLUP);
-  analogReadResolution(12);
-  analogSetPinAttenuation(kPinVolume, ADC_11db);   // full 0-3.3 V pot range
+  analogReadResolution(12);   // default attenuation (11 dB) covers the full 0-3.3 V pot range
 }
 
 // Pot to gain. Squared: a linear pot then sounds roughly even across its
@@ -404,6 +447,7 @@ static void updatePixels(uint32_t) {}
 static void updateLink(uint32_t) {}
 
 static void printStatus() {
+  printRate();
   Serial.printf("following %s, packets %u, presses %u (late %u), sync error %+.1f samples, "
                 "slews %u, jumps %u, volume %d%% | ",
                 following ? "yes" : "no", (unsigned)statPackets, (unsigned)statPresses,
@@ -468,7 +512,7 @@ void setup() {
                   (unsigned)(rowColour[r] >> 16 & 0xFF), (unsigned)(rowColour[r] >> 8 & 0xFF),
                   (unsigned)(rowColour[r] & 0xFF));
   }
-  Serial.println("Ready — press a pad.");
+  Serial.println("Ready — press a pad (or BOOT = pad 5, or type 1-9 / c here).");
 #else
   Serial.printf("Volume:   pot on GPIO%u\n", kPinVolume);
   Serial.println("Ready — waiting for the outside unit. BOOT plays the chime.");
