@@ -67,6 +67,12 @@ constexpr const char* kHostname = "djdoorbell-inside";
 constexpr uint8_t  kPinBoot    = 0;    // BOOT button, active low
 constexpr uint32_t kDebounceMs = 30;
 constexpr uint8_t  kPinVolume  = 34;   // pot wiper, ADC1 (ADC2 is unusable with WiFi on)
+// Volume knob on/off. Off: fixed volume, GPIO34 ignored. Off until the pot
+// is wired and reads correctly; build with -DDJ_VOLUME_POT=1 to turn it on.
+#ifndef DJ_VOLUME_POT
+#define DJ_VOLUME_POT 0
+#endif
+constexpr int kFixedVolumePct = 100;
 // No packet from the outside unit for this long: stop the bed.
 constexpr uint64_t kLostSamples = 3 * dj::kSampleRate;
 #else
@@ -423,14 +429,26 @@ static void setupInputs() {
 
 // Pot to gain. Squared: a linear pot then sounds roughly even across its
 // travel. The bottom few percent is silence.
+static bool potIgnored = false;   // bench: 'f' on serial = full volume, knob ignored
+
 static void readVolume(uint32_t now) {
+  if (!DJ_VOLUME_POT) {
+    volumeQ15 = potIgnored ? 32768 : kFixedVolumePct * 32768 / 100;
+    return;
+  }
   static uint32_t last = 0;
   static float smooth = -1;
+  static int printed = -100;
   if (now - last < 20) return;
   last = now;
   const float x = analogRead(kPinVolume) / 4095.0f;
   smooth = smooth < 0 ? x : smooth + (x - smooth) * 0.2f;
-  const float g = smooth < 0.03f ? 0 : smooth * smooth;
+  const int knob = static_cast<int>(smooth * 100 + 0.5f);
+  if (abs(knob - printed) >= 5) {
+    printed = knob;
+    Serial.printf("knob %d%%\n", knob);
+  }
+  const float g = potIgnored ? 1.0f : smooth < 0.03f ? 0 : smooth * smooth;
   volumeQ15 = static_cast<int32_t>(g * 32768);
 }
 
@@ -438,6 +456,16 @@ static void pollInputs(uint32_t now) {
   if (boot.update(digitalRead(kPinBoot) == LOW, now)) {
     Serial.println("BOOT: chime");
     sendCmd({kCmdChime, 0, {}, 0});
+  }
+  while (Serial.available()) {
+    const int ch = Serial.read();
+    if (ch == 'f') {
+      potIgnored = !potIgnored;
+      Serial.printf("volume: %s\n", potIgnored ? "FULL, knob ignored" : "knob");
+    } else if (ch == 'c') {
+      Serial.println("chime (serial)");
+      sendCmd({kCmdChime, 0, {}, 0});
+    }
   }
   readVolume(now);
 }
@@ -514,7 +542,8 @@ void setup() {
   }
   Serial.println("Ready — press a pad (or BOOT = pad 5, or type 1-9 / c here).");
 #else
-  Serial.printf("Volume:   pot on GPIO%u\n", kPinVolume);
+  if (DJ_VOLUME_POT) Serial.printf("Volume:   pot on GPIO%u\n", kPinVolume);
+  else Serial.printf("Volume:   fixed %d%% (knob off, DJ_VOLUME_POT=0)\n", kFixedVolumePct);
   Serial.println("Ready — waiting for the outside unit. BOOT plays the chime.");
 #endif
 }
