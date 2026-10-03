@@ -4,8 +4,18 @@
 // to mono int16. The only clock is the count of samples rendered, which the
 // firmware writes straight to I2S, so time here is I2S sample time.
 //
+// Two roles:
+//   leader   (outside unit) — press() owns the grid: the first press starts
+//            the bed and anchors the grid, the bed stops after 8 s idle.
+//   follower (inside unit)  — the grid belongs to the leader. followStart()
+//            / followSeek() / followStop() track the leader's bed position,
+//            schedule() plays a press at the musical position the leader
+//            chose. No timeout of its own.
+// "Musical position" = samples since the bed started (position()); it is
+// the same number on both units for the same beat.
+//
 // No hardware calls: this module builds and runs on the host (pio test -e native).
-// Not thread-safe — call press() and render() from the same task.
+// Not thread-safe — call everything from the same task.
 #pragma once
 
 #include <cstddef>
@@ -43,11 +53,37 @@ class Engine {
   // sample index; with quantise on it is always a 16th boundary.
   using FireFn = void (*)(void* ctx, int pad, uint64_t at);
 
+  // What press() decided, so the leader can tell the follower.
+  struct Press {
+    bool     queued;     // false: bad pad or queue full, nothing will play
+    bool     variant;    // the repeat variant was chosen
+    int64_t  pos;        // musical position it will sound at
+    uint32_t session;    // bed run it belongs to
+  };
+
   Engine(const Sample& bed, const Sample (&pads)[kNumPads]);
 
+  // ---- leader ----
   // Queue pad `pad` (0-8) for the next 16th boundary. Starts the bed if it
   // is idle, anchoring the grid to this instant.
-  void press(int pad);
+  Press press(int pad);
+
+  // ---- follower ----
+  // Start the bed so that position() == pos right now. A negative pos means
+  // the bed starts -pos samples from now.
+  void followStart(int64_t pos);
+  // Jump musical time by `delta` samples (positive = ahead). Queued presses
+  // keep their musical position.
+  void followSeek(int64_t delta);
+  void followStop();
+  // Play `pad` at musical position `pos`. If that moment has already been
+  // rendered, it plays at the next 16th instead (or now, quantise off).
+  // False if the bed is not running or the queue is full.
+  bool schedule(int pad, bool variant, int64_t pos);
+
+  // ---- both ----
+  // Stop the bed and every voice, then play `s` alone, unquantised.
+  void chime(const Sample& s);
 
   // Alternate sample for `pad`, used when it is pressed again within
   // kRepeatWindow of its previous press.
@@ -58,7 +94,9 @@ class Engine {
 
   uint64_t nextGrid() const;
   uint64_t now() const { return now_; }
-  bool bedRunning() const { return bedRunning_; }
+  int64_t  position() const { return static_cast<int64_t>(now_) - bedStart_; }
+  bool     bedRunning() const { return bedRunning_; }
+  uint32_t session() const { return session_; }
 
   void setQuantise(bool on) { quantise_ = on; }
   void setBedEnabled(bool on);
@@ -70,6 +108,9 @@ class Engine {
 
   static constexpr int kMaxPending = 32;
 
+  bool enqueue(const Pending& p);
+  void seekBed();   // bedPos_ from position()
+
   Sample bed_;
   Sample pads_[kNumPads];
   Sample variants_[kNumPads] = {};       // len 0 = none
@@ -77,14 +118,18 @@ class Engine {
   bool     padPressed_[kNumPads] = {};   // padLast_ valid
 
   uint64_t now_       = 0;     // master sample counter — the only clock
-  uint64_t bedStart_  = 0;     // grid anchor
+  int64_t  bedStart_  = 0;     // grid anchor; > now_ while a follower waits to start
   uint64_t lastPress_ = 0;
   size_t   bedPos_    = 0;
+  uint32_t session_   = 0;     // bumped on every bed start
   bool     bedRunning_ = false;
   bool     bedEnabled_ = true;
+  bool     follower_   = false;
   bool     quantise_   = DJ_QUANTISE;
 
   Voice   voices_[kNumPads] = {};
+  Sample  chimeSrc_ = {};
+  Voice   chime_ = {};
   Pending pending_[kMaxPending];   // sorted by `at`
   int     pendingCount_ = 0;
 

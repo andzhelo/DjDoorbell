@@ -128,6 +128,24 @@ def riser(dur=1.10):
     return (lp(nz, cut) + tone) * (t / dur) ** 2.2 * 0.42
 
 
+def chime(dur=2.0):
+    """Plain two-tone door chime, E5 then C5 ("ding-dong"): struck metal
+    bars, partials of a free bar (1, 2.76, 5.40) with the overtones dying
+    first. Long-press on the centre pad plays it — no loop, no quantise."""
+    n = int(dur * SR); t = np.arange(n) / SR
+    out = np.zeros(n)
+    for note, start in ((76, 0.0), (72, 0.55)):
+        i = int(start * SR); tt = t[: n - i]
+        f = hz(note)
+        bar = np.zeros(len(tt))
+        for ratio, amp, decay in ((1.0, 1.0, 2.2), (2.76, 0.35, 6.0), (5.40, 0.12, 11.0)):
+            bar += np.sin(2 * np.pi * f * ratio * tt) * amp * np.exp(-tt * decay)
+        out[i:] += bar * (1 - np.exp(-tt * 2000))     # 0.5 ms strike, no click
+    fade = np.ones(n); m = int(0.25 * SR)
+    fade[-m:] = np.linspace(1, 0, m)                  # ends at exactly 2.0 s
+    return out * fade
+
+
 # ---------------------------------------------------------------- pad map
 # Row colours from the panel design: amber drums, cyan tone, magenta fx.
 PADS = [
@@ -145,6 +163,11 @@ PADS = [
 # Variants: played instead of the pad's sample on a rapid repeat.
 VARIANTS = [
     ("10_hat_open", hat(open_=True)),           # pad 3 repeat
+]
+
+# Not on a pad: long-press of the centre pad.
+EXTRAS = [
+    ("11_chime",    chime()),
 ]
 
 
@@ -204,7 +227,7 @@ def write_pair(name, sig):
 
 total = 0
 manifest = []
-for name, sig in PADS + VARIANTS:
+for name, sig in PADS + VARIANTS + EXTRAS:
     ln = write_pair(name, sig)
     total += ln * 2
     manifest.append((name, ln / SR, ln * 2))

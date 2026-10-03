@@ -12,5 +12,6 @@ raw 16-bit PCM mono, little-endian, 22050 Hz, 124.016 BPM, A minor, grid 2667 sa
 08_pluck        0.34 s    14994 bytes
 09_riser        1.10 s    48510 bytes
 10_hat_open     0.30 s    13230 bytes
+11_chime        2.00 s    88200 bytes
 
-total 570474 bytes (557 KB)
+total 658674 bytes (643 KB)
