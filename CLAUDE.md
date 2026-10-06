@@ -37,9 +37,14 @@ Reuses the existing chime enclosure — it is already mounted and already rated
 for the mains entering it. Do not 3D-print a replacement for this one.
 
 ### Protection (outside unit, on the wire from the wall)
-SS34 Schottky (reverse polarity), SMAJ15A TVS, 470uF bulk, and a glass fuse in
-an inline holder (bought instead of the 500mA polyfuse). Fuse must be 500mA;
-the bag is marked 0313001, which may be 1A — check the cap before fitting.
+**Simplified 2026-10-06:** fuse (inline holder) + 470uF across the buck input,
+on a small perfboard. The SS34s and SMAJ15A were dropped: the owner could not
+reliably hand-solder the SMD parts on perfboard, and none is critical. Costs:
+no reverse-polarity protection (measure the pair's polarity before connecting
+at install) and no USB/wall back-feed protection (never plug USB into the S3
+while wall-powered; use OTA). The LED strip keeps its own SS34 on its +5V lead
+(needed: 3.3 V data vs 5 V VDD). Fuse must be 500mA; the bag is marked
+0313001, which is 1A — check the cap before fitting.
 
 ---
 
@@ -199,14 +204,14 @@ Never use: 6-11 (flash), 12 (pulled high at boot = 1.8V flash, won't boot).
 
 ## Power
 
-Outside: 12V pair -> 500mA PTC -> SS34 series -> SMAJ15A + 470uF 25V to GND
--> MP1584 (5.0V) -> SS34 series -> ~4.6V rail -> S3 5V pin, MAX98357A VIN,
-pixels (+1000uF 10V at pad 1).
+Outside: 12V pair -> 500mA fuse -> 470uF 25V to GND -> MP1584 (5.0V, set
+and verified) -> 5V rail -> S3 5V pin, MAX98357A VIN, pixels via the SS34 on
+the strip lead (+1000uF 10V at pad 1).
 Inside: 230V -> IRM-10-12 -> 12V -> (pair to door) and (MP1584 5.0V -> SS34
 -> ~4.6V rail -> WROOM 5V, MAX98357A VIN).
 
-The series SS34 after each buck makes USB-while-powered safe and drops pixel
-VDD so 3.3V data clears the 0.7*VDD threshold.
+The SS34 on the strip's +5V lead drops pixel VDD so 3.3V data clears the
+0.7*VDD threshold (without it the bench chain showed all-red garbage).
 
 ## Amp config
 

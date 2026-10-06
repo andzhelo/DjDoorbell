@@ -47,6 +47,11 @@ give one sentence. They plan to finish in **one day** and record it as a
   Mac cannot reach the boards. Each board is refused once before joining
   (harmless). The S3 hears the router weakly (−87 dBm on the desk): OTA to
   the outside unit may need USB instead.
+- **Power board simplified** (see CLAUDE.md Protection): fuse + 470 µF + buck
+  only. Diagram and perfboard layout: https://claude.ai/artifact/9pFNN78vK4oG96C1DbZBHt
+  Outside buck is set to 5.0 V and verified. Two earlier "dead" bucks were a
+  broken adapter wire, not dead — they are probably fine.
+- LED chain: soldered, passed the pixel test (needed the SS34 on its lead).
 - Bench aids: type `1`-`9` / `c` on the S3 serial port to press a pad /
   chime; on the WROOM `c` = chime, `f` = full volume toggle. S3 BOOT = pad 5.
 - To read serial without resetting or holding the port, the previous
