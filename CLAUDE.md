@@ -212,6 +212,8 @@ the strip lead (+1000uF 10V at pad 1).
 2026-10-10: turning the trimmer the wrong way while the S3 was connected likely
 over-volted the 5V rail; S3 then failed flash writes (boot: partition table
 error). Amp and pixels on that rail are suspect too — check before reuse.
+Confirmed: that S3 (MAC 14:c1:9f:51:7b:1c) reads flash but every erase fails
+(C400, both USB sockets; 3V3 rail fine) — dead, replace with a new N16R8.
 Inside: 230V -> IRM-10-12 -> 12V -> (pair to door) and (MP1584 5.0V -> SS34
 -> ~4.6V rail -> WROOM 5V, MAX98357A VIN).
 
