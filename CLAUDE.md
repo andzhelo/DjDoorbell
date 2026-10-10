@@ -20,7 +20,7 @@ exposure. Neighbours in a shared stairwell are the main real-world constraint.
 | 3x WS2812B strip pieces, 3 LEDs each | Uncut 100 mm pieces of the 30/m IP30 strip already owned. Side-light each row — see Pixels. |
 | MAX98357A I2S amp | |
 | 40mm 4ohm 2W speaker | Low-volume feedback only — the visitor must hear what they play. |
-| MP1584EN buck | 12V -> 5V at the panel |
+| MP1584EN buck | 12V -> 5V at the panel. These boards are reversed: trimmer CLOCKWISE = LOWER voltage. Adjust with nothing on the output. |
 | 330R resistor | Data line into first pixel (already owned) |
 | 1000uF cap | Across 5V/GND at the LED power injection point |
 
@@ -209,6 +209,9 @@ Never use: 6-11 (flash), 12 (pulled high at boot = 1.8V flash, won't boot).
 Outside: 12V pair -> 500mA fuse -> 470uF 25V to GND -> MP1584 (5.0V, set
 and verified) -> 5V rail -> S3 5V pin, MAX98357A VIN, pixels via the SS34 on
 the strip lead (+1000uF 10V at pad 1).
+2026-10-10: turning the trimmer the wrong way while the S3 was connected likely
+over-volted the 5V rail; S3 then failed flash writes (boot: partition table
+error). Amp and pixels on that rail are suspect too — check before reuse.
 Inside: 230V -> IRM-10-12 -> 12V -> (pair to door) and (MP1584 5.0V -> SS34
 -> ~4.6V rail -> WROOM 5V, MAX98357A VIN).
 
