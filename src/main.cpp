@@ -26,8 +26,11 @@ constexpr int8_t kPinDout = 10;
 constexpr const char* kUnitName = "outside";
 constexpr const char* kHostname = "djdoorbell-outside";
 
-// Pads 1-9 in reading order; pixel index == pad index.
+// Pads 1-9 in reading order.
 constexpr uint8_t  kPadPins[dj::kNumPads] = {4, 5, 6, 7, 15, 16, 17, 18, 8};
+// Chain position of each pad's LED, as built: rows 1 and 3 are swapped end
+// for end (pad 1 lit LED 9), the middle row is in reading order.
+constexpr uint8_t  kPixelOf[dj::kNumPads] = {8, 7, 6, 3, 4, 5, 2, 1, 0};
 constexpr uint32_t kDebounceMs = 5;
 constexpr uint32_t kHoldMs     = 1000;   // centre pad held this long = plain chime
 constexpr uint8_t  kPinPixels  = 13;
@@ -363,8 +366,8 @@ static void updatePixels(uint32_t now) {
     const bool lit = chiming || inWindow(now, flashOn[i], flashOff[i]);
     if (!lit && flashOff[i] && int32_t(now - flashOff[i]) >= 0) flashOff[i] = 0;
     const uint32_t want = lit ? rowColour[i / 3] : 0;
-    if (pixels.getPixelColor(i) != want) {
-      pixels.setPixelColor(i, want);
+    if (pixels.getPixelColor(kPixelOf[i]) != want) {
+      pixels.setPixelColor(kPixelOf[i], want);
       changed = true;
     }
   }

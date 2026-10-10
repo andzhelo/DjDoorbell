@@ -86,7 +86,8 @@ faceplate back, just below its row, LEDs facing up into the clear bodies.
 Board data pin -> 330R -> row 1 strip DIN, left to right. Row 1 DOUT (right
 end) -> wire back to row 2 DIN (left end), same for row 3. Arrows on all
 three strips point left to right. 5V and GND shared. One GPIO total.
-Chain order = reading order, so pixel index == pad index.
+As built, rows 1 and 3 ended up swapped end for end in the chain; firmware
+maps pad -> LED with `kPixelOf` in src/main.cpp (no re-solder needed).
 
 ### Enclosure — `cad/` (parametric OpenSCAD; see cad/README.md)
 - Faceplate 114x145x2.5mm: 3x3 holes Ø24.0 on 30mm pitch (from the printed
@@ -188,7 +189,8 @@ clipped at bed + 2 aligned hits). Bed stops after 8 s without a press.
 Never use: 33-37 (octal PSRAM), 19/20 (USB), 43/44 (UART0),
 0/3/45/46 (strapping), 38/48 (onboard RGB LED).
 
-Pixel chain order = pad order 1-9 (reading order), so pixel index == pad index.
+Pixel chain order as built: pad -> LED via `kPixelOf` in src/main.cpp
+(1<->9, 2<->8, 3<->7 swapped; middle row in order).
 Cap brightness at ~40% — power budget and PTC hold current depend on it.
 
 ## Pin map — inside (ESP32-WROOM-32D)
