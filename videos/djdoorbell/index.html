@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>DJ Doorbell — build, part 1</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #0d0f0a; color: #f2f3ea; }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: #0d0f0a; }
+      .clip { position: absolute; inset: 0; }
+      .vid { width: 100%; height: 100%; object-fit: cover; background: #0d0f0a; }
+      .photo { overflow: hidden; background: #0d0f0a; }
+      .photo img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; will-change: transform; }
+      .photo img.pbg { object-fit: cover; filter: blur(28px) brightness(0.55) saturate(0.8); transform: scale(1.15); }
+      .photo img.kb { object-fit: contain; }
+
+      .display { font-family: "Archivo Black", "League Gothic", sans-serif; font-weight: 400; }
+      .mono { font-family: "JetBrains Mono", monospace; font-weight: 700; }
+
+      /* ---- cold open ---- */
+      .shade { position: absolute; inset: 0; background: radial-gradient(120% 90% at 20% 80%, rgba(13,15,10,0.92) 0%, rgba(13,15,10,0.55) 45%, rgba(13,15,10,0.05) 100%); }
+      .openbox { position: absolute; left: 110px; bottom: 130px; max-width: 1400px; }
+      .opentitle { font-size: 220px; line-height: 0.86; letter-spacing: -0.035em; color: #f2f3ea; }
+      .opentitle .w { display: inline-block; opacity: 0; }
+      .opentitle #ot2 { color: #c8ff2e; }
+      .opensub { margin-top: 34px; font-size: 40px; letter-spacing: 0.02em; color: #f2f3ea; opacity: 0; }
+      .opensub em { font-style: normal; color: #c8ff2e; }
+      /* ---- chapter cards ---- */
+      .card { overflow: hidden; }
+      .panel { position: absolute; inset: 0; background: #0d0f0a; }
+      .cardbox { position: absolute; left: 140px; top: 300px; width: 1640px; }
+      .cardnum { font-size: 44px; color: #c8ff2e; letter-spacing: 0.12em; opacity: 0; }
+      .cardtitle { margin-top: 18px; font-size: 168px; line-height: 0.9; letter-spacing: -0.03em; color: #f2f3ea; opacity: 0; }
+      .cardline { margin-top: 40px; font-size: 38px; color: rgba(242,243,234,0.62); letter-spacing: 0.01em; opacity: 0; }
+      .actlabel { inset: auto 80px 72px auto; font-size: 24px; letter-spacing: 0.14em; color: #f2f3ea; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }
+      .actlabel span { display: inline-block; opacity: 0; padding: 10px 18px; border: 3px solid #c8ff2e; background: rgba(13,15,10,0.55); }
+      /* ---- end card ---- */
+      .endcard { background: #0d0f0a; }
+      .endbox { position: absolute; left: 140px; top: 260px; width: 1640px; }
+      .endkicker { font-size: 40px; letter-spacing: 0.2em; color: #c8ff2e; opacity: 0; }
+      .endtitle { margin-top: 24px; font-size: 200px; line-height: 0.9; letter-spacing: -0.035em; color: #f2f3ea; opacity: 0; }
+      .endurl { margin-top: 48px; font-size: 44px; color: rgba(242,243,234,0.62); opacity: 0; }
+      .fade { position: absolute; inset: 0; background: #000; opacity: 0; }
+      /* ---- HUD: the pad grid + 16-step bar ---- */
+      .hud { pointer-events: none; }
+      .padgrid { position: absolute; left: 80px; bottom: 150px; display: grid; grid-template-columns: repeat(3, 26px); gap: 12px; }
+      .pad { display: block; width: 26px; height: 26px; border-radius: 50%; opacity: 0.35; will-change: transform; box-shadow: 0 0 18px 2px currentColor; }
+      .pad.r1 { background: #ffb000; color: #ffb000; }
+      .pad.r2 { background: #22e6ff; color: #22e6ff; }
+      .pad.r3 { background: #ff2bd6; color: #ff2bd6; }
+      .steps { position: absolute; left: 80px; bottom: 112px; display: flex; gap: 6px; }
+      .step { display: block; width: 12px; height: 14px; background: #c8ff2e; opacity: 0.25; transform-origin: bottom; will-change: transform; }
+      .hudlabel { position: absolute; left: 80px; bottom: 72px; font-size: 22px; letter-spacing: 0.16em; color: #c8ff2e; background: rgba(13,15,10,0.84); padding: 6px 12px; }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-38td" id="root" data-composition-id="main" data-start="0" data-width="1920" data-height="1080" data-duration="158.689" data-fps="30">
+            <video data-hf-id="hf-rji3" id="v01" class="clip vid " src="assets/video/hero_6921.mp4" data-start="0.000" data-duration="7.741" data-media-start="4.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <div data-hf-id="hf-edb2" id="p01" class="clip photo" data-start="7.741" data-duration="3.870" data-track-index="2" style="z-index:1"><img data-hf-id="hf-m4gn" id="p01-bg" class="pbg" data-layout-allow-overflow src="assets/photo/IMG_6335.jpg" alt=""><img data-hf-id="hf-apz5" id="p01-img" class="kb" data-layout-allow-overflow src="assets/photo/IMG_6335.jpg" alt=""></div>
+      <div data-hf-id="hf-5o6w" id="p02" class="clip photo" data-start="11.611" data-duration="1.935" data-track-index="2" style="z-index:1"><img data-hf-id="hf-fh7x" id="p02-bg" class="pbg" data-layout-allow-overflow src="assets/photo/IMG_6336.jpg" alt=""><img data-hf-id="hf-syq1" id="p02-img" class="kb" data-layout-allow-overflow src="assets/photo/IMG_6336.jpg" alt=""></div>
+      <div data-hf-id="hf-sotl" id="p03" class="clip photo" data-start="13.547" data-duration="1.935" data-track-index="2" style="z-index:1"><img data-hf-id="hf-9y4g" id="p03-bg" class="pbg" data-layout-allow-overflow src="assets/photo/IMG_6338.jpg" alt=""><img data-hf-id="hf-jiha" id="p03-img" class="kb" data-layout-allow-overflow src="assets/photo/IMG_6338.jpg" alt=""></div>
+      <div data-hf-id="hf-tads" id="p04" class="clip photo" data-start="15.482" data-duration="1.935" data-track-index="2" style="z-index:1"><img data-hf-id="hf-h0dk" id="p04-bg" class="pbg" data-layout-allow-overflow src="assets/photo/IMG_6339.jpg" alt=""><img data-hf-id="hf-wly0" id="p04-img" class="kb" data-layout-allow-overflow src="assets/photo/IMG_6339.jpg" alt=""></div>
+      <video data-hf-id="hf-2e76" id="v02" class="clip vid " src="assets/video/wall_6925.mp4" data-start="17.417" data-duration="5.806" data-media-start="1.500" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <div data-hf-id="hf-ih4z" id="p05" class="clip photo" data-start="23.223" data-duration="2.903" data-track-index="2" style="z-index:1"><img data-hf-id="hf-py63" id="p05-bg" class="pbg" data-layout-allow-overflow src="assets/photo/IMG_6807.jpg" alt=""><img data-hf-id="hf-kr6h" id="p05-img" class="kb" data-layout-allow-overflow src="assets/photo/IMG_6807.jpg" alt=""></div>
+      <div data-hf-id="hf-monf" id="p06" class="clip photo" data-start="26.126" data-duration="1.935" data-track-index="2" style="z-index:1"><img data-hf-id="hf-t31d" id="p06-bg" class="pbg" data-layout-allow-overflow src="assets/photo/IMG_6703.jpg" alt=""><img data-hf-id="hf-u8rp" id="p06-img" class="kb" data-layout-allow-overflow src="assets/photo/IMG_6703.jpg" alt=""></div>
+      <video data-hf-id="hf-qwq3" id="v03" class="clip vid " src="assets/video/bench_6699_wide.mp4" data-start="28.061" data-duration="3.870" data-media-start="4.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-pq1w" id="v04" class="clip vid " src="assets/video/led_6716_wide.mp4" data-start="31.931" data-duration="3.870" data-media-start="3.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <div data-hf-id="hf-9of1" id="p07" class="clip photo" data-start="35.802" data-duration="1.935" data-track-index="2" style="z-index:1"><img data-hf-id="hf-372l" id="p07-bg" class="pbg" data-layout-allow-overflow src="assets/photo/IMG_6704.jpg" alt=""><img data-hf-id="hf-mbif" id="p07-img" class="kb" data-layout-allow-overflow src="assets/photo/IMG_6704.jpg" alt=""></div>
+      <div data-hf-id="hf-zoyn" id="p08" class="clip photo" data-start="37.737" data-duration="1.935" data-track-index="2" style="z-index:1"><img data-hf-id="hf-onj0" id="p08-bg" class="pbg" data-layout-allow-overflow src="assets/photo/IMG_6814.jpg" alt=""><img data-hf-id="hf-16uc" id="p08-img" class="kb" data-layout-allow-overflow src="assets/photo/IMG_6814.jpg" alt=""></div>
+      <div data-hf-id="hf-71eo" id="p09" class="clip photo" data-start="39.672" data-duration="1.935" data-track-index="2" style="z-index:1"><img data-hf-id="hf-edba" id="p09-bg" class="pbg" data-layout-allow-overflow src="assets/photo/IMG_6819.jpg" alt=""><img data-hf-id="hf-7ju0" id="p09-img" class="kb" data-layout-allow-overflow src="assets/photo/IMG_6819.jpg" alt=""></div>
+      <video data-hf-id="hf-y02h" id="v05" class="clip vid " src="assets/video/power_6885.mp4" data-start="41.608" data-duration="0.968" data-media-start="1.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-h62o" id="v06" class="clip vid " src="assets/video/link_6813.mp4" data-start="42.575" data-duration="3.870" data-media-start="0.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-78vc" id="v07" class="clip vid " src="assets/video/link_6813.mp4" data-start="46.446" data-duration="1.935" data-media-start="4.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-9keq" id="v08" class="clip vid " src="assets/video/link_6813.mp4" data-start="48.381" data-duration="4.838" data-media-start="8.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-6ud1" id="v09" class="clip vid " src="assets/video/link_6813.mp4" data-start="53.219" data-duration="4.838" data-media-start="13.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <div data-hf-id="hf-0qfo" id="p10" class="clip photo" data-start="58.057" data-duration="1.935" data-track-index="2" style="z-index:1"><img data-hf-id="hf-v8fd" id="p10-bg" class="pbg" data-layout-allow-overflow src="assets/photo/IMG_6717.jpg" alt=""><img data-hf-id="hf-b33v" id="p10-img" class="kb" data-layout-allow-overflow src="assets/photo/IMG_6717.jpg" alt=""></div>
+      <div data-hf-id="hf-p3m8" id="p11" class="clip photo" data-start="59.992" data-duration="1.935" data-track-index="2" style="z-index:1"><img data-hf-id="hf-8oqf" id="p11-bg" class="pbg" data-layout-allow-overflow src="assets/photo/IMG_6770.jpg" alt=""><img data-hf-id="hf-9utr" id="p11-img" class="kb" data-layout-allow-overflow src="assets/photo/IMG_6770.jpg" alt=""></div>
+      <video data-hf-id="hf-lkqq" id="v10" class="clip vid " src="assets/video/shell_6837.mp4" data-start="61.927" data-duration="7.741" data-media-start="2.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-32ee" id="v11" class="clip vid " src="assets/video/fit_6837.mp4" data-start="69.668" data-duration="4.838" data-media-start="2.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-08g2" id="v12" class="clip vid " src="assets/video/face_6898.mp4" data-start="74.507" data-duration="2.903" data-media-start="1.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-oomv" id="v13" class="clip vid " src="assets/video/power_6884.mp4" data-start="77.409" data-duration="3.870" data-media-start="0.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-yjaz" id="v14" class="clip vid " src="assets/video/solder_6899.mp4" data-start="81.280" data-duration="7.741" data-media-start="20.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-b5bf" id="v15" class="clip vid " src="assets/video/tl_6912_wide.mp4" data-start="89.021" data-duration="11.611" data-media-start="0.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-rbjm" id="v16" class="clip vid " src="assets/video/tl_6911.mp4" data-start="100.632" data-duration="7.741" data-media-start="0.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-qtvj" id="v17" class="clip vid " src="assets/video/wire_6917.mp4" data-start="108.373" data-duration="3.870" data-media-start="4.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-9qao" id="v18" class="clip vid " src="assets/video/assy_6923a.mp4" data-start="112.244" data-duration="7.741" data-media-start="4.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-bchq" id="v19" class="clip vid " src="assets/video/assy_6923a.mp4" data-start="119.985" data-duration="3.870" data-media-start="36.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-7szt" id="v20" class="clip vid " src="assets/video/hero_6921.mp4" data-start="123.855" data-duration="3.870" data-media-start="0.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-huii" id="v21" class="clip vid " src="assets/video/hero_6921.mp4" data-start="127.725" data-duration="3.870" data-media-start="11.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-ysi3" id="v22" class="clip vid " src="assets/video/wires_6926.mp4" data-start="131.596" data-duration="4.838" data-media-start="1.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-xcc0" id="v23" class="clip vid " src="assets/video/shellwall_6926.mp4" data-start="136.434" data-duration="4.838" data-media-start="1.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-s7ji" id="v24" class="clip vid " src="assets/video/shellwall_6927.mp4" data-start="141.272" data-duration="5.806" data-media-start="1.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+
+      <section data-hf-id="hf-8j8u" id="open" class="clip overlay" data-start="0" data-duration="7.741" data-track-index="3" style="z-index:5">
+        <div data-hf-id="hf-x8kp" id="open-shade" class="shade"></div>
+        <div data-hf-id="hf-93u5" id="open-box" class="openbox">
+          <h1 data-hf-id="hf-cuit" id="open-title" class="display opentitle"><span data-hf-id="hf-po3e" id="ot1" class="w">DJ</span> <span data-hf-id="hf-v41e" id="ot2" class="w">DOORBELL</span></h1>
+          <p data-hf-id="hf-9k94" id="open-sub" class="mono opensub">a doorbell you <em data-hf-id="hf-l2it">play</em>, not press.</p>
+        </div>
+      </section>
+            <section data-hf-id="hf-otss" id="c1" class="clip card" data-start="7.741" data-duration="2.903" data-track-index="3" style="z-index:5"><div data-hf-id="hf-xjd9" id="c1-panel" class="panel"></div><div data-hf-id="hf-4o7v" id="c1-box" class="cardbox"><div data-hf-id="hf-ujt5" id="c1-num" class="mono cardnum">01</div><h2 data-hf-id="hf-2xc5" id="c1-title" class="display cardtitle">THE WALL</h2><p data-hf-id="hf-rxun" id="c1-line" class="mono cardline">two wires · 8 V AC · one dumb button</p></div></section>
+      <section data-hf-id="hf-zo7e" id="c2" class="clip card" data-start="23.223" data-duration="2.903" data-track-index="3" style="z-index:5"><div data-hf-id="hf-uig6" id="c2-panel" class="panel"></div><div data-hf-id="hf-rp70" id="c2-box" class="cardbox"><div data-hf-id="hf-eawn" id="c2-num" class="mono cardnum">02</div><h2 data-hf-id="hf-e2xw" id="c2-title" class="display cardtitle">THE BENCH</h2><p data-hf-id="hf-3rzk" id="c2-line" class="mono cardline">ESP32-S3 · nine arcade buttons · one speaker</p></div></section>
+      <section data-hf-id="hf-2f9w" id="c3" class="clip card" data-start="42.575" data-duration="2.903" data-track-index="3" style="z-index:5"><div data-hf-id="hf-lat7" id="c3-panel" class="panel"></div><div data-hf-id="hf-q8vl" id="c3-box" class="cardbox"><div data-hf-id="hf-5bit" id="c3-num" class="mono cardnum">03</div><h2 data-hf-id="hf-ba1s" id="c3-title" class="display cardtitle">THE GATE</h2><p data-hf-id="hf-s99k" id="c3-line" class="mono cardline">ESP-NOW through a closed door</p></div></section>
+      <section data-hf-id="hf-rzxv" id="c4" class="clip card" data-start="58.057" data-duration="2.903" data-track-index="3" style="z-index:5"><div data-hf-id="hf-x478" id="c4-panel" class="panel"></div><div data-hf-id="hf-r4s2" id="c4-box" class="cardbox"><div data-hf-id="hf-0tcv" id="c4-num" class="mono cardnum">04</div><h2 data-hf-id="hf-bgdj" id="c4-title" class="display cardtitle">ENCLOSURE</h2><p data-hf-id="hf-nvqs" id="c4-line" class="mono cardline">Ø24 mm holes · 30 mm pitch · printed in lime</p></div></section>
+      <section data-hf-id="hf-tc1u" id="c5" class="clip card" data-start="77.409" data-duration="2.903" data-track-index="3" style="z-index:5"><div data-hf-id="hf-s2ep" id="c5-panel" class="panel"></div><div data-hf-id="hf-4vd3" id="c5-box" class="cardbox"><div data-hf-id="hf-r9tt" id="c5-num" class="mono cardnum">05</div><h2 data-hf-id="hf-5apf" id="c5-title" class="display cardtitle">SOLDERING</h2><p data-hf-id="hf-6rgv" id="c5-line" class="mono cardline">nine switches · nine wires · 27 pixels</p></div></section>
+      <section data-hf-id="hf-vkt6" id="c6" class="clip card" data-start="112.244" data-duration="2.903" data-track-index="3" style="z-index:5"><div data-hf-id="hf-eije" id="c6-panel" class="panel"></div><div data-hf-id="hf-pyjs" id="c6-box" class="cardbox"><div data-hf-id="hf-2x0n" id="c6-num" class="mono cardnum">06</div><h2 data-hf-id="hf-lvlr" id="c6-title" class="display cardtitle">ASSEMBLY</h2><p data-hf-id="hf-fskt" id="c6-line" class="mono cardline">it exists.</p></div></section>
+      <section data-hf-id="hf-dlla" id="c7" class="clip card" data-start="131.596" data-duration="2.903" data-track-index="3" style="z-index:5"><div data-hf-id="hf-rg27" id="c7-panel" class="panel"></div><div data-hf-id="hf-eb99" id="c7-box" class="cardbox"><div data-hf-id="hf-5tad" id="c7-num" class="mono cardnum">07</div><h2 data-hf-id="hf-e1hl" id="c7-title" class="display cardtitle">THE WALL, AGAIN</h2><p data-hf-id="hf-0d73" id="c7-line" class="mono cardline">12 V on the pair · install day next</p></div></section>
+            <div data-hf-id="hf-uxmf" id="l01" class="clip actlabel mono" data-start="10.644" data-duration="12.579" data-track-index="5" style="z-index:6"><span data-hf-id="hf-r990" id="l01-t">01 — THE WALL</span></div>
+      <div data-hf-id="hf-6brw" id="l02" class="clip actlabel mono" data-start="26.126" data-duration="16.449" data-track-index="5" style="z-index:6"><span data-hf-id="hf-t5qo" id="l02-t">02 — THE BENCH</span></div>
+      <div data-hf-id="hf-o91g" id="l03" class="clip actlabel mono" data-start="45.478" data-duration="12.579" data-track-index="5" style="z-index:6"><span data-hf-id="hf-gniv" id="l03-t">03 — THE GATE</span></div>
+      <div data-hf-id="hf-23w6" id="l04" class="clip actlabel mono" data-start="60.960" data-duration="16.449" data-track-index="5" style="z-index:6"><span data-hf-id="hf-snx1" id="l04-t">04 — ENCLOSURE</span></div>
+      <div data-hf-id="hf-5fxl" id="l05" class="clip actlabel mono" data-start="80.312" data-duration="31.931" data-track-index="5" style="z-index:6"><span data-hf-id="hf-76y8" id="l05-t">05 — SOLDERING</span></div>
+      <div data-hf-id="hf-y8fb" id="l06" class="clip actlabel mono" data-start="115.146" data-duration="16.449" data-track-index="5" style="z-index:6"><span data-hf-id="hf-qx5r" id="l06-t">06 — ASSEMBLY</span></div>
+      <div data-hf-id="hf-9uj4" id="l07" class="clip actlabel mono" data-start="134.499" data-duration="12.579" data-track-index="5" style="z-index:6"><span data-hf-id="hf-bg24" id="l07-t">07 — THE WALL, AGAIN</span></div>
+
+      <section data-hf-id="hf-itlk" id="end" class="clip overlay endcard" data-start="147.078" data-duration="11.611" data-track-index="3" style="z-index:5">
+        <div data-hf-id="hf-qta7" id="end-box" class="endbox">
+          <div data-hf-id="hf-42sx" id="end-kicker" class="mono endkicker">TO BE CONTINUED</div>
+          <h1 data-hf-id="hf-1bcl" id="end-title" class="display endtitle">PART 2:<br data-hf-id="hf-x5px">INSTALL DAY</h1>
+          <p data-hf-id="hf-u2fd" id="end-url" class="mono endurl">github.com/andzhelo/DjDoorbell</p>
+        </div>
+        <div data-hf-id="hf-15kq" id="end-fade" class="fade"></div>
+      </section>
+
+      <div data-hf-id="hf-rfgm" id="hud" class="clip hud" data-start="0" data-duration="158.689" data-track-index="4" style="z-index:6">
+        <div data-hf-id="hf-31yd" id="hud-grid" class="padgrid">
+          <i data-hf-id="hf-yuoa" class="pad r1"></i><i data-hf-id="hf-m1e6" class="pad r1"></i><i data-hf-id="hf-mfp7" class="pad r1"></i>
+          <i data-hf-id="hf-uwk9" class="pad r2"></i><i data-hf-id="hf-6h4d" class="pad r2"></i><i data-hf-id="hf-7o1g" class="pad r2"></i>
+          <i data-hf-id="hf-u4wg" class="pad r3"></i><i data-hf-id="hf-hhyg" class="pad r3"></i><i data-hf-id="hf-gb1d" class="pad r3"></i>
+        </div>
+        <div data-hf-id="hf-l6fo" id="hud-steps" class="steps"><b data-hf-id="hf-y06z" class="step"></b><b data-hf-id="hf-um2j" class="step"></b><b data-hf-id="hf-u7ri" class="step"></b><b data-hf-id="hf-ttgh" class="step"></b><b data-hf-id="hf-tf5g" class="step"></b><b data-hf-id="hf-t0uf" class="step"></b><b data-hf-id="hf-smje" class="step"></b><b data-hf-id="hf-s88d" class="step"></b><b data-hf-id="hf-y6ts" class="step"></b><b data-hf-id="hf-xsir" class="step"></b><b data-hf-id="hf-hj69" class="step"></b><b data-hf-id="hf-hxha" class="step"></b><b data-hf-id="hf-ibsb" class="step"></b><b data-hf-id="hf-iq3c" class="step"></b><b data-hf-id="hf-fxy5" class="step"></b><b data-hf-id="hf-gc96" class="step"></b></div>
+        <div data-hf-id="hf-2e9m" id="hud-label" class="mono hudlabel">124.016 BPM · A MINOR · 16TH GRID</div>
+      </div>
+
+            <audio data-hf-id="hf-6xlq" id="bed00" src="assets/audio/00_loop.wav" data-start="0.000" data-duration="7.737" data-track-index="10" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-j1d6" id="bed01" src="assets/audio/00_loop.wav" data-start="7.741" data-duration="7.737" data-track-index="10" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-7d04" id="bed02" src="assets/audio/00_loop.wav" data-start="15.482" data-duration="7.737" data-track-index="10" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-c13p" id="bed03" src="assets/audio/00_loop.wav" data-start="23.223" data-duration="7.737" data-track-index="10" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-fkvs" id="bed04" src="assets/audio/00_loop.wav" data-start="30.964" data-duration="7.737" data-track-index="10" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-07rc" id="bed05" src="assets/audio/00_loop.wav" data-start="38.705" data-duration="7.737" data-track-index="10" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-puj0" id="bed06" src="assets/audio/00_loop.wav" data-start="46.446" data-duration="7.737" data-track-index="10" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-ts9o" id="bed07" src="assets/audio/00_loop.wav" data-start="54.187" data-duration="7.737" data-track-index="10" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-09wj" id="bed08" src="assets/audio/00_loop.wav" data-start="61.927" data-duration="7.737" data-track-index="10" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-556c" id="bed09" src="assets/audio/00_loop.wav" data-start="69.668" data-duration="7.737" data-track-index="10" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-2nji" id="bed10" src="assets/audio/00_loop.wav" data-start="77.409" data-duration="7.737" data-track-index="10" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-cm01" id="bed11" src="assets/audio/00_loop.wav" data-start="85.150" data-duration="7.737" data-track-index="10" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-33hw" id="bed12" src="assets/audio/00_loop.wav" data-start="92.891" data-duration="7.737" data-track-index="10" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-06da" id="bed13" src="assets/audio/00_loop.wav" data-start="100.632" data-duration="7.737" data-track-index="10" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-lqmf" id="bed14" src="assets/audio/00_loop.wav" data-start="108.373" data-duration="7.737" data-track-index="10" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-5m0y" id="bed15" src="assets/audio/00_loop.wav" data-start="116.114" data-duration="7.737" data-track-index="10" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-3jh3" id="bed16" src="assets/audio/00_loop.wav" data-start="123.855" data-duration="7.737" data-track-index="10" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-8tt5" id="bed17" src="assets/audio/00_loop.wav" data-start="131.596" data-duration="7.737" data-track-index="10" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-xxe3" id="bed18" src="assets/audio/00_loop.wav" data-start="139.337" data-duration="7.737" data-track-index="10" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-wrtx" id="bed19" src="assets/audio/00_loop.wav" data-start="147.078" data-duration="7.737" data-track-index="10" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-4rsj" id="bed20" src="assets/audio/00_loop.wav" data-start="154.819" data-duration="3.870" data-track-index="10" data-volume="0.45" data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":1},{"t":1.870,"v":1},{"t":3.870,"v":0}]}]}'></audio>
+            <audio data-hf-id="hf-6s5e" id="sfx01-kick" src="assets/audio/01_kick.wav" data-start="0.000" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-6lx3" id="sfx02-clap" src="assets/audio/02_clap.wav" data-start="7.741" data-duration="0.420" data-track-index="12" data-volume="0.55"></audio>
+      <audio data-hf-id="hf-pcng" id="sfx03-kick" src="assets/audio/01_kick.wav" data-start="11.611" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-pnt3" id="sfx04-kick" src="assets/audio/01_kick.wav" data-start="13.547" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-5li8" id="sfx05-kick" src="assets/audio/01_kick.wav" data-start="15.482" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-4khv" id="sfx06-kick" src="assets/audio/01_kick.wav" data-start="17.417" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-mlih" id="sfx07-clap" src="assets/audio/02_clap.wav" data-start="23.223" data-duration="0.420" data-track-index="12" data-volume="0.55"></audio>
+      <audio data-hf-id="hf-bx4o" id="sfx08-kick" src="assets/audio/01_kick.wav" data-start="26.126" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-6ldl" id="sfx09-kick" src="assets/audio/01_kick.wav" data-start="28.061" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-j5mz" id="sfx10-kick" src="assets/audio/01_kick.wav" data-start="31.931" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-1ybh" id="sfx11-kick" src="assets/audio/01_kick.wav" data-start="35.802" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-y6pr" id="sfx12-kick" src="assets/audio/01_kick.wav" data-start="37.737" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-ftdc" id="sfx13-kick" src="assets/audio/01_kick.wav" data-start="39.672" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-ixoh" id="sfx14-kick" src="assets/audio/01_kick.wav" data-start="41.608" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-zjvp" id="sfx15-clap" src="assets/audio/02_clap.wav" data-start="42.575" data-duration="0.420" data-track-index="12" data-volume="0.55"></audio>
+      <audio data-hf-id="hf-zyyw" id="sfx16-kick" src="assets/audio/01_kick.wav" data-start="46.446" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-0ua7" id="sfx17-kick" src="assets/audio/01_kick.wav" data-start="48.381" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-ro96" id="sfx18-kick" src="assets/audio/01_kick.wav" data-start="53.219" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-5hwt" id="sfx19-clap" src="assets/audio/02_clap.wav" data-start="58.057" data-duration="0.420" data-track-index="12" data-volume="0.55"></audio>
+      <audio data-hf-id="hf-g79d" id="sfx20-kick" src="assets/audio/01_kick.wav" data-start="59.992" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-lwid" id="sfx21-kick" src="assets/audio/01_kick.wav" data-start="61.927" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-pgze" id="sfx22-kick" src="assets/audio/01_kick.wav" data-start="69.668" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-j3wj" id="sfx23-kick" src="assets/audio/01_kick.wav" data-start="74.507" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-2i9t" id="sfx24-clap" src="assets/audio/02_clap.wav" data-start="77.409" data-duration="0.420" data-track-index="12" data-volume="0.55"></audio>
+      <audio data-hf-id="hf-swz5" id="sfx25-kick" src="assets/audio/01_kick.wav" data-start="81.280" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-dtf7" id="sfx26-kick" src="assets/audio/01_kick.wav" data-start="89.021" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-39l2" id="sfx27-kick" src="assets/audio/01_kick.wav" data-start="100.632" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-opgt" id="sfx28-kick" src="assets/audio/01_kick.wav" data-start="108.373" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-m6gl" id="sfx29-clap" src="assets/audio/02_clap.wav" data-start="112.244" data-duration="0.420" data-track-index="12" data-volume="0.55"></audio>
+      <audio data-hf-id="hf-rm41" id="sfx30-kick" src="assets/audio/01_kick.wav" data-start="119.985" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-3ubt" id="sfx31-kick" src="assets/audio/01_kick.wav" data-start="123.855" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-q130" id="sfx32-kick" src="assets/audio/01_kick.wav" data-start="127.725" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-1ug7" id="sfx33-clap" src="assets/audio/02_clap.wav" data-start="131.596" data-duration="0.420" data-track-index="12" data-volume="0.55"></audio>
+      <audio data-hf-id="hf-rz51" id="sfx34-kick" src="assets/audio/01_kick.wav" data-start="136.434" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-e3jm" id="sfx35-kick" src="assets/audio/01_kick.wav" data-start="141.272" data-duration="0.520" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-t96g" id="sfx36-stab" src="assets/audio/04_stab_am.wav" data-start="1.935" data-duration="0.620" data-track-index="14" data-volume="0.6"></audio>
+      <audio data-hf-id="hf-d2r2" id="sfx37-pluck" src="assets/audio/08_pluck.wav" data-start="3.870" data-duration="0.340" data-track-index="15" data-volume="0.6"></audio>
+      <audio data-hf-id="hf-f214" id="sfx38-riser" src="assets/audio/09_riser.wav" data-start="143.207" data-duration="1.100" data-track-index="16" data-volume="0.5"></audio>
+      <audio data-hf-id="hf-ielj" id="sfx39-chime" src="assets/audio/11_chime.wav" data-start="147.078" data-duration="2.000" data-track-index="17" data-volume="0.9"></audio>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      // ---- rhythm chrome: one tempo grid drives the pad grid + step bar ----
+      const BEAT = 0.483809, BAR = 1.935234, TOTAL = 158.689;
+      const pads = gsap.utils.toArray("#hud-grid .pad");
+      const steps = gsap.utils.toArray("#hud-steps .step");
+      const nBeats = Math.floor(TOTAL / BEAT);
+      for (let b = 0; b < nBeats; b++) {
+        const t = b * BEAT;
+        // kick on 1 & 3 lights row 1, clap on 2 & 4 lights row 3, row 2 walks.
+        const which = (b % 4 === 0) ? b % 3 : (b % 2 === 1) ? 6 + (b % 3) : 3 + (b % 3);
+        tl.fromTo(pads[which], { scale: 1.45, opacity: 1 }, { scale: 1, opacity: 0.35, duration: BEAT * 0.9, ease: "power3.out", immediateRender: false, overwrite: "auto" }, t);
+      }
+      const nSteps = Math.floor(TOTAL / (BEAT / 4));
+      for (let s = 0; s < nSteps; s++) {
+        const t = s * (BEAT / 4);
+        tl.fromTo(steps[s % 16], { opacity: 1, scaleY: 1.6 }, { opacity: 0.25, scaleY: 1, duration: BEAT / 4 * 0.95, ease: "none", immediateRender: false, overwrite: "auto" }, t);
+      }
+
+      // ---- cold open: title slams on bar 1, subtitle on bar 2 ----
+      tl.fromTo("#ot1", { opacity: 0, scale: 1.6, filter: "blur(18px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.45, ease: "power4.out", immediateRender: false }, BAR * 1);
+      tl.fromTo("#ot2", { opacity: 0, x: -260 }, { opacity: 1, x: 0, duration: 0.42, ease: "expo.out", immediateRender: false }, BAR * 1 + BEAT);
+      tl.fromTo("#open-sub", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, ease: "circ.out", immediateRender: false }, BAR * 2);
+      // ---- photos: Ken Burns on an inner img (never on the timed clip) ----
+      tl.fromTo("#p01-img", { scale: 1.0, xPercent: 0 }, { scale: 1.08, xPercent: -1.5, duration: 3.870, ease: "none", immediateRender: false }, 7.741);
+      tl.fromTo("#p02-img", { scale: 1.08, xPercent: 0 }, { scale: 1.0, xPercent: 1.5, duration: 1.935, ease: "none", immediateRender: false }, 11.611);
+      tl.fromTo("#p03-img", { scale: 1.0, xPercent: 0 }, { scale: 1.08, xPercent: -1.5, duration: 1.935, ease: "none", immediateRender: false }, 13.547);
+      tl.fromTo("#p04-img", { scale: 1.08, xPercent: 0 }, { scale: 1.0, xPercent: 1.5, duration: 1.935, ease: "none", immediateRender: false }, 15.482);
+      tl.fromTo("#p05-img", { scale: 1.0, xPercent: 0 }, { scale: 1.08, xPercent: -1.5, duration: 2.903, ease: "none", immediateRender: false }, 23.223);
+      tl.fromTo("#p06-img", { scale: 1.08, xPercent: 0 }, { scale: 1.0, xPercent: 1.5, duration: 1.935, ease: "none", immediateRender: false }, 26.126);
+      tl.fromTo("#p07-img", { scale: 1.0, xPercent: 0 }, { scale: 1.08, xPercent: -1.5, duration: 1.935, ease: "none", immediateRender: false }, 35.802);
+      tl.fromTo("#p08-img", { scale: 1.08, xPercent: 0 }, { scale: 1.0, xPercent: 1.5, duration: 1.935, ease: "none", immediateRender: false }, 37.737);
+      tl.fromTo("#p09-img", { scale: 1.0, xPercent: 0 }, { scale: 1.08, xPercent: -1.5, duration: 1.935, ease: "none", immediateRender: false }, 39.672);
+      tl.fromTo("#p10-img", { scale: 1.08, xPercent: 0 }, { scale: 1.0, xPercent: 1.5, duration: 1.935, ease: "none", immediateRender: false }, 58.057);
+      tl.fromTo("#p11-img", { scale: 1.0, xPercent: 0 }, { scale: 1.08, xPercent: -1.5, duration: 1.935, ease: "none", immediateRender: false }, 59.992);
+      // ---- chapter cards: wipe in, slam, wipe out (the wipe IS the exit) ----
+
+      tl.fromTo("#c1-panel", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.28, ease: "power4.out", immediateRender: false }, 7.741);
+      tl.fromTo("#c1-num", { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out", immediateRender: false }, 7.861);
+      tl.fromTo("#c1-title", { opacity: 0, y: 70, scale: 1.08 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power4.out", immediateRender: false }, 7.941);
+      tl.fromTo("#c1-line", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 8.191);
+      tl.to("#c1-panel", { clipPath: "inset(0 0 0 100%)", duration: 0.32, ease: "power4.in" }, 10.304);
+      tl.to("#c1-box", { x: 260, opacity: 0, duration: 0.3, ease: "power4.in" }, 10.324);
+
+      tl.fromTo("#c2-panel", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.28, ease: "power4.out", immediateRender: false }, 23.223);
+      tl.fromTo("#c2-num", { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out", immediateRender: false }, 23.343);
+      tl.fromTo("#c2-title", { opacity: 0, y: 70, scale: 1.08 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power4.out", immediateRender: false }, 23.423);
+      tl.fromTo("#c2-line", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 23.673);
+      tl.to("#c2-panel", { clipPath: "inset(0 0 0 100%)", duration: 0.32, ease: "power4.in" }, 25.786);
+      tl.to("#c2-box", { x: 260, opacity: 0, duration: 0.3, ease: "power4.in" }, 25.806);
+
+      tl.fromTo("#c3-panel", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.28, ease: "power4.out", immediateRender: false }, 42.575);
+      tl.fromTo("#c3-num", { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out", immediateRender: false }, 42.695);
+      tl.fromTo("#c3-title", { opacity: 0, y: 70, scale: 1.08 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power4.out", immediateRender: false }, 42.775);
+      tl.fromTo("#c3-line", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 43.025);
+      tl.to("#c3-panel", { clipPath: "inset(0 0 0 100%)", duration: 0.32, ease: "power4.in" }, 45.138);
+      tl.to("#c3-box", { x: 260, opacity: 0, duration: 0.3, ease: "power4.in" }, 45.158);
+
+      tl.fromTo("#c4-panel", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.28, ease: "power4.out", immediateRender: false }, 58.057);
+      tl.fromTo("#c4-num", { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out", immediateRender: false }, 58.177);
+      tl.fromTo("#c4-title", { opacity: 0, y: 70, scale: 1.08 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power4.out", immediateRender: false }, 58.257);
+      tl.fromTo("#c4-line", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 58.507);
+      tl.to("#c4-panel", { clipPath: "inset(0 0 0 100%)", duration: 0.32, ease: "power4.in" }, 60.620);
+      tl.to("#c4-box", { x: 260, opacity: 0, duration: 0.3, ease: "power4.in" }, 60.640);
+
+      tl.fromTo("#c5-panel", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.28, ease: "power4.out", immediateRender: false }, 77.409);
+      tl.fromTo("#c5-num", { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out", immediateRender: false }, 77.529);
+      tl.fromTo("#c5-title", { opacity: 0, y: 70, scale: 1.08 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power4.out", immediateRender: false }, 77.609);
+      tl.fromTo("#c5-line", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 77.859);
+      tl.to("#c5-panel", { clipPath: "inset(0 0 0 100%)", duration: 0.32, ease: "power4.in" }, 79.972);
+      tl.to("#c5-box", { x: 260, opacity: 0, duration: 0.3, ease: "power4.in" }, 79.992);
+
+      tl.fromTo("#c6-panel", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.28, ease: "power4.out", immediateRender: false }, 112.244);
+      tl.fromTo("#c6-num", { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out", immediateRender: false }, 112.364);
+      tl.fromTo("#c6-title", { opacity: 0, y: 70, scale: 1.08 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power4.out", immediateRender: false }, 112.444);
+      tl.fromTo("#c6-line", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 112.694);
+      tl.to("#c6-panel", { clipPath: "inset(0 0 0 100%)", duration: 0.32, ease: "power4.in" }, 114.806);
+      tl.to("#c6-box", { x: 260, opacity: 0, duration: 0.3, ease: "power4.in" }, 114.826);
+
+      tl.fromTo("#c7-panel", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.28, ease: "power4.out", immediateRender: false }, 131.596);
+      tl.fromTo("#c7-num", { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out", immediateRender: false }, 131.716);
+      tl.fromTo("#c7-title", { opacity: 0, y: 70, scale: 1.08 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power4.out", immediateRender: false }, 131.796);
+      tl.fromTo("#c7-line", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 132.046);
+      tl.to("#c7-panel", { clipPath: "inset(0 0 0 100%)", duration: 0.32, ease: "power4.in" }, 134.159);
+      tl.to("#c7-box", { x: 260, opacity: 0, duration: 0.3, ease: "power4.in" }, 134.179);
+      tl.fromTo("#l01-t", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 10.644);
+      tl.fromTo("#l02-t", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 26.126);
+      tl.fromTo("#l03-t", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 45.478);
+      tl.fromTo("#l04-t", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 60.960);
+      tl.fromTo("#l05-t", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 80.312);
+      tl.fromTo("#l06-t", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 115.146);
+      tl.fromTo("#l07-t", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 134.499);
+      // ---- end card (final scene: exit fades allowed) ----
+      const E = BAR * 76;
+      tl.fromTo("#end-kicker", { opacity: 0, x: -50 }, { opacity: 1, x: 0, duration: 0.4, ease: "expo.out", immediateRender: false }, E + 0.1);
+      tl.fromTo("#end-title", { opacity: 0, y: 80 }, { opacity: 1, y: 0, duration: 0.55, ease: "power4.out", immediateRender: false }, E + BEAT);
+      tl.fromTo("#end-url", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", immediateRender: false }, E + BAR);
+      tl.to("#end-fade", { opacity: 1, duration: 1.2, ease: "power2.in" }, TOTAL - 1.3);
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

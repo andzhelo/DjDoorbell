@@ -5,3 +5,8 @@ include/secrets.h
 data/preview/
 cad/stl/
 cad/preview/
+# HyperFrames video projects: keep sources, not media/renders
+videos/*/assets/
+videos/*/renders/
+videos/*/.hyperframes/
+videos/*/node_modules/

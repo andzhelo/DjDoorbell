@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>DJ Doorbell — reel</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #0d0f0a; color: #f2f3ea; }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: #0d0f0a; }
+      .clip { position: absolute; inset: 0; }
+      .vid { width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; background: #0d0f0a; }
+
+      .display { font-family: "Archivo Black", "League Gothic", sans-serif; font-weight: 400; }
+      .mono { font-family: "JetBrains Mono", monospace; font-weight: 700; }
+
+      .shade { position: absolute; inset: 0; background: radial-gradient(90% 60% at 50% 85%, rgba(13,15,10,0.92) 0%, rgba(13,15,10,0.5) 50%, rgba(13,15,10,0.05) 100%); }
+      .openbox { position: absolute; left: 70px; right: 70px; bottom: 560px; }
+      .kicker { font-size: 44px; letter-spacing: 0.18em; color: #f2f3ea; opacity: 0; }
+      .opentitle { margin-top: 18px; font-size: 236px; line-height: 0.86; letter-spacing: -0.035em; color: #f2f3ea; }
+      .opentitle .w { display: inline-block; opacity: 0; }
+      .lime { color: #c8ff2e; }
+      .capwrap { pointer-events: none; }
+      .cap { position: absolute; left: 70px; right: 70px; bottom: 640px; font-size: 104px; line-height: 1.02; letter-spacing: -0.03em; color: #f2f3ea; opacity: 0; }
+      .cap span { display: inline; background: rgba(13,15,10,0.84); padding: 6px 22px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+      .capbar { position: absolute; left: 70px; bottom: 600px; width: 220px; height: 14px; background: #c8ff2e; transform-origin: left; display: block; }
+      .endurl { position: absolute; left: 70px; bottom: 520px; font-size: 40px; letter-spacing: 0.04em; color: #c8ff2e; background: rgba(13,15,10,0.84); padding: 10px 18px; opacity: 0; }
+      .fade { position: absolute; inset: 0; background: #000; opacity: 0; }
+      .hud { pointer-events: none; }
+      .padgrid { position: absolute; left: 70px; top: 190px; display: grid; grid-template-columns: repeat(3, 30px); gap: 14px; }
+      .pad { display: block; width: 30px; height: 30px; border-radius: 50%; opacity: 0.35; will-change: transform; box-shadow: 0 0 20px 2px currentColor; }
+      .pad.r1 { background: #ffb000; color: #ffb000; }
+      .pad.r2 { background: #22e6ff; color: #22e6ff; }
+      .pad.r3 { background: #ff2bd6; color: #ff2bd6; }
+      .steps { position: absolute; left: 70px; top: 330px; display: flex; gap: 6px; }
+      .step { display: block; width: 12px; height: 16px; background: #c8ff2e; opacity: 0.25; transform-origin: bottom; will-change: transform; }
+      .hudlabel { position: absolute; left: 70px; top: 364px; font-size: 24px; letter-spacing: 0.16em; color: #c8ff2e; background: rgba(13,15,10,0.84); padding: 6px 12px; }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-8nxp" id="root" data-composition-id="main" data-start="0" data-width="1080" data-height="1920" data-duration="38.705" data-fps="30">
+            <video data-hf-id="hf-zj8n" id="v01" class="clip vid cover" src="assets/video/hero_6921.mp4" data-start="0.000" data-duration="3.870" data-media-start="6.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-mhog" id="v02" class="clip vid cover" src="assets/video/wall_6925.mp4" data-start="3.870" data-duration="3.870" data-media-start="6.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-9q2a" id="v03" class="clip vid tall" src="assets/video/bench_6699.mp4" data-start="7.741" data-duration="3.870" data-media-start="4.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-coqm" id="v04" class="clip vid tall" src="assets/video/led_6716.mp4" data-start="11.611" data-duration="3.870" data-media-start="3.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-686h" id="v05" class="clip vid tall" src="assets/video/link_6812.mp4" data-start="15.482" data-duration="3.870" data-media-start="8.500" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-40ha" id="v06" class="clip vid tall" src="assets/video/tl_6912.mp4" data-start="19.352" data-duration="3.870" data-media-start="0.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-6pfi" id="v07" class="clip vid tall" src="assets/video/overhead_811847.mp4" data-start="23.223" data-duration="3.870" data-media-start="2.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-9i4n" id="v08" class="clip vid cover" src="assets/video/face_6897.mp4" data-start="27.093" data-duration="3.870" data-media-start="0.500" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-omh4" id="v09" class="clip vid cover" src="assets/video/hero_6921.mp4" data-start="30.964" data-duration="3.870" data-media-start="12.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+      <video data-hf-id="hf-h9m8" id="v10" class="clip vid cover" src="assets/video/shellwall_6927.mp4" data-start="34.834" data-duration="3.870" data-media-start="3.000" data-track-index="1" muted playsinline style="z-index:1"></video>
+
+      <section data-hf-id="hf-igi1" id="open" class="clip overlay" data-start="0" data-duration="3.870" data-track-index="3" style="z-index:5">
+        <div data-hf-id="hf-x8kp" id="open-shade" class="shade"></div>
+        <div data-hf-id="hf-93u5" id="open-box" class="openbox">
+          <div data-hf-id="hf-vj38" id="ot0" class="mono kicker">I BUILT A DOORBELL</div>
+          <h1 data-hf-id="hf-cuit" id="open-title" class="display opentitle"><span data-hf-id="hf-4wyb" id="ot1" class="w">YOU</span><br data-hf-id="hf-x5px"><span data-hf-id="hf-86vu" id="ot2" class="w lime">PLAY.</span></h1>
+        </div>
+      </section>
+            <section data-hf-id="hf-fe8y" id="cap01" class="clip capwrap" data-start="3.870" data-duration="3.870" data-track-index="3" style="z-index:5"><h2 data-hf-id="hf-tujp" id="cap01-t" class="display cap"><span data-hf-id="hf-9hdm">the old one:<br data-hf-id="hf-rsrt">a button.</span></h2><i data-hf-id="hf-xzk6" id="cap01-bar" class="capbar"></i></section>
+      <section data-hf-id="hf-539q" id="cap02" class="clip capwrap" data-start="7.741" data-duration="3.870" data-track-index="3" style="z-index:5"><h2 data-hf-id="hf-8lji" id="cap02-t" class="display cap"><span data-hf-id="hf-avqc">ESP32-S3<br data-hf-id="hf-szow">+ 9 arcade buttons</span></h2><i data-hf-id="hf-8qrp" id="cap02-bar" class="capbar"></i></section>
+      <section data-hf-id="hf-25lo" id="cap03" class="clip capwrap" data-start="11.611" data-duration="3.870" data-track-index="3" style="z-index:5"><h2 data-hf-id="hf-c1wb" id="cap03-t" class="display cap"><span data-hf-id="hf-jlu3">27 pixels</span></h2><i data-hf-id="hf-ij4s" id="cap03-bar" class="capbar"></i></section>
+      <section data-hf-id="hf-avcl" id="cap04" class="clip capwrap" data-start="15.482" data-duration="3.870" data-track-index="3" style="z-index:5"><h2 data-hf-id="hf-43po" id="cap04-t" class="display cap"><span data-hf-id="hf-addg">link test<br data-hf-id="hf-sldv">through the door ✓</span></h2><i data-hf-id="hf-8bar" id="cap04-bar" class="capbar"></i></section>
+      <section data-hf-id="hf-jyv4" id="cap05" class="clip capwrap" data-start="19.352" data-duration="3.870" data-track-index="3" style="z-index:5"><h2 data-hf-id="hf-t32x" id="cap05-t" class="display cap"><span data-hf-id="hf-0ybv">24 min of soldering</span></h2><i data-hf-id="hf-yqiy" id="cap05-bar" class="capbar"></i></section>
+      <section data-hf-id="hf-wctn" id="cap07" class="clip capwrap" data-start="27.093" data-duration="3.870" data-track-index="3" style="z-index:5"><h2 data-hf-id="hf-pxen" id="cap07-t" class="display cap"><span data-hf-id="hf-wx5i">every press snaps<br data-hf-id="hf-qluq">to a 16th-note grid</span></h2><i data-hf-id="hf-5ayo" id="cap07-bar" class="capbar"></i></section>
+      <section data-hf-id="hf-rioj" id="cap08" class="clip capwrap" data-start="30.964" data-duration="3.870" data-track-index="3" style="z-index:5"><h2 data-hf-id="hf-7w28" id="cap08-t" class="display cap"><span data-hf-id="hf-eqxo">124 BPM · A minor</span></h2><i data-hf-id="hf-ckqf" id="cap08-bar" class="capbar"></i></section>
+      <section data-hf-id="hf-y4uw" id="cap09" class="clip capwrap" data-start="34.834" data-duration="3.870" data-track-index="3" style="z-index:5"><h2 data-hf-id="hf-jslp" id="cap09-t" class="display cap"><span data-hf-id="hf-1e1p">part 2:<br data-hf-id="hf-q7jp">install day</span></h2><i data-hf-id="hf-yfji" id="cap09-bar" class="capbar"></i></section>
+
+      <section data-hf-id="hf-5maw" id="end" class="clip overlay" data-start="34.834" data-duration="3.870" data-track-index="3" style="z-index:7">
+        <div data-hf-id="hf-ij3a" id="end-url" class="mono endurl">github.com/andzhelo/DjDoorbell</div>
+        <div data-hf-id="hf-15kq" id="end-fade" class="fade"></div>
+      </section>
+
+      <div data-hf-id="hf-uwpy" id="hud" class="clip hud" data-start="0" data-duration="38.705" data-track-index="4" style="z-index:6">
+        <div data-hf-id="hf-31yd" id="hud-grid" class="padgrid">
+          <i data-hf-id="hf-yuoa" class="pad r1"></i><i data-hf-id="hf-m1e6" class="pad r1"></i><i data-hf-id="hf-mfp7" class="pad r1"></i>
+          <i data-hf-id="hf-uwk9" class="pad r2"></i><i data-hf-id="hf-6h4d" class="pad r2"></i><i data-hf-id="hf-7o1g" class="pad r2"></i>
+          <i data-hf-id="hf-u4wg" class="pad r3"></i><i data-hf-id="hf-hhyg" class="pad r3"></i><i data-hf-id="hf-gb1d" class="pad r3"></i>
+        </div>
+        <div data-hf-id="hf-l6fo" id="hud-steps" class="steps"><b data-hf-id="hf-y06z" class="step"></b><b data-hf-id="hf-um2j" class="step"></b><b data-hf-id="hf-u7ri" class="step"></b><b data-hf-id="hf-ttgh" class="step"></b><b data-hf-id="hf-tf5g" class="step"></b><b data-hf-id="hf-t0uf" class="step"></b><b data-hf-id="hf-smje" class="step"></b><b data-hf-id="hf-s88d" class="step"></b><b data-hf-id="hf-y6ts" class="step"></b><b data-hf-id="hf-xsir" class="step"></b><b data-hf-id="hf-hj69" class="step"></b><b data-hf-id="hf-hxha" class="step"></b><b data-hf-id="hf-ibsb" class="step"></b><b data-hf-id="hf-iq3c" class="step"></b><b data-hf-id="hf-fxy5" class="step"></b><b data-hf-id="hf-gc96" class="step"></b></div>
+        <div data-hf-id="hf-2e9m" id="hud-label" class="mono hudlabel">124.016 BPM · A MINOR · 16TH GRID</div>
+      </div>
+
+            <audio data-hf-id="hf-44as" id="bed00" src="assets/audio/00_loop.wav" data-start="0.000" data-duration="7.737" data-track-index="10" data-volume="0.5"></audio>
+      <audio data-hf-id="hf-s0dm" id="bed01" src="assets/audio/00_loop.wav" data-start="7.741" data-duration="7.737" data-track-index="10" data-volume="0.5"></audio>
+      <audio data-hf-id="hf-gjji" id="bed02" src="assets/audio/00_loop.wav" data-start="15.482" data-duration="7.737" data-track-index="10" data-volume="0.5"></audio>
+      <audio data-hf-id="hf-lzf7" id="bed03" src="assets/audio/00_loop.wav" data-start="23.223" data-duration="7.737" data-track-index="10" data-volume="0.5"></audio>
+      <audio data-hf-id="hf-q3zq" id="bed04" src="assets/audio/00_loop.wav" data-start="30.964" data-duration="7.737" data-track-index="10" data-volume="0.5" data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":1},{"t":6.537,"v":1},{"t":7.737,"v":0}]}]}'></audio>
+            <audio data-hf-id="hf-5wgc" id="sfx01-kick" src="assets/audio/01_kick.wav" data-start="0.000" data-duration="0.520" data-track-index="11" data-volume="0.4"></audio>
+      <audio data-hf-id="hf-8fyx" id="sfx02-kick" src="assets/audio/01_kick.wav" data-start="3.870" data-duration="0.520" data-track-index="11" data-volume="0.4"></audio>
+      <audio data-hf-id="hf-ahz5" id="sfx03-kick" src="assets/audio/01_kick.wav" data-start="7.741" data-duration="0.520" data-track-index="11" data-volume="0.4"></audio>
+      <audio data-hf-id="hf-9f61" id="sfx04-kick" src="assets/audio/01_kick.wav" data-start="11.611" data-duration="0.520" data-track-index="11" data-volume="0.4"></audio>
+      <audio data-hf-id="hf-3hnm" id="sfx05-kick" src="assets/audio/01_kick.wav" data-start="15.482" data-duration="0.520" data-track-index="11" data-volume="0.4"></audio>
+      <audio data-hf-id="hf-xi79" id="sfx06-kick" src="assets/audio/01_kick.wav" data-start="19.352" data-duration="0.520" data-track-index="11" data-volume="0.4"></audio>
+      <audio data-hf-id="hf-ifqu" id="sfx07-kick" src="assets/audio/01_kick.wav" data-start="23.223" data-duration="0.520" data-track-index="11" data-volume="0.4"></audio>
+      <audio data-hf-id="hf-0w2o" id="sfx08-kick" src="assets/audio/01_kick.wav" data-start="27.093" data-duration="0.520" data-track-index="11" data-volume="0.4"></audio>
+      <audio data-hf-id="hf-6ypc" id="sfx09-kick" src="assets/audio/01_kick.wav" data-start="30.964" data-duration="0.520" data-track-index="11" data-volume="0.4"></audio>
+      <audio data-hf-id="hf-6tbs" id="sfx10-kick" src="assets/audio/01_kick.wav" data-start="34.834" data-duration="0.520" data-track-index="11" data-volume="0.4"></audio>
+      <audio data-hf-id="hf-ubt5" id="sfx11-clap" src="assets/audio/02_clap.wav" data-start="0.968" data-duration="0.420" data-track-index="12" data-volume="0.6"></audio>
+      <audio data-hf-id="hf-wrt6" id="sfx12-stab" src="assets/audio/04_stab_am.wav" data-start="1.935" data-duration="0.620" data-track-index="14" data-volume="0.6"></audio>
+      <audio data-hf-id="hf-8nkj" id="sfx13-riser" src="assets/audio/09_riser.wav" data-start="30.964" data-duration="1.100" data-track-index="16" data-volume="0.6"></audio>
+      <audio data-hf-id="hf-c2rp" id="sfx14-chime" src="assets/audio/11_chime.wav" data-start="34.834" data-duration="2.000" data-track-index="17" data-volume="0.9"></audio>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      // ---- rhythm chrome: one tempo grid drives the pad grid + step bar ----
+      const BEAT = 0.483809, BAR = 1.935234, TOTAL = 38.705;
+      const pads = gsap.utils.toArray("#hud-grid .pad");
+      const steps = gsap.utils.toArray("#hud-steps .step");
+      const nBeats = Math.floor(TOTAL / BEAT);
+      for (let b = 0; b < nBeats; b++) {
+        const t = b * BEAT;
+        // kick on 1 & 3 lights row 1, clap on 2 & 4 lights row 3, row 2 walks.
+        const which = (b % 4 === 0) ? b % 3 : (b % 2 === 1) ? 6 + (b % 3) : 3 + (b % 3);
+        tl.fromTo(pads[which], { scale: 1.45, opacity: 1 }, { scale: 1, opacity: 0.35, duration: BEAT * 0.9, ease: "power3.out", immediateRender: false, overwrite: "auto" }, t);
+      }
+      const nSteps = Math.floor(TOTAL / (BEAT / 4));
+      for (let s = 0; s < nSteps; s++) {
+        const t = s * (BEAT / 4);
+        tl.fromTo(steps[s % 16], { opacity: 1, scaleY: 1.6 }, { opacity: 0.25, scaleY: 1, duration: BEAT / 4 * 0.95, ease: "none", immediateRender: false, overwrite: "auto" }, t);
+      }
+
+      tl.fromTo("#ot0", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out", immediateRender: false }, BEAT * 1);
+      tl.fromTo("#ot1", { opacity: 0, scale: 1.6, filter: "blur(18px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.42, ease: "power4.out", immediateRender: false }, BEAT * 2);
+      tl.fromTo("#ot2", { opacity: 0, x: -220 }, { opacity: 1, x: 0, duration: 0.4, ease: "expo.out", immediateRender: false }, BEAT * 3);
+      tl.fromTo("#cap01-bar", { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power4.out", immediateRender: false }, 4.112);
+      tl.fromTo("#cap01-t", { opacity: 0, y: 60, skewY: 4 }, { opacity: 1, y: 0, skewY: 0, duration: 0.4, ease: "power4.out", immediateRender: false }, 4.112);
+      tl.fromTo("#cap02-bar", { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power4.out", immediateRender: false }, 7.983);
+      tl.fromTo("#cap02-t", { opacity: 0, y: 60, skewY: 4 }, { opacity: 1, y: 0, skewY: 0, duration: 0.4, ease: "power4.out", immediateRender: false }, 7.983);
+      tl.fromTo("#cap03-bar", { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power4.out", immediateRender: false }, 11.853);
+      tl.fromTo("#cap03-t", { opacity: 0, y: 60, skewY: 4 }, { opacity: 1, y: 0, skewY: 0, duration: 0.4, ease: "power4.out", immediateRender: false }, 11.853);
+      tl.fromTo("#cap04-bar", { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power4.out", immediateRender: false }, 15.724);
+      tl.fromTo("#cap04-t", { opacity: 0, y: 60, skewY: 4 }, { opacity: 1, y: 0, skewY: 0, duration: 0.4, ease: "power4.out", immediateRender: false }, 15.724);
+      tl.fromTo("#cap05-bar", { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power4.out", immediateRender: false }, 19.594);
+      tl.fromTo("#cap05-t", { opacity: 0, y: 60, skewY: 4 }, { opacity: 1, y: 0, skewY: 0, duration: 0.4, ease: "power4.out", immediateRender: false }, 19.594);
+      tl.fromTo("#cap07-bar", { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power4.out", immediateRender: false }, 27.335);
+      tl.fromTo("#cap07-t", { opacity: 0, y: 60, skewY: 4 }, { opacity: 1, y: 0, skewY: 0, duration: 0.4, ease: "power4.out", immediateRender: false }, 27.335);
+      tl.fromTo("#cap08-bar", { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power4.out", immediateRender: false }, 31.206);
+      tl.fromTo("#cap08-t", { opacity: 0, y: 60, skewY: 4 }, { opacity: 1, y: 0, skewY: 0, duration: 0.4, ease: "power4.out", immediateRender: false }, 31.206);
+      tl.fromTo("#cap09-bar", { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power4.out", immediateRender: false }, 35.076);
+      tl.fromTo("#cap09-t", { opacity: 0, y: 60, skewY: 4 }, { opacity: 1, y: 0, skewY: 0, duration: 0.4, ease: "power4.out", immediateRender: false }, 35.076);
+      tl.fromTo("#end-url", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, BAR * 18 + BEAT * 2);
+      tl.to("#end-fade", { opacity: 1, duration: 0.8, ease: "power2.in" }, TOTAL - 0.85);
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
