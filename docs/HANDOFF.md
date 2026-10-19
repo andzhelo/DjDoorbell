@@ -29,7 +29,7 @@ give one sentence. They plan to finish in **one day** and record it as a
 
 ## Facts a new session needs
 
-- S3 serial port when on its **UART** USB socket: `/dev/cu.usbmodem5C843177861`
+- S3 serial port when on its **UART** USB socket: `/dev/cu.usbmodem5CF70341171` (replacement S3, flashed 2026-10-19, MAC 44:BD:8D:68:03:A0; the dead board was `/dev/cu.usbmodem5C843177861`)
   (a CH343 bridge). The other socket (native USB) flashes but shows no log.
   The WROOM's port: `/dev/cu.usbserial-0001` (CP2102).
 - **WROOM bench quirk:** after a program closes its serial port, the WROOM
