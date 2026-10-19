@@ -346,6 +346,12 @@ static void pollInputs(uint32_t now) {
     } else if (ch == 'c') {
       Serial.println("chime (serial)");
       chime(now);
+    } else if (ch == 'd') {
+      // Diagnostic: raw pin levels (1 = idle/pulled up, 0 = pressed or shorted)
+      Serial.print("pins:");
+      for (int i = 0; i < dj::kNumPads; ++i)
+        Serial.printf(" pad%d(GPIO%u)=%d", i + 1, kPadPins[i], digitalRead(kPadPins[i]));
+      Serial.printf(" BOOT(GPIO%u)=%d\n", kPinBoot, digitalRead(kPinBoot));
     }
   }
 }

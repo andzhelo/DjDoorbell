@@ -26,6 +26,9 @@ void setup() {
   delay(200);
   Serial.printf("\nDJ Doorbell — pixel test: %u x WS2812 on GPIO%u, 20%%\n",
                 kNumPixels, kPinPixels);
+  // Hold the I2S pins low so a connected MAX98357A sees no clock and shuts
+  // down; left floating they pick up the pixel data and the speaker roars.
+  for (uint8_t pin : {10, 11, 12}) { pinMode(pin, OUTPUT); digitalWrite(pin, LOW); }
   strip.begin();
   strip.clear();
   strip.show();
@@ -36,9 +39,12 @@ void loop() {
     for (uint16_t i = 0; i < kNumPixels; ++i) {
       strip.clear();
       strip.setPixelColor(i, c.r, c.g, c.b);
-      strip.show();
       Serial.printf("%-5s pixel %u\n", c.name, i + 1);
-      delay(kStepMs);
+      // Resend the frame continuously for the whole step so the data pin
+      // carries a steady stream: a meter on GPIO13 then reads a few hundred
+      // mV average, which is how to prove the board is driving the chain.
+      const uint32_t until = millis() + kStepMs;
+      while ((int32_t)(millis() - until) < 0) strip.show();
     }
   }
 }
