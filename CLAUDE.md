@@ -214,6 +214,14 @@ over-volted the 5V rail; S3 then failed flash writes (boot: partition table
 error). Amp and pixels on that rail are suspect too — check before reuse.
 Confirmed: that S3 (MAC 14:c1:9f:51:7b:1c) reads flash but every erase fails
 (C400, both USB sockets; 3V3 rail fine) — dead. Replacement N16R8 (MAC 44:BD:8D:68:03:A0) flashed with `outside` on 2026-10-19: boots, WiFi + OTA up.
+2026-10-19 bench on that board: pads, I2S and pixel data all verified at the
+board; outside MAX98357A confirmed DEAD (inside unit's spare plays on the same
+wires); installed LED chain still unresponsive (first strip / data wire
+suspect, faceplate must come off to check). 2026-10-20: a spare-strip test
+powered from the 3V3 pin shorted and smoked the on-board 3.3 V regulator; the
+board now brownout-loops at WiFi start even bare -> DEAD. Third S3 needed.
+Rule: test strips only from the 5V pin (USB-limited), never 3V3; check strip
++5V/GND against the wires before plugging in.
 Inside: 230V -> IRM-10-12 -> 12V -> (pair to door) and (MP1584 5.0V -> SS34
 -> ~4.6V rail -> WROOM 5V, MAX98357A VIN).
 
