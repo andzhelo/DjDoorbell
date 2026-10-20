@@ -222,6 +222,8 @@ powered from the 3V3 pin shorted and smoked the on-board 3.3 V regulator; the
 board now brownout-loops at WiFi start even bare -> DEAD. Third S3 needed.
 Rule: test strips only from the 5V pin (USB-limited), never 3V3; check strip
 +5V/GND against the wires before plugging in.
+Third S3 (MAC 44:BD:8D:68:04:74, port `/dev/cu.usbmodem5CF70340961`) flashed
+with `outside` 2026-10-20: boots clean, WiFi up, all pads idle high.
 Inside: 230V -> IRM-10-12 -> 12V -> (pair to door) and (MP1584 5.0V -> SS34
 -> ~4.6V rail -> WROOM 5V, MAX98357A VIN).
 
