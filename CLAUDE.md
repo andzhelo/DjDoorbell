@@ -219,11 +219,23 @@ board; outside MAX98357A confirmed DEAD (inside unit's spare plays on the same
 wires); installed LED chain still unresponsive (first strip / data wire
 suspect, faceplate must come off to check). 2026-10-20: a spare-strip test
 powered from the 3V3 pin shorted and smoked the on-board 3.3 V regulator; the
-board now brownout-loops at WiFi start even bare -> DEAD. Third S3 needed.
-Rule: test strips only from the 5V pin (USB-limited), never 3V3; check strip
-+5V/GND against the wires before plugging in.
+board brownout-loops on USB power. CORRECTED 2026-10-20: the chip and the 3.3 V
+regulator are fine; what died is the USB power path (the VBUS diode), so only
+~3.4 V reaches 5Vin from USB. Powered from the buck on the 5Vin pin it boots
+clean, joins WiFi (192.168.1.227) and OTA is up. Serial/esptool over USB still
+work for data (bootloader flashes fine at the low voltage).
 Third S3 (MAC 44:BD:8D:68:04:74, port `/dev/cu.usbmodem5CF70340961`) flashed
-with `outside` 2026-10-20: boots clean, WiFi up, all pads idle high.
+with `outside` 2026-10-20, then suffered the same USB-path damage in a strip
+test; regulator fine, 3.3 V on buck power. It still holds `outside_pixeltest`
+(no WiFi, no OTA) and did not answer esptool afterwards — park it.
+Rules: strips get power only from 5Vin (never 3V3); beep-check +V to GND on the
+strip AND on the board pins before power; nothing at 12 V ever touches the
+board. The installed 5 V chain's first LED or its data wire is dead (a healthy
+board with verified data still shows 5 stuck LEDs). Owner has a spare 12 V
+WS2815 strip (GND/BI/DI/+12V pads) as the candidate replacement, fed from the
+12 V side; decision parked, install proceeds without LEDs first.
+USB exception: boards 2 and 3 may have USB (data) plugged while buck-powered,
+because their USB power path is already open; never do this on a healthy board.
 Inside: 230V -> IRM-10-12 -> 12V -> (pair to door) and (MP1584 5.0V -> SS34
 -> ~4.6V rail -> WROOM 5V, MAX98357A VIN).
 
