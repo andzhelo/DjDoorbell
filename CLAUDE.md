@@ -233,7 +233,14 @@ strip AND on the board pins before power; nothing at 12 V ever touches the
 board. The installed 5 V chain's first LED or its data wire is dead (a healthy
 board with verified data still shows 5 stuck LEDs). Owner has a spare 12 V
 WS2815 strip (GND/BI/DI/+12V pads) as the candidate replacement, fed from the
-12 V side; decision parked, install proceeds without LEDs first.
+12 V side. 2026-10-21: DECIDED. Outside unit rebuilt on board 2 (buck power):
+nine pads + spare amp play correctly. The old 5 V chain is dead even on the
+buck rail (stuck LEDs, no data response). A 3-LED WS2815 test piece fed from
+the 12 V side, DI straight from GPIO13 (no level shifter), BI to GND, flashes
+correctly on pads 7-9. Build plan: three WS2815 pieces, +12V/GND from the 12 V
+side before the buck, DI<-GPIO13 and BI->GND on the first, DO->DI and BO->BI
+between pieces; no SS34, no 1000 uF. LED pitch / piece length and the
+kNumPixels / kPixelOf change pend the strip measurements.
 USB exception: boards 2 and 3 may have USB (data) plugged while buck-powered,
 because their USB power path is already open; never do this on a healthy board.
 Inside: 230V -> IRM-10-12 -> 12V -> (pair to door) and (MP1584 5.0V -> SS34
