@@ -28,9 +28,18 @@ constexpr const char* kHostname = "djdoorbell-outside";
 
 // Pads 1-9 in reading order.
 constexpr uint8_t  kPadPins[dj::kNumPads] = {4, 5, 6, 7, 15, 16, 17, 18, 8};
-// Chain position of each pad's LED, as built: rows 1 and 3 are swapped end
-// for end (pad 1 lit LED 9), the middle row is in reading order.
-constexpr uint8_t  kPixelOf[dj::kNumPads] = {8, 7, 6, 3, 4, 5, 2, 1, 0};
+// LED chain: three 3-LED pieces of 30/m WS2812B (5 V via the strip's SS34,
+// 330R in series at the first DIN), one per row, arrows left to right, row 1
+// first in the chain, LEDs in reading order. If a row ends up chained
+// backwards, edit its three entries here (no re-solder); the first build had
+// rows 1 and 3 swapped end for end ({8,7,6},{3,4,5},{2,1,0}).
+constexpr uint8_t  kPixelsPerPad = 1;
+constexpr uint16_t kNumPixels    = 9;
+constexpr uint8_t  kPixelsOf[dj::kNumPads][kPixelsPerPad] = {
+  {0}, {1}, {2},   // row 1
+  {3}, {4}, {5},   // row 2
+  {6}, {7}, {8},   // row 3
+};
 constexpr uint32_t kDebounceMs = 5;
 constexpr uint32_t kHoldMs     = 1000;   // centre pad held this long = plain chime
 constexpr uint8_t  kPinPixels  = 13;
@@ -58,7 +67,7 @@ constexpr uint32_t kOutputLatencyMs = (6 * 240 + 256 / 2) * 1000 / 22050;
 constexpr uint32_t kSyncPlayingMs = 100;
 constexpr uint32_t kSyncIdleMs    = 1000;
 
-static Adafruit_NeoPixel pixels(dj::kNumPads, kPinPixels, NEO_GRB + NEO_KHZ800);
+static Adafruit_NeoPixel pixels(kNumPixels, kPinPixels, NEO_GRB + NEO_KHZ800);
 
 #elif defined(UNIT_INSIDE)
 constexpr int8_t kPinBclk = 26;
@@ -372,9 +381,11 @@ static void updatePixels(uint32_t now) {
     const bool lit = chiming || inWindow(now, flashOn[i], flashOff[i]);
     if (!lit && flashOff[i] && int32_t(now - flashOff[i]) >= 0) flashOff[i] = 0;
     const uint32_t want = lit ? rowColour[i / 3] : 0;
-    if (pixels.getPixelColor(kPixelOf[i]) != want) {
-      pixels.setPixelColor(kPixelOf[i], want);
-      changed = true;
+    for (uint8_t px : kPixelsOf[i]) {
+      if (pixels.getPixelColor(px) != want) {
+        pixels.setPixelColor(px, want);
+        changed = true;
+      }
     }
   }
   if (changed) pixels.show();
@@ -542,8 +553,9 @@ void setup() {
 #if defined(UNIT_OUTSIDE)
   Serial.printf("Pads:     GPIO 4 5 6 7 15 16 17 18 8, debounce %u ms, hold pad 5 %u ms = chime\n",
                 (unsigned)kDebounceMs, (unsigned)kHoldMs);
-  Serial.printf("Pixels:   GPIO%u, flash delayed %u ms to match audio\n",
-                kPinPixels, (unsigned)kOutputLatencyMs);
+  Serial.printf("Pixels:   GPIO%u, %u LEDs (%u per pad), flash delayed %u ms to match audio\n",
+                kPinPixels, (unsigned)kNumPixels, (unsigned)kPixelsPerPad,
+                (unsigned)kOutputLatencyMs);
   for (int r = 0; r < 3; ++r) {
     Serial.printf("Row %d:    #%06lX -> LED %3u %3u %3u\n", r + 1, (unsigned long)kRowHex[r],
                   (unsigned)(rowColour[r] >> 16 & 0xFF), (unsigned)(rowColour[r] >> 8 & 0xFF),

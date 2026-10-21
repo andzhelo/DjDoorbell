@@ -239,8 +239,15 @@ buck rail (stuck LEDs, no data response). A 3-LED WS2815 test piece fed from
 the 12 V side, DI straight from GPIO13 (no level shifter), BI to GND, flashes
 correctly on pads 7-9. Build plan: three WS2815 pieces, +12V/GND from the 12 V
 side before the buck, DI<-GPIO13 and BI->GND on the first, DO->DI and BO->BI
-between pieces; no SS34, no 1000 uF. LED pitch / piece length and the
-kNumPixels / kPixelOf change pend the strip measurements.
+between pieces; no SS34, no 1000 uF. ABANDONED 2026-10-21: during the full
+9-LED WS2815 build, 12 V most likely reached GPIO13 (the +12V pad sits next to
+DI on that strip) and board 2 died too. Decision: back to a 5 V WS2812B 30/m
+strip (fits the channels as designed), SS34 on its +5V lead, and the 330R in
+series at the first DIN (it was missing from the rebuild). Firmware mapping is
+back to 9 LEDs in reading order (`kPixelsOf` in src/main.cpp). On order: 2x
+S3 N16R8, 5 V strip, 2x MAX98357A, diodes. Board 2's 3V3-on-buck reading was
+not taken; if it reads 3.3 later, only GPIO13 may be dead (move pixel data to
+another pin).
 USB exception: boards 2 and 3 may have USB (data) plugged while buck-powered,
 because their USB power path is already open; never do this on a healthy board.
 Inside: 230V -> IRM-10-12 -> 12V -> (pair to door) and (MP1584 5.0V -> SS34

@@ -1,5 +1,5 @@
 // Pixel chain test (pio run -e outside_pixeltest). Walks one lit pixel through
-// 1-9 in red, then green, then blue, and repeats. Run on the bench-soldered
+// the chain in red, then green, then blue, and repeats. Run on the bench-soldered
 // chain before seating any pixel in a button: a dead or dim pixel, or a chain
 // that stops partway, points at the joint just before it.
 #ifdef PIXEL_TEST
@@ -8,7 +8,7 @@
 #include <Arduino.h>
 
 constexpr uint8_t  kPinPixels = 13;
-constexpr uint16_t kNumPixels = 9;
+constexpr uint16_t kNumPixels = 9;    // 3 rows x 3 (30/m WS2812B)
 constexpr uint8_t  kLevel     = 51;    // 20% of 255
 constexpr uint32_t kStepMs    = 300;
 

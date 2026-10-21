@@ -29,7 +29,7 @@ give one sentence. They plan to finish in **one day** and record it as a
 
 ## Facts a new session needs
 
-- S3 serial port when on its **UART** USB socket: `/dev/cu.usbmodem5CF70341171` (second S3, see below). Third S3 `/dev/cu.usbmodem5CF70340961` (MAC 44:BD:8D:68:04:74) is parked with the pixel test on it. (second S3, MAC 44:BD:8D:68:03:A0 — USB power path damaged, runs fine from the buck on 5Vin, this is the board going to the door; the first dead board was `/dev/cu.usbmodem5C843177861`). A third S3 is needed; see CLAUDE.md Power for the bench findings (outside amp dead, LED chain data path unverified).
+- S3 serial port when on its **UART** USB socket: `/dev/cu.usbmodem5CF70341171` (second S3, see below). Third S3 `/dev/cu.usbmodem5CF70340961` (MAC 44:BD:8D:68:04:74) is parked with the pixel test on it. (second S3, MAC 44:BD:8D:68:03:A0 — USB power path damaged, ran from the buck; probably killed 2026-10-21 by 12 V on GPIO13 during the WS2815 build, see CLAUDE.md Power; new S3s on order; the first dead board was `/dev/cu.usbmodem5C843177861`). A third S3 is needed; see CLAUDE.md Power for the bench findings (outside amp dead, LED chain data path unverified).
   (a CH343 bridge). The other socket (native USB) flashes but shows no log.
   The WROOM's port: `/dev/cu.usbserial-0001` (CP2102).
 - **WROOM bench quirk:** after a program closes its serial port, the WROOM
