@@ -251,6 +251,14 @@ another pin).
 2026-10-30: fourth S3 (MAC 7C:E8:B1:AA:D6:D8, port `/dev/cu.usbmodem5C831108341`)
 flashed with `outside` bare over USB: boots clean, WiFi 192.168.1.245, OTA up,
 all pads idle high. A fifth S3 is sealed as the spare. New 5 V strip arrived.
+Quirk of this board revision: the 5Vin pin does NOT source USB power (an
+IN-OUT solder jumper by that corner is open from the factory; it read 2.2 V
+floating), so on the bench the strip/amp take 5 V from the buck with a common
+GND wire to the board while the board stays on USB. The old MP1584 was found
+dead (dragged 12 V to 2.2 V by itself, a casualty of the 12 V strip incident);
+a fresh MP1584 is in, set from 5.3 V toward 5.0 V. New 9-LED WS2812B piece,
+owner-soldered lead (red +5V, green DIn, white GND): full chain verified on
+board 4 with the real firmware (pad flash + chime all-nine flash).
 USB exception: boards 2 and 3 may have USB (data) plugged while buck-powered,
 because their USB power path is already open; never do this on a healthy board.
 Inside: 230V -> IRM-10-12 -> 12V -> (pair to door) and (MP1584 5.0V -> SS34
