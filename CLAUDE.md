@@ -248,6 +248,9 @@ back to 9 LEDs in reading order (`kPixelsOf` in src/main.cpp). On order: 2x
 S3 N16R8, 5 V strip, 2x MAX98357A, diodes. Board 2's 3V3-on-buck reading was
 not taken; if it reads 3.3 later, only GPIO13 may be dead (move pixel data to
 another pin).
+2026-10-30: fourth S3 (MAC 7C:E8:B1:AA:D6:D8, port `/dev/cu.usbmodem5C831108341`)
+flashed with `outside` bare over USB: boots clean, WiFi 192.168.1.245, OTA up,
+all pads idle high. A fifth S3 is sealed as the spare. New 5 V strip arrived.
 USB exception: boards 2 and 3 may have USB (data) plugged while buck-powered,
 because their USB power path is already open; never do this on a healthy board.
 Inside: 230V -> IRM-10-12 -> 12V -> (pair to door) and (MP1584 5.0V -> SS34
