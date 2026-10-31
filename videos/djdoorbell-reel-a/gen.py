@@ -12,6 +12,7 @@ BARS = 19
 TOTAL = 19 * (16 * 60 / 124 / 4)   # exactly 19 bars so the loop point is a bar line
 
 LIME = "#c8ff2e"
+HOOK_T = 8.03   # door_7119 time at frame 0: just after a sound tail that ends at 8.02 s (v3 started at 7.9 and cut into it)
 W, H = 1080, 1920
 
 def f(x): return f"{x:.4f}".rstrip("0").rstrip(".")
@@ -38,10 +39,15 @@ def title(id_, lines, start, dur, pos="low", size=120, instant=False):
               f'{{opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power3.out"}}, {f(start)});\n')
     return html, js
 
-def video(id_, src, start, dur, media_start=0, pos="50% 50%", z=1, rate=None, sound=None):
-    """sound=None mutes the clip; sound=<gain> keeps the clip's own audio at that gain."""
+def video(id_, src, start, dur, media_start=0, pos="50% 50%", z=1, rate=None, sound=None,
+          fade_in=None, fade_out=None, extra=""):
+    """sound=None mutes the clip; sound=<gain> keeps the clip's own audio at that gain.
+    fade_in/fade_out: clip-edge audio fades in seconds. extra: more attributes (automation, fx)."""
     r = f' data-playback-rate="{rate}"' if rate else ""
     a = f' data-has-audio="true" data-volume="{sound}"' if sound else " muted"
+    if sound and fade_in: a += f' data-fade-in="{fade_in}"'
+    if sound and fade_out: a += f' data-fade-out="{fade_out}"'
+    if sound and extra: a += " " + extra
     return (f'<video id="{id_}" class="clip media"{a} playsinline preload="auto" src="assets/video/{src}.mp4" '
             f'data-start="{f(start)}" data-duration="{f(dur)}" data-media-start="{f(media_start)}"{r} '
             f'data-track-index="1" style="object-position:{pos};z-index:{z}"></video>')
@@ -102,9 +108,16 @@ def add(id_, start_bar, bars, parts, extra_css=""):
     scenes.append((id_, start_bar, bars, scene(id_, bars * BAR, "\n".join(body), "".join(js), extra_css)))
 
 # b0-1 HOOK: the hand on the pad, title already on frame 0
+HOOK_LANE = ('{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0.615},{"t":%s,"v":0.615},{"t":%s,"v":1}]}]}'
+             % (f(0.9 * BAR), f(1.4 * BAR)))
+HOOK_FX = '{"version":1,"nodes":[{"type":"highpass","id":"hp","label":"Remove rumble","params":{"frequency":90}}]}'
+HOOK_AUDIO = ("data-automation='%s' data-fx-chain=\"%s\"" % (HOOK_LANE, HOOK_FX.replace('"', "&quot;")))
 hook_t = title("hook-t", ["my doorbell", "is a", "*drum* *machine*"], 0, 2 * BAR, pos="top", size=168, instant=True)
 add("hook", 0, 2, [
-    video("hook-v", "door_7119", 0, 2 * BAR, media_start=7.9, sound=1.6),   # the real door sound
+    # the real door sound. data-volume 2.6 x lane: 1.6 in bar 0 (dense playing), rising to 2.6 through
+    # bar 1 where the clip's own presses are ~7 dB quieter, so the hand-off to the generated track is level.
+    video("hook-v", "door_7119", 0, 2 * BAR, media_start=HOOK_T, sound=2.6, fade_in=0.04,
+          extra=HOOK_AUDIO),
     '<div class="shade top"></div>',
     hook_t,
 ])
@@ -135,7 +148,7 @@ add("ordered", 4, 2, [
 add("build", 6, 5, [
     photo("bu-p1", "p6770", 0, BAR, pos="50% 50%", push=1.10),
     video("bu-v2", "face_6898", BAR, BAR, media_start=1.0, pos="62% 40%"),
-    video("bu-v3", "solder_6902", 2 * BAR, BAR, media_start=2.0, pos="50% 45%"),
+    video("bu-v3", "solder_6899", 2 * BAR, BAR, media_start=1.5, pos="50% 50%"),
     video("bu-v4", "tl_6912", 3 * BAR, BAR, media_start=6.0),
     video("bu-v5", "strip_vid", 4 * BAR, BAR, media_start=1.4),
     '<div class="shade"></div>',
@@ -179,6 +192,7 @@ add("phone", 16, 1, [
 ])
 
 # b17 END CARD: lime field wipes up, name and link
+TAIL_AUDIO = 'data-fx-chain="%s"' % HOOK_FX.replace('"', "&quot;")
 end_css = f"""
     #end-field {{ position: absolute; inset: 0; background: {LIME}; z-index: 20 !important; transform: translateY(1920px); }}
     #end-name {{ position: absolute; left: 72px; right: 72px; top: 700px; z-index: 30 !important; font-family: "League Gothic", sans-serif;
@@ -202,7 +216,8 @@ add("end", 17, 2, [
     f'<div id="end-link" class="clip" data-start="0" data-duration="{f(1.5 * BAR)}" data-track-index="5">github.com/andzhelo/DjDoorbell</div>',
     (" ", end_js),
     # loop tail: the half bar of door footage that leads into frame 0 (7.9 s), same title, real sound
-    video("end-tail", "door_7119", 1.5 * BAR, 0.5 * BAR, media_start=7.9 - 0.5 * BAR, z=1, sound=1.6),
+    video("end-tail", "door_7119", 1.5 * BAR, 0.5 * BAR, media_start=HOOK_T - 0.5 * BAR, z=1, sound=1.6,
+          fade_in=0.2, fade_out=0.15, extra=TAIL_AUDIO),
     '<div id="end-tail-shade" class="clip shade top" data-start="%s" data-duration="%s" data-track-index="4"></div>' % (f(1.5 * BAR), f(0.5 * BAR)),
     title("end-tail-t", ["my doorbell", "is a", "*drum* *machine*"], 1.5 * BAR, 0.5 * BAR, pos="top", size=168, instant=True),
 ], extra_css=end_css + '\n    #end-field { z-index: 20 !important; }\n    #end-tail { z-index: 50 !important; }\n    #end-tail-shade { z-index: 55 !important; }\n')
@@ -235,8 +250,8 @@ index = f"""<!doctype html>
   <body>
     <div id="root" data-composition-id="main" data-start="0" data-duration="{f(TOTAL)}" data-width="{W}" data-height="{H}">
 {chr(10).join(hosts)}
-    <audio id="music" src="assets/audio/track.wav" data-start="{f(2 * BAR)}" data-media-start="{f(2 * BAR)}" data-duration="{f(15.5 * BAR)}" data-volume="1" data-fade-in="0.25" data-fade-out="1.0" data-track-index="8"></audio>
-    <audio id="chime" src="assets/audio/chime.wav" data-start="{f(17 * BAR + BEAT)}" data-volume="0.9" data-track-index="9"></audio>
+    <audio id="music" src="assets/audio/track.wav" data-start="{f(2 * BAR)}" data-media-start="{f(2 * BAR)}" data-duration="{f(15.5 * BAR)}" data-volume="1" data-fade-in="0.25" data-fade-out="1.6" data-track-index="8"></audio>
+    <audio id="chime" src="assets/audio/chime.wav" data-start="{f(17 * BAR + BEAT)}" data-volume="0.55" data-track-index="9"></audio>
     </div>
     <script>
       const tl = gsap.timeline({{ paused: true }});

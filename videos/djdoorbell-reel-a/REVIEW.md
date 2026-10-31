@@ -43,3 +43,17 @@
   kept on purpose: it continues into the hook.
 - The lime field is a timed clip now; as an untimed div it dropped out of the last frames of the v2 render and
   left the end-card text over the footage.
+
+## v4 (start click, bar 8 reframe, levels)
+- Start: the hook began at 7.9 s of the door clip, inside a sound that stops at 8.02 s, so frame 0 opened on
+  a 120 ms burst at -16 dBFS. The hook (and the loop tail) now start at 8.03 s with a 40 ms fade-in: the first
+  200 ms measure -33 dBFS (room tone). The tail fades out over 150 ms so the same tail does not reappear at the loop.
+- "nine wires. one ground." (15.5-17.4 s) used solder_6902, landscape, with the maker at the top edge of the
+  frame; the 9:16 crop showed mostly desk. Replaced with solder_6899 (1328x1080, near-square): head, hands and
+  the pad are centred in the crop.
+- Levels: the hook's second bar was ~7 dB under the music (the clip's own presses are sparse there): a volume
+  lane lifts it from 1.6x to 2.6x through bar 1, with a 90 Hz high-pass on the door audio. Bars 2-3 of the
+  generated track were 8-10 dB under the rest (sparse intro): kick and hat added (scratchpad make_track.py).
+  Chime 0.9 -> 0.55 under a 1.6 s music fade-out. Half-bar RMS spread over bars 0-17.5: -25.2..-14.6 (std 2.8)
+  in v3 -> -23.7..-16.3 (std 2.4). Delivery transcode adds +2.5 dB and a true-peak limiter at -2 dB (auto-level
+  off): integrated -14.4 LUFS, peak -0.6 dBFS (Instagram normalises to about -14).
