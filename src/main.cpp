@@ -20,6 +20,7 @@
 #if defined(UNIT_OUTSIDE)
 #include <Adafruit_NeoPixel.h>
 #include <WebServer.h>
+#include "web_page.h"
 
 constexpr int8_t kPinBclk = 12;
 constexpr int8_t kPinWs   = 11;
@@ -369,15 +370,18 @@ static void pollInputs(uint32_t now) {
 // Remote presses over the home network, same path as a finger on a pad:
 //   GET /pad/1 .. /pad/9   press that pad
 //   GET /chime             the plain chime
-//   GET /                  this list
+//   GET /                  a phone-sized page of nine pads + chime (web_page.h)
+//   GET /help              this list
 // curl http://djdoorbell-outside.local/pad/5 — works from a laptop, a Pi,
 // or an iPhone Shortcut ("Get contents of URL").
 static WebServer web(80);
 
 static void setupWeb() {
-  web.on("/", [] {
+  web.on("/", [] { web.send_P(200, "text/html", kWebPage); });
+  web.on("/help", [] {
     web.send(200, "text/plain",
              "DJ Doorbell outside unit\n"
+             "  GET /             pad page for a phone\n"
              "  GET /pad/1 .. /pad/9  press a pad\n"
              "  GET /chime            plain chime\n");
   });
@@ -398,7 +402,7 @@ static void setupWeb() {
     }
   });
   web.begin();
-  Serial.println("Web:      http://djdoorbell-outside.local/  (/pad/N, /chime)");
+  Serial.println("Web:      http://djdoorbell-outside.local/  (pad page; /pad/N, /chime, /help)");
 }
 
 static void onFired(const FireEvent& ev, uint32_t now) {
