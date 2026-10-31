@@ -38,13 +38,14 @@ circle if the frame has holes).
 | Part | What | Print |
 |---|---|---|
 | `inside_plate.scad` | plate with the speaker grille, retaining ring on the back, optional volume-knob hole, 4 countersunk M3 | face-down |
-| `inside_shell.scad` | open box: M3 bosses, 12 V wire entry + wall-box slots behind the speaker, a low fence keeping the boards out from under the magnet | open side up |
-| `inside_assembly.scad` | plate on shell with speaker + board phantoms; `-D 'check="fit"'` must be empty | not printed |
+| `inside_shell.scad` | open box: M3 bosses, a mains compartment at the top over the wall box (IRM-10-12 + lever connectors, wire entry + wall-box slots, full-height partition with a notch for the 12 V pair), a low fence keeping the boards out from under the magnet | open side up |
+| `inside_assembly.scad` | plate on shell with speaker, board and mains-part phantoms; `-D 'check="shell"'` and `-D 'check="fit"'` must both be empty | not printed |
 
-Layout: speaker in the upper part hanging from the plate ring, WROOM + buck +
-amp flat on the shell floor in the bay below it (foam tape), every pin row
-taped over before closing (that is what killed outside board 4).
-The IRM-10-12 stays in the old chime box; only the 12 V pair comes over.
+Layout, top to bottom: mains compartment over the wall box (the old chime box
+is gone; the IRM-10-12 and the 230 V lever connectors live here, every joint
+taped), partition, speaker hanging from the plate ring, then WROOM + buck + amp
+flat on the shell floor (foam tape), every pin row taped over before closing
+(that is what killed outside board 4).
 
 ## Status
 
