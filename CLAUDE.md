@@ -264,6 +264,13 @@ nine pads and the 9-LED strip verified by hand (sound + LED flash per pad).
 Buck still at 5.3 V; strip data works without the SS34 at that voltage.
 Strip cut into three 3-LED pieces and chained; the middle piece ended up
 data-in on the right, so row 2 is {5},{4},{3} in `kPixelsOf` (OTA'd, works).
+2026-10-31 install: IRM-10-12 (pin type, wires soldered to pins) replaced the
+transformer in the chime box; 12 V DC on the door pair. Outside unit ran on the
+pair, then died while the shell was being closed (board got hot). Board 4 now
+reads 1.1 V on 3V3 with only 5 V in -> DEAD. Buck still 5.3 V. Cause is a
+mechanical short when the faceplate pressed parts onto the header pins (speaker
+terminals / 12 V side / bare button tabs suspected). Board 5 (spare) must not
+go in until the pin rows and every bare metal part are insulated.
 USB exception: boards 2 and 3 may have USB (data) plugged while buck-powered,
 because their USB power path is already open; never do this on a healthy board.
 Inside: 230V -> IRM-10-12 -> 12V -> (pair to door) and (MP1584 5.0V -> SS34
