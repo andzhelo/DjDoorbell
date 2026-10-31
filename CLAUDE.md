@@ -301,6 +301,15 @@ The SS34 on the strip's +5V lead drops pixel VDD so 3.3V data clears the
 - GAIN: outside tied to VIN (6 dB, quiet feedback); inside floating (9 dB).
 - Bridge-tied output: no speaker lead to ground, ever.
 
+## Remote presses (outside unit web listener, 2026-10-31)
+
+The outside unit serves plain HTTP on port 80 inside the home network:
+`GET /pad/1`..`/pad/9` presses a pad (same path as a finger: lights, door
+speaker, inside chime), `GET /chime` plays the plain chime, `GET /` lists them.
+`curl http://djdoorbell-outside.local/pad/5` from a laptop or Pi; on an
+iPhone, a Shortcut with "Get contents of URL" (add to home screen as a button).
+No auth: LAN only.
+
 ## Build config
 
 Samples are embedded via `board_build.embed_files` (memory-mapped, zero copy),

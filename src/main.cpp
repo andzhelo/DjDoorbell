@@ -19,6 +19,7 @@
 
 #if defined(UNIT_OUTSIDE)
 #include <Adafruit_NeoPixel.h>
+#include <WebServer.h>
 
 constexpr int8_t kPinBclk = 12;
 constexpr int8_t kPinWs   = 11;
@@ -365,6 +366,41 @@ static void pollInputs(uint32_t now) {
   }
 }
 
+// Remote presses over the home network, same path as a finger on a pad:
+//   GET /pad/1 .. /pad/9   press that pad
+//   GET /chime             the plain chime
+//   GET /                  this list
+// curl http://djdoorbell-outside.local/pad/5 — works from a laptop, a Pi,
+// or an iPhone Shortcut ("Get contents of URL").
+static WebServer web(80);
+
+static void setupWeb() {
+  web.on("/", [] {
+    web.send(200, "text/plain",
+             "DJ Doorbell outside unit\n"
+             "  GET /pad/1 .. /pad/9  press a pad\n"
+             "  GET /chime            plain chime\n");
+  });
+  web.on("/chime", [] {
+    Serial.println("chime (web)");
+    chime(millis());
+    web.send(200, "text/plain", "chime\n");
+  });
+  web.onNotFound([] {
+    const String& uri = web.uri();
+    if (uri.length() == 6 && uri.startsWith("/pad/") && uri[5] >= '1' && uri[5] <= '9') {
+      const int pad = uri[5] - '0';
+      Serial.printf("pad %d (web)\n", pad);
+      sendCmd({kCmdPress, pad - 1, {}, 0});
+      web.send(200, "text/plain", "pad " + String(pad) + "\n");
+    } else {
+      web.send(404, "text/plain", "use /pad/1..9 or /chime\n");
+    }
+  });
+  web.begin();
+  Serial.println("Web:      http://djdoorbell-outside.local/  (/pad/N, /chime)");
+}
+
 static void onFired(const FireEvent& ev, uint32_t now) {
   flashOn[ev.pad] = now + kOutputLatencyMs;
   flashOff[ev.pad] = flashOn[ev.pad] + kFlashMs;
@@ -551,6 +587,7 @@ void setup() {
   radio::begin(kHostname, onPacket);
 
 #if defined(UNIT_OUTSIDE)
+  setupWeb();
   Serial.printf("Pads:     GPIO 4 5 6 7 15 16 17 18 8, debounce %u ms, hold pad 5 %u ms = chime\n",
                 (unsigned)kDebounceMs, (unsigned)kHoldMs);
   Serial.printf("Pixels:   GPIO%u, %u LEDs (%u per pad), flash delayed %u ms to match audio\n",
@@ -574,6 +611,9 @@ void loop() {
   const uint32_t now = millis();
   pollInputs(now);
   radio::loop();
+#if defined(UNIT_OUTSIDE)
+  web.handleClient();
+#endif
   updateLink(now);
 
   FireEvent ev;
