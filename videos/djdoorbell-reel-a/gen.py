@@ -9,7 +9,7 @@ S16 = 60 / 124 / 4
 BAR = 16 * S16            # 1.93548
 BEAT = 4 * S16
 BARS = 19
-TOTAL = 36.9
+TOTAL = 19 * (16 * 60 / 124 / 4)   # exactly 19 bars so the loop point is a bar line
 
 LIME = "#c8ff2e"
 W, H = 1080, 1920
@@ -195,13 +195,17 @@ end_js = (
     'tl.fromTo("#end-link", {opacity: 0}, {opacity: 1, duration: 0.2, ease: "power2.out"}, 0.7);\n'
 )
 add("end", 17, 2, [
-    video("end-v", "door_7119", 0, 2 * BAR, media_start=13.5, z=1),
-    '<div id="end-field" data-layout-allow-overflow></div>',
-    f'<div id="end-sub" class="clip" data-start="0" data-duration="{f(2 * BAR)}" data-track-index="5">open source · esp32 · 3d printed</div>',
-    f'<div id="end-name" class="clip" data-start="0" data-duration="{f(2 * BAR)}" data-track-index="5"><div class="ln"><span class="w">DJ</span></div><div class="ln"><span class="w">Doorbell</span></div></div>',
-    f'<div id="end-link" class="clip" data-start="0" data-duration="{f(2 * BAR)}" data-track-index="5">github.com/andzhelo/DjDoorbell</div>',
+    video("end-v", "door_7119", 0, 1.5 * BAR, media_start=13.5, z=1),
+    f'<div id="end-field" class="clip" data-start="0" data-duration="{f(1.5 * BAR)}" data-track-index="3" data-layout-allow-overflow></div>',
+    f'<div id="end-sub" class="clip" data-start="0" data-duration="{f(1.5 * BAR)}" data-track-index="5">open source · esp32 · 3d printed</div>',
+    f'<div id="end-name" class="clip" data-start="0" data-duration="{f(1.5 * BAR)}" data-track-index="5"><div class="ln"><span class="w">DJ</span></div><div class="ln"><span class="w">Doorbell</span></div></div>',
+    f'<div id="end-link" class="clip" data-start="0" data-duration="{f(1.5 * BAR)}" data-track-index="5">github.com/andzhelo/DjDoorbell</div>',
     (" ", end_js),
-], extra_css=end_css)
+    # loop tail: the half bar of door footage that leads into frame 0 (7.9 s), same title, real sound
+    video("end-tail", "door_7119", 1.5 * BAR, 0.5 * BAR, media_start=7.9 - 0.5 * BAR, z=1, sound=1.6),
+    '<div id="end-tail-shade" class="clip shade top" data-start="%s" data-duration="%s" data-track-index="4"></div>' % (f(1.5 * BAR), f(0.5 * BAR)),
+    title("end-tail-t", ["my doorbell", "is a", "*drum* *machine*"], 1.5 * BAR, 0.5 * BAR, pos="top", size=168, instant=True),
+], extra_css=end_css + '\n    #end-field { z-index: 20 !important; }\n    #end-tail { z-index: 50 !important; }\n    #end-tail-shade { z-index: 55 !important; }\n')
 
 # ---------------------------------------------------------------- write
 comp = HERE / "compositions"
@@ -231,7 +235,7 @@ index = f"""<!doctype html>
   <body>
     <div id="root" data-composition-id="main" data-start="0" data-duration="{f(TOTAL)}" data-width="{W}" data-height="{H}">
 {chr(10).join(hosts)}
-    <audio id="music" src="assets/audio/track.wav" data-start="{f(2 * BAR)}" data-media-start="{f(2 * BAR)}" data-duration="{f(TOTAL - 2 * BAR)}" data-volume="1" data-fade-in="0.25" data-fade-out="1.2" data-track-index="8"></audio>
+    <audio id="music" src="assets/audio/track.wav" data-start="{f(2 * BAR)}" data-media-start="{f(2 * BAR)}" data-duration="{f(15.5 * BAR)}" data-volume="1" data-fade-in="0.25" data-fade-out="1.0" data-track-index="8"></audio>
     <audio id="chime" src="assets/audio/chime.wav" data-start="{f(17 * BAR + BEAT)}" data-volume="0.9" data-track-index="9"></audio>
     </div>
     <script>

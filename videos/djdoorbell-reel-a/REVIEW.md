@@ -35,3 +35,11 @@
 - The inside unit (IMG_7122) is not in the cut; a half-bar of it after the payoff would close the "inside follows"
   idea. Dropped to keep 37 s.
 - No voice: the user asked for a hook and a build story; titles carry it. Captions are not needed (no speech).
+
+## v3 (loop + real hook sound)
+- Hook keeps the door clip's own audio (gain 1.6); the generated beat enters at bar 2 with a 0.25 s fade-in.
+- Film is exactly 19 bars (36.77 s). End card holds 1.5 bars, then a half-bar tail of the door clip (6.93-7.9 s)
+  with the hook title already on, so the loop lands on frame 0 without a jump. `line_unread` on the tail title is
+  kept on purpose: it continues into the hook.
+- The lime field is a timed clip now; as an untimed div it dropped out of the last frames of the v2 render and
+  left the end-card text over the footage.
