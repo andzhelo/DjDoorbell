@@ -182,3 +182,10 @@ WROOM 5V and amp VIN.
 - Fuse rating: confirm 500 mA.
 - Idle LED behaviour: dark, dim breathing, or slow colour drift.
 - Nisko wall-box screw spacing is assumed (60 mm); the slots allow 52–68.
+
+## Tutorial (2026-10-31)
+
+Public write-up of the whole build, with photos, clips, CAD renders and the
+lessons: https://claude.ai/artifact/5YxCbNBJak7X3pdnc8jSSZ (private until shared
+from its Share menu). Source page and media were generated from this repo's
+`videos/djdoorbell/assets/` and `cad/preview/`.
