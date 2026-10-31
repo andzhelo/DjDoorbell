@@ -285,7 +285,7 @@ Inside unit 2026-10-31: WROOM (port `/dev/cu.usbserial-0001`, ESP-NOW MAC
 00:70:07:82:C1:1C) flashed with `inside`, WiFi 192.168.1.180, OTA up, new amp
 + 3" speaker: BOOT chime plays and it follows the installed door unit (link
 UP through the door, sync error ~17 samples, 0 late). Knob still off
-(DJ_VOLUME_POT=0). Still on USB; needs its buck + SS34 from the chime-box 12 V.
+(DJ_VOLUME_POT=0). Then moved to its own MP1584 + SS34 off the chime-box 12 V: BOOT chime plays on wall power, USB out.
 USB exception: boards 2 and 3 may have USB (data) plugged while buck-powered,
 because their USB power path is already open; never do this on a healthy board.
 Inside: 230V -> IRM-10-12 -> 12V -> (pair to door) and (MP1584 5.0V -> SS34
