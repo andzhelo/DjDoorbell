@@ -271,6 +271,8 @@ reads 1.1 V on 3V3 with only 5 V in -> DEAD. Buck still 5.3 V. Cause is a
 mechanical short when the faceplate pressed parts onto the header pins (speaker
 terminals / 12 V side / bare button tabs suspected). Board 5 (spare) must not
 go in until the pin rows and every bare metal part are insulated.
+Board 5 (last spare, MAC B8:1F:3F:C3:D0:30, port `/dev/cu.usbmodem5C834152081`)
+flashed bare with `outside` 2026-10-31: boots, WiFi 192.168.1.29, OTA up.
 USB exception: boards 2 and 3 may have USB (data) plugged while buck-powered,
 because their USB power path is already open; never do this on a healthy board.
 Inside: 230V -> IRM-10-12 -> 12V -> (pair to door) and (MP1584 5.0V -> SS34
