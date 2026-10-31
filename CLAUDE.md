@@ -262,7 +262,8 @@ board 4 with the real firmware (pad flash + chime all-nine flash).
 2026-10-31: full outside unit on buck power only (no USB): board 4, amp, all
 nine pads and the 9-LED strip verified by hand (sound + LED flash per pad).
 Buck still at 5.3 V; strip data works without the SS34 at that voltage.
-Next: cut the strip into three 3-LED pieces and chain them.
+Strip cut into three 3-LED pieces and chained; the middle piece ended up
+data-in on the right, so row 2 is {5},{4},{3} in `kPixelsOf` (OTA'd, works).
 USB exception: boards 2 and 3 may have USB (data) plugged while buck-powered,
 because their USB power path is already open; never do this on a healthy board.
 Inside: 230V -> IRM-10-12 -> 12V -> (pair to door) and (MP1584 5.0V -> SS34

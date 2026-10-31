@@ -37,7 +37,7 @@ constexpr uint8_t  kPixelsPerPad = 1;
 constexpr uint16_t kNumPixels    = 9;
 constexpr uint8_t  kPixelsOf[dj::kNumPads][kPixelsPerPad] = {
   {0}, {1}, {2},   // row 1
-  {3}, {4}, {5},   // row 2
+  {5}, {4}, {3},   // row 2 (middle piece chained right to left as built)
   {6}, {7}, {8},   // row 3
 };
 constexpr uint32_t kDebounceMs = 5;
