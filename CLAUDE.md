@@ -278,6 +278,9 @@ buck power with USB out), every bare metal part (board pin rows, amp pins,
 buck, speaker terminals, button tabs, strip cut ends) taped, shell closed:
 WORKS closed, on buck power. Next: connect at the door (measure pair polarity
 first: no reverse-polarity protection), then inside unit (needs an amp).
+2026-10-31 INSTALLED: outside unit mounted at the door on the 12 V pair from
+the IRM-10-12, playing and lighting (video IMG_7119). Remaining: inside unit
+(needs an amp), volume / quiet hours / idle LED tuning.
 USB exception: boards 2 and 3 may have USB (data) plugged while buck-powered,
 because their USB power path is already open; never do this on a healthy board.
 Inside: 230V -> IRM-10-12 -> 12V -> (pair to door) and (MP1584 5.0V -> SS34
