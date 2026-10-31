@@ -27,8 +27,24 @@ channel, adhesive side against the fin. The plate is 114 wide, not 100, so the
 100 mm strip fits inside the rib with ~2 mm at each end for the row-to-row wires.
 Chain order: row 1 left to right, then row 2, then row 3 — pixel index = pad index.
 
-The inside unit reuses the existing chime enclosure (see CLAUDE.md); only a
-carrier tray for the boards may be printed, once that box is open and measured.
+## Inside unit — `inside_*.scad`
+
+The old chime box is too small for the 3" speaker + WROOM + buck + amp, so the
+inside unit gets its own box in the same style (2026-10-31). `inside_params.scad`
+holds its dimensions; the three `MEASURE` values that size everything are the
+speaker frame diameter, its depth and its cone opening (plus the mounting-hole
+circle if the frame has holes).
+
+| Part | What | Print |
+|---|---|---|
+| `inside_plate.scad` | plate with the speaker grille, retaining ring on the back, optional volume-knob hole, 4 countersunk M3 | face-down |
+| `inside_shell.scad` | open box: M3 bosses, 12 V wire entry + wall-box slots behind the speaker, a low fence keeping the boards out from under the magnet | open side up |
+| `inside_assembly.scad` | plate on shell with speaker + board phantoms; `-D 'check="fit"'` must be empty | not printed |
+
+Layout: speaker in the upper part hanging from the plate ring, WROOM + buck +
+amp flat on the shell floor in the bay below it (foam tape), every pin row
+taped over before closing (that is what killed outside board 4).
+The IRM-10-12 stays in the old chime box; only the 12 V pair comes over.
 
 ## Status
 

@@ -33,8 +33,9 @@ exposure. Neighbours in a shared stairwell are the main real-world constraint.
 | 3" 4ohm 5W full-range speaker | |
 | 10k pot | Volume |
 
-Reuses the existing chime enclosure — it is already mounted and already rated
-for the mains entering it. Do not 3D-print a replacement for this one.
+The old chime enclosure keeps the IRM-10-12 (mains stays there). The inside
+unit itself was too big for it, so it gets its own printed box: `cad/inside_*.scad`
+(2026-10-31, waiting on speaker measurements). Only the 12 V pair leaves the chime box.
 
 ### Protection (outside unit, on the wire from the wall)
 **Simplified 2026-10-06:** fuse (inline holder) + 470uF across the buck input,

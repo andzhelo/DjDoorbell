@@ -5,10 +5,10 @@
 set -e
 cd "$(dirname "$0")"
 mkdir -p stl preview
-parts=${*:-"coupon faceplate shell"}
+parts=${*:-"coupon faceplate shell inside_plate inside_shell"}
 for p in $parts; do
   openscad --backend=manifold -o "stl/$p.stl" "$p.scad"
-  openscad --backend=manifold -o "preview/$p.png" --imgsize=1200,900 \
+  openscad --backend=manifold --render -o "preview/$p.png" --imgsize=1200,900 \
     --autocenter --viewall --projection=o "$p.scad" 2>/dev/null || true
   echo "$p: $(du -h "stl/$p.stl" | cut -f1)"
 done
