@@ -38,9 +38,11 @@ def title(id_, lines, start, dur, pos="low", size=120, instant=False):
               f'{{opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power3.out"}}, {f(start)});\n')
     return html, js
 
-def video(id_, src, start, dur, media_start=0, pos="50% 50%", z=1, rate=None):
+def video(id_, src, start, dur, media_start=0, pos="50% 50%", z=1, rate=None, sound=None):
+    """sound=None mutes the clip; sound=<gain> keeps the clip's own audio at that gain."""
     r = f' data-playback-rate="{rate}"' if rate else ""
-    return (f'<video id="{id_}" class="clip media" muted playsinline preload="auto" src="assets/video/{src}.mp4" '
+    a = f' data-has-audio="true" data-volume="{sound}"' if sound else " muted"
+    return (f'<video id="{id_}" class="clip media"{a} playsinline preload="auto" src="assets/video/{src}.mp4" '
             f'data-start="{f(start)}" data-duration="{f(dur)}" data-media-start="{f(media_start)}"{r} '
             f'data-track-index="1" style="object-position:{pos};z-index:{z}"></video>')
 
@@ -102,7 +104,7 @@ def add(id_, start_bar, bars, parts, extra_css=""):
 # b0-1 HOOK: the hand on the pad, title already on frame 0
 hook_t = title("hook-t", ["my doorbell", "is a", "*drum* *machine*"], 0, 2 * BAR, pos="top", size=168, instant=True)
 add("hook", 0, 2, [
-    video("hook-v", "door_7119", 0, 2 * BAR, media_start=7.9),
+    video("hook-v", "door_7119", 0, 2 * BAR, media_start=7.9, sound=1.6),   # the real door sound
     '<div class="shade top"></div>',
     hook_t,
 ])
@@ -229,7 +231,7 @@ index = f"""<!doctype html>
   <body>
     <div id="root" data-composition-id="main" data-start="0" data-duration="{f(TOTAL)}" data-width="{W}" data-height="{H}">
 {chr(10).join(hosts)}
-    <audio id="music" src="assets/audio/track.wav" data-start="0" data-duration="{f(TOTAL)}" data-volume="1" data-fade-out="1.2" data-track-index="8"></audio>
+    <audio id="music" src="assets/audio/track.wav" data-start="{f(2 * BAR)}" data-media-start="{f(2 * BAR)}" data-duration="{f(TOTAL - 2 * BAR)}" data-volume="1" data-fade-in="0.25" data-fade-out="1.2" data-track-index="8"></audio>
     <audio id="chime" src="assets/audio/chime.wav" data-start="{f(17 * BAR + BEAT)}" data-volume="0.9" data-track-index="9"></audio>
     </div>
     <script>
