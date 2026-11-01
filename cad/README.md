@@ -31,13 +31,16 @@ Chain order: row 1 left to right, then row 2, then row 3 — pixel index = pad i
 
 The old chime box is too small for the 3" speaker + WROOM + buck + amp, so the
 inside unit gets its own box in the same style (2026-10-31). `inside_params.scad`
-holds its dimensions; the three `MEASURE` values that size everything are the
-speaker frame diameter, its depth and its cone opening (plus the mounting-hole
-circle if the frame has holes).
+holds its dimensions. Speaker measured from the listing 2026-11-01: 78 x 78 mm
+square frame, four holes on an 84 mm diagonal, 45 mm magnet, 68 mm opening; the
+one `MEASURE` left is its depth (36 assumed; sets the shell height). The frame
+hangs on four standoff bosses on the plate back (M3 x 5 heat-set inserts, screws
+from the speaker side), and the volume-knob hole (7.2 mm, M7 bushing of a 16 mm
+pot) sits at the bottom right over the board bay. Plate 99 x 174.4, shell 46.4 high.
 
 | Part | What | Print |
 |---|---|---|
-| `inside_plate.scad` | plate with the speaker grille, retaining ring on the back, optional volume-knob hole, 4 countersunk M3 | face-down |
+| `inside_plate.scad` | plate with the speaker grille, four insert bosses for the square frame, volume-knob hole, 4 countersunk M3 | face-down |
 | `inside_shell.scad` | open box: M3 bosses, a mains compartment at the top over the wall box (IRM-10-12 + lever connectors, wire entry + wall-box slots, full-height partition with a notch for the 12 V pair), a low fence keeping the boards out from under the magnet | open side up |
 | `inside_assembly.scad` | plate on shell with speaker, board and mains-part phantoms; `-D 'check="shell"'` and `-D 'check="fit"'` must both be empty | not printed |
 

@@ -35,7 +35,7 @@ exposure. Neighbours in a shared stairwell are the main real-world constraint.
 
 The old chime enclosure keeps the IRM-10-12 (mains stays there). The inside
 unit itself was too big for it, so it gets its own printed box: `cad/inside_*.scad`
-(2026-10-31, waiting on speaker measurements). Only the 12 V pair leaves the chime box.
+(speaker dimensions in 2026-11-01, depth still assumed 36 mm). Only the 12 V pair leaves the chime box.
 
 ### Protection (outside unit, on the wire from the wall)
 **Simplified 2026-10-06:** fuse (inline holder) + 470uF across the buck input,

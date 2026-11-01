@@ -1,5 +1,5 @@
-// Inside unit plate: speaker grille, retaining ring on the back, optional
-// volume knob hole. Printed face-down for the finish.
+// Inside unit plate: speaker grille, four standoff bosses (M3 inserts) for the
+// square speaker frame, volume knob hole. Printed face-down for the finish.
 include <inside_params.scad>
 
 module inside_plate() {
@@ -16,12 +16,10 @@ module inside_plate() {
             for (p = corner_xy) translate(p) circle(d = boss_d + 2 * fit_clear + 1);
           }
 
-      // speaker retaining ring
-      translate([spk_cx, spk_cy, panel_t])
-        difference() {
-          cylinder(d = spk_ring_od, h = spk_ring_h);
-          translate([0, 0, -1]) cylinder(d = spk_d + 0.4, h = spk_ring_h + 2);
-        }
+      // speaker standoff bosses at the frame's four holes
+      for (sx = [-1, 1], sy = [-1, 1])
+        translate([spk_cx + sx * spk_hole_off, spk_cy + sy * spk_hole_off, panel_t - 0.01])
+          cylinder(d = spk_boss_d, h = spk_boss_h + 0.01);
     }
 
     // grille: hex-packed holes over the cone opening
@@ -34,16 +32,14 @@ module inside_plate() {
           translate([x, y, 0]) cylinder(d = grille_hole_d, h = panel_t + 2, $fn = 24);
       }
 
-    // speaker mounting screws, if the frame has holes
-    if (spk_hole_pcd > 0)
-      for (a = [0 : 90 : 270])
-        translate([spk_cx + spk_hole_pcd / 2 * cos(a + spk_hole_angle),
-                   spk_cy + spk_hole_pcd / 2 * sin(a + spk_hole_angle), -1])
-          cylinder(d = spk_hole_d, h = panel_t + spk_ring_h + 2, $fn = 32);
+    // heat-set insert holes in the speaker bosses (blind, from the back)
+    for (sx = [-1, 1], sy = [-1, 1])
+      translate([spk_cx + sx * spk_hole_off, spk_cy + sy * spk_hole_off, panel_t + spk_boss_h - spk_insert_h])
+        cylinder(d = insert_hole_d, h = spk_insert_h + 1, $fn = 32);
 
     // volume knob
     if (pot_hole_d > 0)
-      translate([pot_xy[0], pot_xy[1], -1]) cylinder(d = pot_hole_d, h = panel_t + rib_h + 2);
+      translate([pot_xy_set[0], pot_xy_set[1], -1]) cylinder(d = pot_hole_d, h = panel_t + rib_h + 2);
 
     // corner screws, countersunk from the front
     for (p = corner_xy) translate([p[0], p[1], 0]) {

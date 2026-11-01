@@ -10,12 +10,16 @@ check = "none";
 
 module place() { translate([0, 0, shell_h + panel_t]) mirror([0, 0, 1]) children(); }
 
-// speaker: frame disc + magnet, hanging from the plate back
+// speaker: square frame on the standoff bosses, basket + magnet behind it;
+// the pot body hangs from the plate beside the boards
 module speaker() {
-  translate([spk_cx, spk_cy, panel_t + 0.01]) {
-    cylinder(d = spk_d, h = 4);
-    cylinder(d = spk_d * 0.55, h = spk_depth);
+  translate([spk_cx, spk_cy, panel_t + spk_boss_h + 0.01]) {
+    translate([-spk_d / 2, -spk_d / 2, 0]) cube([spk_d, spk_d, 2]);
+    cylinder(d = spk_cone_d, h = spk_depth * 0.5);
+    cylinder(d = spk_magnet_d, h = spk_depth - spk_boss_h);
   }
+  if (pot_hole_d > 0)
+    translate([pot_xy_set[0], pot_xy_set[1], panel_t + 0.01]) cylinder(d = pot_body_d, h = pot_body_h);
 }
 
 // boards on the shell floor (shell coordinates)
