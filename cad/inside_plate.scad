@@ -16,6 +16,15 @@ module inside_plate() {
             for (p = corner_xy) translate(p) circle(d = boss_d + 2 * fit_clear + 1);
           }
 
+      // socket for the 9 mm pot body on the plate back
+      if (pot_hole_d > 0)
+        translate([pot_xy_set[0], pot_xy_set[1], panel_t - 0.01])
+          linear_extrude(pot_socket_h + 0.01)
+            difference() {
+              square(pot_socket_in + 2 * pot_socket_wall, center = true);
+              square(pot_socket_in, center = true);
+            }
+
       // speaker standoff bosses at the frame's four holes
       for (sx = [-1, 1], sy = [-1, 1])
         translate([spk_cx + sx * spk_hole_off, spk_cy + sy * spk_hole_off, panel_t - 0.01])

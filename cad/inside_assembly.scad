@@ -20,7 +20,8 @@ module speaker() {
     cylinder(d = spk_magnet_d, h = spk_depth - spk_boss_h);
   }
   if (pot_hole_d > 0)
-    translate([pot_xy_set[0], pot_xy_set[1], panel_t + 0.01]) cylinder(d = pot_body_d, h = pot_body_h);
+    translate([pot_xy_set[0], pot_xy_set[1], panel_t + 0.01])
+      linear_extrude(pot_body_h) square(pot_body_sq, center = true);
 }
 
 // boards on the shell floor (shell coordinates)

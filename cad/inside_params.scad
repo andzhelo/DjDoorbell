@@ -57,9 +57,16 @@ mains_bay_h     = irm_w + 2 * mains_pad + partition_t;   // 35
 notch_w         = 8;      // 12 V pair passes the partition here
 
 // ---- volume knob (10k pot on GPIO34; DJ_VOLUME_POT is still 0 in firmware) --
-pot_hole_d      = 7.2;    // M7 bushing of a 16 mm pot; 0 = no knob hole
-pot_body_d      = 17;     // pot body behind the plate (phantom in the fit check)
-pot_body_h      = 10;
+// 2026-11-02: the owner's pot is a 9 mm PCB type (RV09: 9.5 mm square body,
+// 6 mm knurled shaft, no panel nut), so the plate gets a square socket on its
+// back that the body drops into, pins toward the floor, a drop of glue to keep it.
+pot_hole_d      = 6.6;    // 6 mm shaft through the plate; 0 = no knob hole
+pot_body_sq     = 9.5;    // RV09 body
+pot_socket_in   = pot_body_sq + 0.5;
+pot_socket_wall = 1.6;
+pot_socket_h    = 6;
+pot_body_d      = pot_socket_in + 2 * pot_socket_wall;   // phantom / clearance envelope
+pot_body_h      = pot_socket_h;
 
 // ---- plate --------------------------------------------------------------------
 panel_t         = 2.5;
