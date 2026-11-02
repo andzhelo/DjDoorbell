@@ -2,6 +2,7 @@
 //   check = "none"    show the assembly
 //   check = "shell"   shell vs plate overlap                          (must be empty)
 //   check = "fit"     speaker + boards + mains parts vs plate + shell (must be empty)
+//   check = "open"    shell with the parts in place, plate removed (layout picture)
 include <inside_params.scad>
 use <inside_plate.scad>
 use <inside_shell.scad>
@@ -24,14 +25,12 @@ module speaker() {
 
 // boards on the shell floor (shell coordinates)
 module boards() {
-  translate([wroom_xy[0], wroom_xy[1], floor_t + 0.01]) cube([wroom_l, wroom_w, wroom_h]);
+  translate([wroom_xy[0], wroom_xy[1], floor_t + 0.01]) cube([wroom_w, wroom_l, wroom_h]);   // lengthwise
   translate([buck_xy[0],  buck_xy[1],  floor_t + 0.01]) cube([buck_l,  buck_w,  5]);
   translate([amp_xy[0],   amp_xy[1],   floor_t + 0.01]) cube([amp_l,   amp_w,   5]);
-  // mains compartment: IRM lying flat, two lever connectors beside it
-  translate([wall_t + 8, mains_y0 + partition_t + 3, floor_t + 0.01]) cube([irm_l, irm_w, irm_h]);
-  for (i = [0, 1])
-    translate([wall_t + 12 + irm_l, mains_y0 + partition_t + 3 + i * (wago_w + 3), floor_t + 0.01])
-      cube([wago_l, wago_w, wago_h]);
+  // mains compartment: IRM lying flat, the two lever connectors stacked beside it
+  translate([irm_xy[0], irm_xy[1], floor_t + 0.01]) cube([irm_l, irm_w, irm_h]);
+  translate([wago_x, irm_xy[1] + (irm_w - wago_w) / 2, floor_t + 0.01]) cube([wago_l, wago_w, 2 * wago_h]);
 }
 
 if (check == "shell")
@@ -41,6 +40,11 @@ else if (check == "fit")
     union() { place() speaker(); boards(); }
     union() { inside_shell(); translate([0, 0, 0.01]) place() inside_plate(); }
   }
+else if (check == "open") {
+  color("gold") inside_shell();
+  color("lightgreen") boards();
+  place() color("dimgray") speaker();
+}
 else {
   color("gold") inside_shell();
   color("lightgreen") boards();
