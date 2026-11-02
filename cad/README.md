@@ -35,20 +35,25 @@ holds its dimensions. Speaker measured from the listing 2026-11-01: 78 x 78 mm
 square frame, four holes on an 84 mm diagonal, 45 mm magnet, 68 mm opening; the
 one `MEASURE` left is its depth (36 assumed; sets the shell height). The frame
 hangs on four standoff bosses on the plate back (M3 x 5 heat-set inserts, screws
-from the speaker side), and the volume-knob hole (7.2 mm, M7 bushing of a 16 mm
-pot) sits at the bottom right over the board bay. Plate 99 x 174.4, shell 46.4 high.
+from the speaker side). 2026-11-02: the owner wants no side over 130 mm, so the
+layout went landscape: 130 x 126 mm plate, shell 46.4 high. Speaker bottom left,
+a 30 mm board column on the right (WROOM lengthwise at the bottom, then buck,
+amp, and the volume-knob hole at the top: 7.2 mm for the M7 bushing of a 16 mm
+pot, its body hangs 33 mm above the amp), mains compartment as a strip across
+the top left over the wall box (IRM flat, the two lever connectors stacked),
+walled off by an L-shaped full-height partition with the 12 V notch at its
+corner next to the column.
 
 | Part | What | Print |
 |---|---|---|
 | `inside_plate.scad` | plate with the speaker grille, four insert bosses for the square frame, volume-knob hole, 4 countersunk M3 | face-down |
-| `inside_shell.scad` | open box: M3 bosses, a mains compartment at the top over the wall box (IRM-10-12 + lever connectors, wire entry + wall-box slots, full-height partition with a notch for the 12 V pair), a low fence keeping the boards out from under the magnet | open side up |
-| `inside_assembly.scad` | plate on shell with speaker, board and mains-part phantoms; `-D 'check="shell"'` and `-D 'check="fit"'` must both be empty | not printed |
+| `inside_shell.scad` | open box: M3 bosses, mains compartment top left over the wall box (IRM-10-12 + stacked lever connectors, wire entry + wall-box slots, L-shaped full-height partition with a notch for the 12 V pair), a low fence between the speaker and the board column | open side up |
+| `inside_assembly.scad` | plate on shell with speaker, board and mains-part phantoms; `-D 'check="shell"'` and `-D 'check="fit"'` must both be empty; `-D 'check="open"'` is the layout picture without the plate | not printed |
 
-Layout, top to bottom: mains compartment over the wall box (the old chime box
-is gone; the IRM-10-12 and the 230 V lever connectors live here, every joint
-taped), partition, speaker hanging from the plate ring, then WROOM + buck + amp
-flat on the shell floor (foam tape), every pin row taped over before closing
-(that is what killed outside board 4).
+The old chime box is gone; the IRM-10-12 and the 230 V lever connectors live
+in the mains compartment, every joint taped. Boards lie flat on the shell floor
+on foam tape, every pin row taped over before closing (that is what killed
+outside board 4).
 
 ## Status
 
