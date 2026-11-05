@@ -20,7 +20,7 @@ give one sentence. They plan to finish in **one day** and record it as a
 | Audio engine | Done, `lib/engine/`. Matches `tools/simulator.py` to 0.5 LSB. Repeat variant: pad 3 twice fast = open hat. |
 | Outside bench firmware | Done, `src/main.cpp` (env `outside`). 9 pads, LED flash in row colour, quantised playback. Verified on the S3 with 5 buttons. |
 | Link test | **PASSED** 2026-10-03, door closed, channel 1: unicast 99.987 %, longest gap 106 ms, RSSI −71 dBm. Log: `docs/linktest-2026-10-03.log`. |
-| Two-board firmware | Written and **working on the bench**: presses play on both units on the same beat, sync within ±0.5 ms, zero late presses. Long-press pad 5 = chime (`11_chime`). WiFi + OTA on both (`*_ota` envs). Quiet hours done 2026-11-05 (web page card). Not yet done: notification, replay. |
+| Two-board firmware | Written and **working on the bench**: presses play on both units on the same beat, sync within ±0.5 ms, zero late presses. Long-press pad 5 = chime (`11_chime`). WiFi + OTA on both (`*_ota` envs). Quiet hours done 2026-11-05 (web page card). Phone notification (ntfy) done 2026-11-05. Not yet done: replay. |
 | Inside volume knob | **On** (`-DDJ_VOLUME_POT=1` in the `inside` env since 2026-11-05). 9 mm RV09 pot, ends on 3V3/GND, wiper GPIO34; verified on wall power. |
 | Enclosure | Shell printed. Faceplate v2 (40 mm speaker) printing now. Sources in `cad/`. |
 | Parts | All arrived. |

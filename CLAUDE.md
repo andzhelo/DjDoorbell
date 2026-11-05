@@ -309,8 +309,9 @@ The outside unit serves plain HTTP on port 80 inside the home network:
 `GET /` is a phone-sized page with the nine pads + chime (src/web_page.h,
 open it on the iPhone and Add to Home Screen); `GET /pad/1`..`/pad/9` presses
 a pad (same path as a finger: lights, door speaker, inside chime), `GET /chime`
-plays the plain chime, `GET /quiet` / `GET /quiet/set?...` quiet hours (see
-Features), `GET /help` lists them. The page has a Quiet hours card at the bottom.
+plays the plain chime, `GET /quiet` / `GET /quiet/set?...` quiet hours, `GET /notify`
+/ `/notify/set` / `/notify/test` phone notification (see Features), `GET /help`
+lists them. The page has Quiet hours and Phone notification cards at the bottom.
 `curl http://djdoorbell-outside.local/pad/5` from a laptop or Pi; on an
 iPhone, a Shortcut with "Get contents of URL" (add to home screen as a button).
 No auth: LAN only.
@@ -379,7 +380,12 @@ Confirmed, all zero-cost:
   (`GET /quiet` JSON, `GET /quiet/set?on=1&from=1320&to=420&out=25&in=50`,
   minutes after midnight, percent of normal, squared like the knob). Default
   off, 22:00-07:00, door 25 %, inside 50 %. Unknown clock = not quiet.
-- **Phone notification.** MQTT or Home Assistant webhook from the inside unit.
+- **Phone notification.** DONE 2026-11-05 (src/notify.cpp, outside unit): ntfy
+  push (free app, no account). One message when a performance starts (first
+  press of a bed session) and one per plain chime, "(quiet hours)" appended
+  when active. HTTPS POST on its own task on core 0, so the pads never wait.
+  Settings in NVS, on the pad page (`GET /notify`, `/notify/set?on=1&topic=..
+  &server=https://ntfy.sh`, `/notify/test`). Topic is the only secret.
 - **Plain-chime escape hatch.** Long-press the centre pad plays a normal
   2-second chime. Delivery drivers and plumbers want one button and to leave.
 

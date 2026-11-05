@@ -20,6 +20,7 @@
 #if defined(UNIT_OUTSIDE)
 #include <Adafruit_NeoPixel.h>
 #include <WebServer.h>
+#include "notify.h"
 #include "quiet.h"
 #include "web_page.h"
 
@@ -388,7 +389,29 @@ static void setupWeb() {
              "  GET /pad/1 .. /pad/9  press a pad\n"
              "  GET /chime            plain chime\n"
              "  GET /quiet            quiet-hours settings + clock, JSON\n"
-             "  GET /quiet/set?on=1&from=1320&to=420&out=25&in=50   save (minutes after midnight, %)\n");
+             "  GET /quiet/set?on=1&from=1320&to=420&out=25&in=50   save (minutes after midnight, %)\n"
+             "  GET /notify           phone notification settings (ntfy), JSON\n"
+             "  GET /notify/set?on=1&topic=...&server=https://ntfy.sh\n"
+             "  GET /notify/test      send a test message\n");
+  });
+  web.on("/notify", [] {
+    char buf[200];
+    notify::toJson(buf, sizeof buf);
+    web.send(200, "application/json", buf);
+  });
+  web.on("/notify/set", [] {
+    notify::Settings s = notify::settings();
+    if (web.hasArg("on"))     s.on = web.arg("on") == "1";
+    if (web.hasArg("topic"))  strlcpy(s.topic, web.arg("topic").c_str(), sizeof s.topic);
+    if (web.hasArg("server")) strlcpy(s.server, web.arg("server").c_str(), sizeof s.server);
+    if (!notify::set(s)) { web.send(400, "text/plain", "bad value\n"); return; }
+    char buf[200];
+    notify::toJson(buf, sizeof buf);
+    web.send(200, "application/json", buf);
+  });
+  web.on("/notify/test", [] {
+    const bool queued = notify::send("DJ Doorbell", "Test from the pad page", "white_check_mark");
+    web.send(queued ? 200 : 409, "text/plain", queued ? "sent\n" : "notifications are off or no topic\n");
   });
   web.on("/quiet", [] {
     char buf[160];
@@ -462,8 +485,17 @@ static void updateLink(uint32_t now) {
   static uint16_t seq = 0;
   static uint32_t lastSync = 0;
 
+  static uint32_t notifiedSession = UINT32_MAX;
   NetEvent ev;
   while (xQueueReceive(netQueue, &ev, 0) == pdTRUE) {
+    if (ev.type == dj::kChime) {
+      notify::send("DJ Doorbell", quiet::active() ? "Someone rang the bell (quiet hours)"
+                                                   : "Someone rang the bell", "bell");
+    } else if (ev.type == dj::kPress && ev.session != notifiedSession) {
+      notifiedSession = ev.session;
+      notify::send("DJ Doorbell", quiet::active() ? "Someone is playing the doorbell (quiet hours)"
+                                                   : "Someone is playing the doorbell", "musical_note");
+    }
     dj::Packet p = {};
     p.magic = dj::kLinkMagic;
     p.type = ev.type;
@@ -628,6 +660,7 @@ void setup() {
 
 #if defined(UNIT_OUTSIDE)
   quiet::begin();
+  notify::begin();
   setupWeb();
   Serial.printf("Pads:     GPIO 4 5 6 7 15 16 17 18 8, debounce %u ms, hold pad 5 %u ms = chime\n",
                 (unsigned)kDebounceMs, (unsigned)kHoldMs);

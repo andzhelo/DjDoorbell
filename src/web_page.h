@@ -41,6 +41,10 @@ static const char kWebPage[] PROGMEM = R"HTML(<!doctype html>
   .lv{flex-direction:column;align-items:stretch;gap:6px}
   .lv div{display:flex;align-items:center;gap:10px}
   .note{font-size:12px;opacity:.5;padding:4px 0 14px;border-top:1px solid #2a2a2a}
+  .note a{color:#ffb000}
+  .row input[type=text]{flex:1;min-width:0;font:inherit;font-size:16px;color:#eee;background:#2a2a2a;border:0;border-radius:8px;padding:8px 10px}
+  .row .small{appearance:none;border:0;border-radius:20px;aspect-ratio:auto;width:auto;height:36px;padding:0 16px;font-size:14px;background:#333;color:#eee;box-shadow:none}
+  .row .small:active{transform:none;filter:brightness(1.3)}
 </style></head><body><main>
 <h1>DJ DOORBELL</h1>
 <div class="pad">
@@ -62,6 +66,14 @@ static const char kWebPage[] PROGMEM = R"HTML(<!doctype html>
     <div><input type="range" id="qin" min="0" max="100" step="5"><output for="qin" id="qino"></output></div></div>
   <div class="note" id="qn">0 % is silent, 100 % is normal. The pads still light up.</div>
 </details>
+<details id="n">
+  <summary>Phone notification <span id="ns">…</span></summary>
+  <div class="row"><label for="non">Notify my phone</label>
+    <span class="sw"><input type="checkbox" id="non"><i></i></span></div>
+  <div class="row"><label for="ntopic">Topic</label><input type="text" id="ntopic" placeholder="e.g. djdoorbell-x7k2m9" autocapitalize="off" autocorrect="off" spellcheck="false"></div>
+  <div class="row"><label>Test</label><button class="small" id="ntest">send test</button></div>
+  <div class="note">Install the free <a href="https://ntfy.sh" target="_blank" rel="noopener">ntfy</a> app, subscribe to the same topic, done. The topic is the only secret: pick a long random one. A message is sent when a performance starts and when the plain chime rings.</div>
+</details>
 <script>
   const st=document.getElementById('st');
   function hit(b){
@@ -70,7 +82,7 @@ static const char kWebPage[] PROGMEM = R"HTML(<!doctype html>
     fetch(url,{cache:'no-store'}).then(r=>{st.textContent=r.ok?'':'error '+r.status;})
       .catch(()=>{st.textContent='no connection';});
   }
-  document.querySelectorAll('button').forEach(b=>{
+  document.querySelectorAll('.pad button,.chime').forEach(b=>{
     b.addEventListener('pointerdown',e=>{e.preventDefault();hit(b);});
   });
 
@@ -100,6 +112,23 @@ static const char kWebPage[] PROGMEM = R"HTML(<!doctype html>
   $('qin').addEventListener('input',()=>{$('qino').value=$('qin').value+' %';});
   load();
   setInterval(()=>{if(!document.hidden)load();},60000);
+
+  // Phone notification (ntfy).
+  function showN(n){
+    $('non').checked=n.on;$('ntopic').value=n.topic;
+    $('ns').textContent=!n.on?'off':!n.topic?'no topic':n.ok?'on':'last send failed';
+  }
+  function loadN(){fetch('/notify',{cache:'no-store'}).then(r=>r.json()).then(showN).catch(()=>{$('ns').textContent='?';});}
+  function saveN(){
+    const u='/notify/set?on='+($('non').checked?1:0)+'&topic='+encodeURIComponent($('ntopic').value.trim());
+    fetch(u,{cache:'no-store'}).then(r=>{if(!r.ok){$('ns').textContent='bad topic';throw 0;}return r.json();}).then(showN).catch(()=>{});
+  }
+  ['non','ntopic'].forEach(id=>$(id).addEventListener('change',saveN));
+  $('ntest').addEventListener('click',()=>{
+    $('ns').textContent='sending…';
+    fetch('/notify/test',{cache:'no-store'}).then(r=>{$('ns').textContent=r.ok?'sent, check your phone':'turn it on and set a topic first';setTimeout(loadN,10000);});
+  });
+  loadN();
 </script>
 </main></body></html>
 )HTML";
