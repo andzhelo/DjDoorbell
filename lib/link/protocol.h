@@ -35,7 +35,7 @@ struct __attribute__((packed)) Packet {
   uint8_t  type;
   uint8_t  pad;        // kPress: 0-8
   uint8_t  flags;
-  uint8_t  reserved;
+  uint8_t  volume;     // inside unit's level, 0..100 % of normal (quiet hours)
   uint16_t seq;        // kPress / kChime: drops duplicates
   uint32_t session;    // leader's bed run; changes on every bed start
   int64_t  pos;        // leader's musical position when this was sent, samples

@@ -309,7 +309,8 @@ The outside unit serves plain HTTP on port 80 inside the home network:
 `GET /` is a phone-sized page with the nine pads + chime (src/web_page.h,
 open it on the iPhone and Add to Home Screen); `GET /pad/1`..`/pad/9` presses
 a pad (same path as a finger: lights, door speaker, inside chime), `GET /chime`
-plays the plain chime, `GET /help` lists them.
+plays the plain chime, `GET /quiet` / `GET /quiet/set?...` quiet hours (see
+Features), `GET /help` lists them. The page has a Quiet hours card at the bottom.
 `curl http://djdoorbell-outside.local/pad/5` from a laptop or Pi; on an
 iPhone, a Shortcut with "Get contents of URL" (add to home screen as a button).
 No auth: LAN only.
@@ -371,8 +372,13 @@ Confirmed, all zero-cost:
 - **Performance replay.** Record events (pad index + grid position), not audio.
   A whole performance is under 100 bytes. Inside unit replays from the same
   samples. Gives every visitor a signature.
-- **Quiet hours.** Inside unit joins WiFi, gets NTP time, tells outside to cut
-  volume after 22:00. This is the feature that keeps neighbours friendly.
+- **Quiet hours.** DONE 2026-11-05 (src/quiet.cpp). The outside unit gets
+  local time by NTP (Israel TZ rule hardcoded), keeps settings in NVS and
+  applies them itself; the inside level rides in the `volume` byte of every
+  ESP-NOW packet and scales the knob. Settings on the pad web page
+  (`GET /quiet` JSON, `GET /quiet/set?on=1&from=1320&to=420&out=25&in=50`,
+  minutes after midnight, percent of normal, squared like the knob). Default
+  off, 22:00-07:00, door 25 %, inside 50 %. Unknown clock = not quiet.
 - **Phone notification.** MQTT or Home Assistant webhook from the inside unit.
 - **Plain-chime escape hatch.** Long-press the centre pad plays a normal
   2-second chime. Delivery drivers and plumbers want one button and to leave.

@@ -20,6 +20,7 @@
 #if defined(UNIT_OUTSIDE)
 #include <Adafruit_NeoPixel.h>
 #include <WebServer.h>
+#include "quiet.h"
 #include "web_page.h"
 
 constexpr int8_t kPinBclk = 12;
@@ -190,10 +191,12 @@ static uint16_t lastSeq = 0;
 static uint32_t lastSeqSession = UINT32_MAX;
 static volatile uint32_t statPackets = 0, statPresses = 0, statLate = 0;
 static volatile float statError = 0;
+static volatile uint8_t linkVolPct = 100;   // quiet hours, from the outside unit's packets
 
 static void handlePacket(const dj::Packet& p, int64_t rxUs, int64_t t) {
   statPackets = statPackets + 1;
   lastRx = engine.now();
+  if (p.volume <= 100) linkVolPct = p.volume;
 
   // A resend of a press or chime the MAC layer already delivered.
   const bool once = p.type == dj::kPress || p.type == dj::kChime;
@@ -383,7 +386,26 @@ static void setupWeb() {
              "DJ Doorbell outside unit\n"
              "  GET /             pad page for a phone\n"
              "  GET /pad/1 .. /pad/9  press a pad\n"
-             "  GET /chime            plain chime\n");
+             "  GET /chime            plain chime\n"
+             "  GET /quiet            quiet-hours settings + clock, JSON\n"
+             "  GET /quiet/set?on=1&from=1320&to=420&out=25&in=50   save (minutes after midnight, %)\n");
+  });
+  web.on("/quiet", [] {
+    char buf[160];
+    quiet::toJson(buf, sizeof buf);
+    web.send(200, "application/json", buf);
+  });
+  web.on("/quiet/set", [] {
+    quiet::Settings s = quiet::settings();
+    if (web.hasArg("on"))   s.on     = web.arg("on") == "1";
+    if (web.hasArg("from")) s.from   = web.arg("from").toInt();
+    if (web.hasArg("to"))   s.to     = web.arg("to").toInt();
+    if (web.hasArg("out"))  s.outPct = web.arg("out").toInt();
+    if (web.hasArg("in"))   s.inPct  = web.arg("in").toInt();
+    if (!quiet::set(s)) { web.send(400, "text/plain", "bad value\n"); return; }
+    char buf[160];
+    quiet::toJson(buf, sizeof buf);
+    web.send(200, "application/json", buf);
   });
   web.on("/chime", [] {
     Serial.println("chime (web)");
@@ -448,6 +470,7 @@ static void updateLink(uint32_t now) {
     p.pad = ev.pad;
     p.seq = ++seq;
     p.session = ev.session;
+    p.volume = quiet::insidePct();
     if (ev.type == dj::kPress) {
       p.flags = dj::kFlagRunning | (ev.variant ? dj::kFlagVariant : 0);
       p.at = ev.at;
@@ -466,14 +489,25 @@ static void updateLink(uint32_t now) {
     p.magic = dj::kLinkMagic;
     p.type = dj::kSync;
     p.flags = c.running ? dj::kFlagRunning : 0;
+    p.volume = quiet::insidePct();
     p.session = c.session;
     p.pos = extrapolate(c.pos, c.us, esp_timer_get_time());
     radio::send(p, false);
   }
 }
 
+static void updateQuiet(uint32_t now) {
+  quiet::loop(now);
+  const int32_t pct = quiet::outsidePct();
+  volumeQ15 = pct * pct * 32768 / 10000;   // squared, like the inside knob
+}
+
 static void printStatus() {
   printRate();
+  const int m = quiet::nowMinutes();
+  if (m < 0) Serial.print("clock not set, ");
+  else Serial.printf("%02d:%02d, ", m / 60, m % 60);
+  Serial.printf("quiet %s (outside %d%%) | ", quiet::active() ? "ON" : "off", quiet::outsidePct());
   radio::printStatus();
 }
 
@@ -493,7 +527,8 @@ static bool potIgnored = false;   // bench: 'f' on serial = full volume, knob ig
 
 static void readVolume(uint32_t now) {
   if (!DJ_VOLUME_POT) {
-    volumeQ15 = potIgnored ? 32768 : kFixedVolumePct * 32768 / 100;
+    const int32_t q = linkVolPct;
+    volumeQ15 = potIgnored ? 32768 : kFixedVolumePct * q * q * 32768 / 1000000;
     return;
   }
   static uint32_t last = 0;
@@ -508,8 +543,9 @@ static void readVolume(uint32_t now) {
     printed = knob;
     Serial.printf("knob %d%%\n", knob);
   }
-  const float g = potIgnored ? 1.0f : smooth < 0.03f ? 0 : smooth * smooth;
-  volumeQ15 = static_cast<int32_t>(g * 32768);
+  const float kg = potIgnored ? 1.0f : smooth < 0.03f ? 0 : smooth * smooth;
+  const float q = linkVolPct / 100.0f;
+  volumeQ15 = static_cast<int32_t>(kg * q * q * 32768);
 }
 
 static void pollInputs(uint32_t now) {
@@ -537,10 +573,10 @@ static void updateLink(uint32_t) {}
 static void printStatus() {
   printRate();
   Serial.printf("following %s, packets %u, presses %u (late %u), sync error %+.1f samples, "
-                "slews %u, jumps %u, volume %d%% | ",
+                "slews %u, jumps %u, volume %d%% (quiet level %u%%) | ",
                 following ? "yes" : "no", (unsigned)statPackets, (unsigned)statPresses,
                 (unsigned)statLate, statError, (unsigned)follower.slews(),
-                (unsigned)follower.seeks(), (int)(volumeQ15 * 100 / 32768));
+                (unsigned)follower.seeks(), (int)(volumeQ15 * 100 / 32768), (unsigned)linkVolPct);
   radio::printStatus();
 }
 
@@ -591,6 +627,7 @@ void setup() {
   radio::begin(kHostname, onPacket);
 
 #if defined(UNIT_OUTSIDE)
+  quiet::begin();
   setupWeb();
   Serial.printf("Pads:     GPIO 4 5 6 7 15 16 17 18 8, debounce %u ms, hold pad 5 %u ms = chime\n",
                 (unsigned)kDebounceMs, (unsigned)kHoldMs);
@@ -617,6 +654,7 @@ void loop() {
   radio::loop();
 #if defined(UNIT_OUTSIDE)
   web.handleClient();
+  updateQuiet(now);
 #endif
   updateLink(now);
 
