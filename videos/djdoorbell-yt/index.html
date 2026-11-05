@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[
+  {"id":"accent","type":"color","label":"Accent","default":"#c8ff2e"}
+]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <style>
+      :root { --ground: #000; --accent: #c8ff2e; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--ground); }
+      #root { position: relative; width: 1920px; height: 1080px; background: var(--ground); }
+      #root > .clip { position: absolute; inset: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="85.1505" data-width="1920" data-height="1080">
+    <div id="hook" class="clip" data-composition-src="compositions/hook.html" data-composition-id="hook" data-start="0" data-duration="7.741" data-track-kind="graphics" data-track-index="0"></div>
+    <div id="wall" class="clip" data-composition-src="compositions/wall.html" data-composition-id="wall" data-start="7.741" data-duration="7.741" data-track-kind="graphics" data-track-index="0"></div>
+    <div id="how" class="clip" data-composition-src="compositions/how.html" data-composition-id="how" data-start="15.4819" data-duration="11.6114" data-track-kind="graphics" data-track-index="0"></div>
+    <div id="build" class="clip" data-composition-src="compositions/build.html" data-composition-id="build" data-start="27.0933" data-duration="15.4819" data-track-kind="graphics" data-track-index="0"></div>
+    <div id="boards" class="clip" data-composition-src="compositions/boards.html" data-composition-id="boards" data-start="42.5752" data-duration="3.8705" data-track-kind="graphics" data-track-index="0"></div>
+    <div id="install" class="clip" data-composition-src="compositions/install.html" data-composition-id="install" data-start="46.4457" data-duration="7.741" data-track-kind="graphics" data-track-index="0"></div>
+    <div id="payoff" class="clip" data-composition-src="compositions/payoff.html" data-composition-id="payoff" data-start="54.1867" data-duration="11.6114" data-track-kind="graphics" data-track-index="0"></div>
+    <div id="box" class="clip" data-composition-src="compositions/box.html" data-composition-id="box" data-start="65.7981" data-duration="7.741" data-track-kind="graphics" data-track-index="0"></div>
+    <div id="claim" class="clip" data-composition-src="compositions/claim.html" data-composition-id="claim" data-start="73.539" data-duration="3.8705" data-track-kind="graphics" data-track-index="0"></div>
+    <div id="end" class="clip" data-composition-src="compositions/end.html" data-composition-id="end" data-start="77.4095" data-duration="7.741" data-track-kind="graphics" data-track-index="0"></div>
+    <audio id="music1" src="assets/audio/track.wav" data-start="7.741" data-media-start="7.741" data-duration="46.4457" data-volume="1" data-fade-in="0.2" data-fade-out="0.3" data-track-index="8"></audio>
+    <audio id="music2" src="assets/audio/track.wav" data-start="65.7981" data-media-start="65.7981" data-duration="19.3524" data-volume="1" data-fade-in="0.2" data-fade-out="2.0" data-track-index="8"></audio>
+    <audio id="chime" src="assets/audio/chime.wav" data-start="77.8933" data-volume="0.55" data-track-index="9"></audio>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

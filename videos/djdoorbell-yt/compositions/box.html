@@ -1,0 +1,58 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #000; overflow: hidden; }
+    .media { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; transform-origin: 50% 50%; }
+    .pillar { position: absolute; top: 0; width: 608px; height: 1080px; object-fit: cover; }
+    .photo { background-size: cover; background-repeat: no-repeat; }
+    .shade { position: absolute; left: 0; right: 0; bottom: 0; height: 420px; z-index: 40 !important;
+             background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.62) 60%, rgba(0,0,0,0.72) 100%); }
+    .shade.top { top: 0; bottom: auto; height: 440px;
+             background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 55%, rgba(0,0,0,0.82) 100%); }
+    .title { position: absolute; left: 110px; width: 1100px; z-index: 60 !important; font-family: "League Gothic", "Oswald", sans-serif;
+             font-weight: 400; text-transform: uppercase; color: #fff; line-height: 0.92; letter-spacing: 0.01em;
+             text-shadow: 0 2px 10px rgba(0,0,0,0.6), 0 4px 40px rgba(0,0,0,0.5); }
+    .title.low { bottom: 120px; }
+    .title.top { top: 110px; }
+    .title .ln { display: block; }
+    .title .w { display: inline-block; will-change: filter, opacity; }
+    .title .acc { color: #c8ff2e; }
+    .title.paper { color: #15170f; text-shadow: none; }
+    .title.paper .acc { color: #5a8a00; }
+
+    .title.narrow { width: 1000px; }
+    #banner { position: absolute; left: 1182px; top: 36px; width: 544px; height: 128px; z-index: 70 !important; background: rgba(250,250,250,0.96);
+               border-radius: 28px; display: flex; align-items: center; gap: 18px; padding: 0 22px; box-shadow: 0 8px 30px rgba(0,0,0,0.35); }
+    #banner .ic { width: 76px; height: 76px; border-radius: 18px; background: #c8ff2e; color: #15170f; font-family: "League Gothic", sans-serif;
+               font-size: 44px; display: grid; place-items: center; flex: none; }
+    #banner .tx { flex: 1; min-width: 0; font-family: "Inter", sans-serif; color: #111; line-height: 1.2; }
+    #banner .tx b { display: block; font-size: 30px; font-weight: 700; }
+    #banner .tx span { display: block; font-size: 28px; font-weight: 400; white-space: nowrap; }
+    #banner .tm { font-family: "Inter", sans-serif; font-size: 28px; color: #666; align-self: flex-start; margin-top: 18px; }
+
+  </style>
+  <div id="root" data-composition-id="box" data-width="1920" data-height="1080" data-layout-allow-overlap>
+<div id="bx-p1" class="clip media photo" data-start="0" data-duration="1.9352" data-track-index="1" style="background-image:url(assets/photo/p7155.jpg);background-position:50% 50%;z-index:1"></div>
+<div id="bx-p2" class="clip media photo" data-start="1.9352" data-duration="1.9352" data-track-index="1" style="background-image:url(assets/photo/p7156.jpg);background-position:50% 45%;z-index:1"></div>
+<video id="bx-bg" class="clip media" muted playsinline preload="auto" src="assets/video/phone_7123_bg.mp4" data-start="3.8705" data-duration="3.8705" data-media-start="3" data-track-index="1" style="object-position:50% 50%;z-index:1"></video>
+<video id="bx" class="clip pillar" data-left="1150" muted playsinline preload="auto" src="assets/video/phone_7123.mp4" data-start="3.8705" data-duration="3.8705" data-media-start="3" data-track-index="1" style="left:1150px;z-index:2"></video>
+<div class="shade"></div>
+<div id="bx-t1" class="clip title low " data-start="0" data-duration="1.9352" data-track-index="5" style="font-size:150px"><div class="ln"><span class="w">the</span> <span class="w">chime</span> <span class="w">got</span></div><div class="ln"><span class="w">its</span> <span class="w">own</span> <span class="w acc">box</span></div></div>
+<div id="bx-t2" class="clip title low " data-start="1.9352" data-duration="1.9352" data-track-index="5" style="font-size:170px"><div class="ln"><span class="w">and</span> <span class="w">a</span> <span class="w acc">knob</span></div></div>
+<div id="bx-t3" class="clip title low narrow" data-start="3.8705" data-duration="1.9352" data-track-index="5" style="font-size:150px"><div class="ln"><span class="w">quiet</span> <span class="w">hours</span></div><div class="ln"><span class="w">after</span> <span class="w acc">22:00</span></div></div>
+<div id="bx-t4" class="clip title low narrow" data-start="5.8057" data-duration="1.9352" data-track-index="5" style="font-size:150px"><div class="ln"><span class="w">and</span> <span class="w">a</span> <span class="w acc">message</span></div><div class="ln"><span class="w">to</span> <span class="w">my</span> <span class="w">phone</span></div></div>
+<div id="banner" class="clip" data-start="5.8057" data-duration="1.9352" data-track-index="6" data-layout-allow-overflow>
+      <div class="ic">DJ</div><div class="tx"><b>DJ Doorbell</b><span>Someone is playing the doorbell</span></div><div class="tm">now</div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+tl.fromTo("#bx-p1", {scale: 1}, {scale: 1.08, duration: 1.9352, ease: "none"}, 0);
+tl.fromTo("#bx-p2", {scale: 1}, {scale: 1.08, duration: 1.9352, ease: "none"}, 1.9352);
+tl.fromTo("#bx-t1 .w", {opacity: 0, filter: "blur(6px)"}, {opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power3.out"}, 0);
+tl.fromTo("#bx-t2 .w", {opacity: 0, filter: "blur(6px)"}, {opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power3.out"}, 1.9352);
+tl.fromTo("#bx-t3 .w", {opacity: 0, filter: "blur(6px)"}, {opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power3.out"}, 3.8705);
+tl.fromTo("#bx-t4 .w", {opacity: 0, filter: "blur(6px)"}, {opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power3.out"}, 5.8057);
+tl.fromTo("#banner", {y: -160}, {y: 0, duration: 0.27, ease: "power3.out"}, 5.8057);
+    window.__timelines["box"] = tl;
+  </script>
+</template>

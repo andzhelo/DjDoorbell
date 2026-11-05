@@ -1,0 +1,161 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #000; overflow: hidden; }
+    .media { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; transform-origin: 50% 50%; }
+    .pillar { position: absolute; top: 0; width: 608px; height: 1080px; object-fit: cover; }
+    .photo { background-size: cover; background-repeat: no-repeat; }
+    .shade { position: absolute; left: 0; right: 0; bottom: 0; height: 420px; z-index: 40 !important;
+             background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.62) 60%, rgba(0,0,0,0.72) 100%); }
+    .shade.top { top: 0; bottom: auto; height: 440px;
+             background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 55%, rgba(0,0,0,0.82) 100%); }
+    .title { position: absolute; left: 110px; width: 1100px; z-index: 60 !important; font-family: "League Gothic", "Oswald", sans-serif;
+             font-weight: 400; text-transform: uppercase; color: #fff; line-height: 0.92; letter-spacing: 0.01em;
+             text-shadow: 0 2px 10px rgba(0,0,0,0.6), 0 4px 40px rgba(0,0,0,0.5); }
+    .title.low { bottom: 120px; }
+    .title.top { top: 110px; }
+    .title .ln { display: block; }
+    .title .w { display: inline-block; will-change: filter, opacity; }
+    .title .acc { color: #c8ff2e; }
+    .title.paper { color: #15170f; text-shadow: none; }
+    .title.paper .acc { color: #5a8a00; }
+
+    #root { background: #f6f7f1; }
+    .node { position: absolute; top: 150px; width: 272px; height: 484px; border: 12px solid #7fb800; border-radius: 18px;
+             background: #fff; overflow: visible; transform-origin: 50% 50%; z-index: 20 !important; }
+    .node em { position: absolute; left: -12px; right: -12px; top: 490px; text-align: center; font-style: normal;
+             font-family: "Inter", sans-serif; font-weight: 700; font-size: 34px; color: #15170f; letter-spacing: 0.02em; }
+    .nodemedia { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
+    .line { position: absolute; top: 388px; height: 8px; background: #7fb800; transform-origin: 0 50%; z-index: 10 !important; }
+    .doormark { position: absolute; top: 110px; width: 4px; height: 564px; background: #15170f; z-index: 15 !important; }
+    .doormark span { position: absolute; left: -80px; width: 164px; top: -46px; text-align: center; font-family: "Inter", sans-serif;
+             font-weight: 700; font-size: 28px; color: #15170f; }
+    .gridbox { position: absolute; inset: 0; padding: 18px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; align-content: start; }
+    .gridbox i { display: block; aspect-ratio: 1; background: #fff; border: 3px solid #15170f; border-radius: 6px; }
+    .gridbox b { grid-column: 1 / -1; margin-top: 14px; text-align: center; font-family: "League Gothic", sans-serif; font-weight: 400;
+             font-size: 54px; text-transform: uppercase; color: #15170f; }
+    .radio { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+    .radio b { font-family: "League Gothic", sans-serif; font-weight: 400; font-size: 190px; line-height: 0.9; color: #15170f; }
+    .radio span { font-family: "Inter", sans-serif; font-weight: 700; font-size: 34px; color: #15170f; text-align: center; line-height: 1.15; }
+    .title.paper { left: 110px; width: 1700px; bottom: 70px; }
+
+  </style>
+  <div id="root" data-composition-id="how" data-width="1920" data-height="1080" data-layout-allow-overlap>
+<div id="n0" class="node" style="left:40px"><video id="n0-v" class="clip nodemedia" muted playsinline preload="auto" src="assets/video/finished_7157.mp4" data-start="0" data-duration="11.6114" data-media-start="1.5" data-track-index="1"></video><em>the pad</em></div>
+<div id="l1" class="clip line" data-start="1.9352" data-duration="9.6762" data-track-index="3" style="left:312px;width:120px"></div>
+<div id="n1" class="node" style="left:432px"><div class="gridbox"><i id="g0"></i><i id="g1"></i><i id="g2"></i><i id="g3"></i><i id="g4"></i><i id="g5"></i><i id="g6"></i><i id="g7"></i><i id="g8"></i><i id="g9"></i><i id="g10"></i><i id="g11"></i><i id="g12"></i><i id="g13"></i><i id="g14"></i><i id="g15"></i><b>16th grid</b></div><em>the engine</em></div>
+<div id="l2" class="clip line" data-start="3.8705" data-duration="7.741" data-track-index="3" style="left:704px;width:120px"></div>
+<div id="n2" class="node" style="left:824px"><div class="radio"><b>30</b><span>bytes<br>per press</span></div><em>radio</em></div>
+<div id="l3" class="clip line" data-start="5.8057" data-duration="5.8057" data-track-index="3" style="left:1096px;width:120px"></div>
+<div id="n3" class="node" style="left:1216px"><video id="n3-v" class="clip nodemedia" muted playsinline preload="auto" src="assets/video/finished_7157.mp4" data-start="6.2057" data-duration="5.4057" data-media-start="15" data-track-index="1"></video><em>inside box</em></div>
+<div id="l4" class="clip line" data-start="7.741" data-duration="3.8705" data-track-index="3" style="left:1488px;width:120px"></div>
+<div id="n4" class="node" style="left:1608px"><video id="n4-v" class="clip nodemedia" muted playsinline preload="auto" src="assets/video/phone_7123.mp4" data-start="8.141" data-duration="3.4705" data-media-start="4" data-track-index="1"></video><em>the phone</em></div>
+<div id="door" class="clip doormark" data-start="5.8057" data-duration="5.8057" data-track-index="3" style="left:1154px"><span>the door</span></div>
+
+<div id="ho-t0" class="clip title low paper" data-start="0" data-duration="1.9352" data-track-index="5" style="font-size:120px"><div class="ln"><span class="w">nine</span> <span class="w">buttons.</span> <span class="w">nine</span> <span class="w acc">wires.</span></div></div>
+<div id="ho-t1" class="clip title low paper" data-start="1.9352" data-duration="1.9352" data-track-index="5" style="font-size:120px"><div class="ln"><span class="w">every</span> <span class="w">press</span> <span class="w acc">snaps</span></div><div class="ln"><span class="w">to</span> <span class="w">the</span> <span class="w">16th-note</span> <span class="w">grid</span></div></div>
+<div id="ho-t2" class="clip title low paper" data-start="3.8705" data-duration="1.9352" data-track-index="5" style="font-size:120px"><div class="ln"><span class="w acc">30</span> <span class="w acc">bytes</span> <span class="w">cross</span> <span class="w">the</span> <span class="w">door</span></div><div class="ln"><span class="w">by</span> <span class="w">radio.</span> <span class="w">no</span> <span class="w">router.</span></div></div>
+<div id="ho-t3" class="clip title low paper" data-start="5.8057" data-duration="1.9352" data-track-index="5" style="font-size:120px"><div class="ln"><span class="w">the</span> <span class="w">inside</span> <span class="w">box</span> <span class="w">plays</span></div><div class="ln"><span class="w">the</span> <span class="w acc">same</span> <span class="w acc">notes</span></div></div>
+<div id="ho-t4" class="clip title low paper" data-start="7.741" data-duration="1.9352" data-track-index="5" style="font-size:120px"><div class="ln"><span class="w">and</span> <span class="w">the</span> <span class="w">phone</span></div><div class="ln"><span class="w">gets</span> <span class="w">a</span> <span class="w acc">message</span></div></div>
+<div id="ho-t5" class="clip title low paper" data-start="9.6762" data-duration="1.9352" data-track-index="5" style="font-size:120px"><div class="ln"><span class="w">no</span> <span class="w acc">audio</span> <span class="w">crosses.</span></div><div class="ln"><span class="w">same</span> <span class="w">samples,</span> <span class="w">both</span> <span class="w">sides</span></div></div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+tl.fromTo("#n0", {scale: 0.92, opacity: 0}, {scale: 1, opacity: 1, duration: 0.27, ease: "power3.out"}, 0);
+tl.fromTo("#l1", {scaleX: 0}, {scaleX: 1, duration: 0.4, ease: "power2.inOut"}, 1.9352);
+tl.fromTo("#n1", {scale: 0.92, opacity: 0}, {scale: 1, opacity: 1, duration: 0.27, ease: "power3.out"}, 2.3352);
+tl.fromTo("#l2", {scaleX: 0}, {scaleX: 1, duration: 0.4, ease: "power2.inOut"}, 3.8705);
+tl.fromTo("#n2", {scale: 0.92, opacity: 0}, {scale: 1, opacity: 1, duration: 0.27, ease: "power3.out"}, 4.2705);
+tl.fromTo("#l3", {scaleX: 0}, {scaleX: 1, duration: 0.4, ease: "power2.inOut"}, 5.8057);
+tl.fromTo("#n3", {scale: 0.92, opacity: 0}, {scale: 1, opacity: 1, duration: 0.27, ease: "power3.out"}, 6.2057);
+tl.fromTo("#l4", {scaleX: 0}, {scaleX: 1, duration: 0.4, ease: "power2.inOut"}, 7.741);
+tl.fromTo("#n4", {scale: 0.92, opacity: 0}, {scale: 1, opacity: 1, duration: 0.27, ease: "power3.out"}, 8.141);
+tl.fromTo("#door", {opacity: 0}, {opacity: 1, duration: 0.2}, 6.2057);
+tl.set("#g0", {backgroundColor: "#7fb800"}, 2.3352);tl.set("#g15", {backgroundColor: "#fff"}, 2.3352);
+tl.set("#g1", {backgroundColor: "#7fb800"}, 2.4562);tl.set("#g0", {backgroundColor: "#fff"}, 2.4562);
+tl.set("#g2", {backgroundColor: "#7fb800"}, 2.5771);tl.set("#g1", {backgroundColor: "#fff"}, 2.5771);
+tl.set("#g3", {backgroundColor: "#7fb800"}, 2.6981);tl.set("#g2", {backgroundColor: "#fff"}, 2.6981);
+tl.set("#g4", {backgroundColor: "#7fb800"}, 2.819);tl.set("#g3", {backgroundColor: "#fff"}, 2.819);
+tl.set("#g5", {backgroundColor: "#7fb800"}, 2.94);tl.set("#g4", {backgroundColor: "#fff"}, 2.94);
+tl.set("#g6", {backgroundColor: "#7fb800"}, 3.061);tl.set("#g5", {backgroundColor: "#fff"}, 3.061);
+tl.set("#g7", {backgroundColor: "#7fb800"}, 3.1819);tl.set("#g6", {backgroundColor: "#fff"}, 3.1819);
+tl.set("#g8", {backgroundColor: "#7fb800"}, 3.3029);tl.set("#g7", {backgroundColor: "#fff"}, 3.3029);
+tl.set("#g9", {backgroundColor: "#7fb800"}, 3.4238);tl.set("#g8", {backgroundColor: "#fff"}, 3.4238);
+tl.set("#g10", {backgroundColor: "#7fb800"}, 3.5448);tl.set("#g9", {backgroundColor: "#fff"}, 3.5448);
+tl.set("#g11", {backgroundColor: "#7fb800"}, 3.6657);tl.set("#g10", {backgroundColor: "#fff"}, 3.6657);
+tl.set("#g12", {backgroundColor: "#7fb800"}, 3.7867);tl.set("#g11", {backgroundColor: "#fff"}, 3.7867);
+tl.set("#g13", {backgroundColor: "#7fb800"}, 3.9076);tl.set("#g12", {backgroundColor: "#fff"}, 3.9076);
+tl.set("#g14", {backgroundColor: "#7fb800"}, 4.0286);tl.set("#g13", {backgroundColor: "#fff"}, 4.0286);
+tl.set("#g15", {backgroundColor: "#7fb800"}, 4.1495);tl.set("#g14", {backgroundColor: "#fff"}, 4.1495);
+tl.set("#g0", {backgroundColor: "#7fb800"}, 4.2705);tl.set("#g15", {backgroundColor: "#fff"}, 4.2705);
+tl.set("#g1", {backgroundColor: "#7fb800"}, 4.3914);tl.set("#g0", {backgroundColor: "#fff"}, 4.3914);
+tl.set("#g2", {backgroundColor: "#7fb800"}, 4.5124);tl.set("#g1", {backgroundColor: "#fff"}, 4.5124);
+tl.set("#g3", {backgroundColor: "#7fb800"}, 4.6333);tl.set("#g2", {backgroundColor: "#fff"}, 4.6333);
+tl.set("#g4", {backgroundColor: "#7fb800"}, 4.7543);tl.set("#g3", {backgroundColor: "#fff"}, 4.7543);
+tl.set("#g5", {backgroundColor: "#7fb800"}, 4.8752);tl.set("#g4", {backgroundColor: "#fff"}, 4.8752);
+tl.set("#g6", {backgroundColor: "#7fb800"}, 4.9962);tl.set("#g5", {backgroundColor: "#fff"}, 4.9962);
+tl.set("#g7", {backgroundColor: "#7fb800"}, 5.1171);tl.set("#g6", {backgroundColor: "#fff"}, 5.1171);
+tl.set("#g8", {backgroundColor: "#7fb800"}, 5.2381);tl.set("#g7", {backgroundColor: "#fff"}, 5.2381);
+tl.set("#g9", {backgroundColor: "#7fb800"}, 5.359);tl.set("#g8", {backgroundColor: "#fff"}, 5.359);
+tl.set("#g10", {backgroundColor: "#7fb800"}, 5.48);tl.set("#g9", {backgroundColor: "#fff"}, 5.48);
+tl.set("#g11", {backgroundColor: "#7fb800"}, 5.601);tl.set("#g10", {backgroundColor: "#fff"}, 5.601);
+tl.set("#g12", {backgroundColor: "#7fb800"}, 5.7219);tl.set("#g11", {backgroundColor: "#fff"}, 5.7219);
+tl.set("#g13", {backgroundColor: "#7fb800"}, 5.8429);tl.set("#g12", {backgroundColor: "#fff"}, 5.8429);
+tl.set("#g14", {backgroundColor: "#7fb800"}, 5.9638);tl.set("#g13", {backgroundColor: "#fff"}, 5.9638);
+tl.set("#g15", {backgroundColor: "#7fb800"}, 6.0848);tl.set("#g14", {backgroundColor: "#fff"}, 6.0848);
+tl.set("#g0", {backgroundColor: "#7fb800"}, 6.2057);tl.set("#g15", {backgroundColor: "#fff"}, 6.2057);
+tl.set("#g1", {backgroundColor: "#7fb800"}, 6.3267);tl.set("#g0", {backgroundColor: "#fff"}, 6.3267);
+tl.set("#g2", {backgroundColor: "#7fb800"}, 6.4476);tl.set("#g1", {backgroundColor: "#fff"}, 6.4476);
+tl.set("#g3", {backgroundColor: "#7fb800"}, 6.5686);tl.set("#g2", {backgroundColor: "#fff"}, 6.5686);
+tl.set("#g4", {backgroundColor: "#7fb800"}, 6.6895);tl.set("#g3", {backgroundColor: "#fff"}, 6.6895);
+tl.set("#g5", {backgroundColor: "#7fb800"}, 6.8105);tl.set("#g4", {backgroundColor: "#fff"}, 6.8105);
+tl.set("#g6", {backgroundColor: "#7fb800"}, 6.9314);tl.set("#g5", {backgroundColor: "#fff"}, 6.9314);
+tl.set("#g7", {backgroundColor: "#7fb800"}, 7.0524);tl.set("#g6", {backgroundColor: "#fff"}, 7.0524);
+tl.set("#g8", {backgroundColor: "#7fb800"}, 7.1733);tl.set("#g7", {backgroundColor: "#fff"}, 7.1733);
+tl.set("#g9", {backgroundColor: "#7fb800"}, 7.2943);tl.set("#g8", {backgroundColor: "#fff"}, 7.2943);
+tl.set("#g10", {backgroundColor: "#7fb800"}, 7.4152);tl.set("#g9", {backgroundColor: "#fff"}, 7.4152);
+tl.set("#g11", {backgroundColor: "#7fb800"}, 7.5362);tl.set("#g10", {backgroundColor: "#fff"}, 7.5362);
+tl.set("#g12", {backgroundColor: "#7fb800"}, 7.6571);tl.set("#g11", {backgroundColor: "#fff"}, 7.6571);
+tl.set("#g13", {backgroundColor: "#7fb800"}, 7.7781);tl.set("#g12", {backgroundColor: "#fff"}, 7.7781);
+tl.set("#g14", {backgroundColor: "#7fb800"}, 7.899);tl.set("#g13", {backgroundColor: "#fff"}, 7.899);
+tl.set("#g15", {backgroundColor: "#7fb800"}, 8.02);tl.set("#g14", {backgroundColor: "#fff"}, 8.02);
+tl.set("#g0", {backgroundColor: "#7fb800"}, 8.141);tl.set("#g15", {backgroundColor: "#fff"}, 8.141);
+tl.set("#g1", {backgroundColor: "#7fb800"}, 8.2619);tl.set("#g0", {backgroundColor: "#fff"}, 8.2619);
+tl.set("#g2", {backgroundColor: "#7fb800"}, 8.3829);tl.set("#g1", {backgroundColor: "#fff"}, 8.3829);
+tl.set("#g3", {backgroundColor: "#7fb800"}, 8.5038);tl.set("#g2", {backgroundColor: "#fff"}, 8.5038);
+tl.set("#g4", {backgroundColor: "#7fb800"}, 8.6248);tl.set("#g3", {backgroundColor: "#fff"}, 8.6248);
+tl.set("#g5", {backgroundColor: "#7fb800"}, 8.7457);tl.set("#g4", {backgroundColor: "#fff"}, 8.7457);
+tl.set("#g6", {backgroundColor: "#7fb800"}, 8.8667);tl.set("#g5", {backgroundColor: "#fff"}, 8.8667);
+tl.set("#g7", {backgroundColor: "#7fb800"}, 8.9876);tl.set("#g6", {backgroundColor: "#fff"}, 8.9876);
+tl.set("#g8", {backgroundColor: "#7fb800"}, 9.1086);tl.set("#g7", {backgroundColor: "#fff"}, 9.1086);
+tl.set("#g9", {backgroundColor: "#7fb800"}, 9.2295);tl.set("#g8", {backgroundColor: "#fff"}, 9.2295);
+tl.set("#g10", {backgroundColor: "#7fb800"}, 9.3505);tl.set("#g9", {backgroundColor: "#fff"}, 9.3505);
+tl.set("#g11", {backgroundColor: "#7fb800"}, 9.4714);tl.set("#g10", {backgroundColor: "#fff"}, 9.4714);
+tl.set("#g12", {backgroundColor: "#7fb800"}, 9.5924);tl.set("#g11", {backgroundColor: "#fff"}, 9.5924);
+tl.set("#g13", {backgroundColor: "#7fb800"}, 9.7133);tl.set("#g12", {backgroundColor: "#fff"}, 9.7133);
+tl.set("#g14", {backgroundColor: "#7fb800"}, 9.8343);tl.set("#g13", {backgroundColor: "#fff"}, 9.8343);
+tl.set("#g15", {backgroundColor: "#7fb800"}, 9.9552);tl.set("#g14", {backgroundColor: "#fff"}, 9.9552);
+tl.set("#g0", {backgroundColor: "#7fb800"}, 10.0762);tl.set("#g15", {backgroundColor: "#fff"}, 10.0762);
+tl.set("#g1", {backgroundColor: "#7fb800"}, 10.1971);tl.set("#g0", {backgroundColor: "#fff"}, 10.1971);
+tl.set("#g2", {backgroundColor: "#7fb800"}, 10.3181);tl.set("#g1", {backgroundColor: "#fff"}, 10.3181);
+tl.set("#g3", {backgroundColor: "#7fb800"}, 10.439);tl.set("#g2", {backgroundColor: "#fff"}, 10.439);
+tl.set("#g4", {backgroundColor: "#7fb800"}, 10.56);tl.set("#g3", {backgroundColor: "#fff"}, 10.56);
+tl.set("#g5", {backgroundColor: "#7fb800"}, 10.681);tl.set("#g4", {backgroundColor: "#fff"}, 10.681);
+tl.set("#g6", {backgroundColor: "#7fb800"}, 10.8019);tl.set("#g5", {backgroundColor: "#fff"}, 10.8019);
+tl.set("#g7", {backgroundColor: "#7fb800"}, 10.9229);tl.set("#g6", {backgroundColor: "#fff"}, 10.9229);
+tl.set("#g8", {backgroundColor: "#7fb800"}, 11.0438);tl.set("#g7", {backgroundColor: "#fff"}, 11.0438);
+tl.set("#g9", {backgroundColor: "#7fb800"}, 11.1648);tl.set("#g8", {backgroundColor: "#fff"}, 11.1648);
+tl.set("#g10", {backgroundColor: "#7fb800"}, 11.2857);tl.set("#g9", {backgroundColor: "#fff"}, 11.2857);
+tl.set("#g11", {backgroundColor: "#7fb800"}, 11.4067);tl.set("#g10", {backgroundColor: "#fff"}, 11.4067);
+tl.set("#g12", {backgroundColor: "#7fb800"}, 11.5276);tl.set("#g11", {backgroundColor: "#fff"}, 11.5276);
+tl.set("#g13", {backgroundColor: "#7fb800"}, 11.6486);tl.set("#g12", {backgroundColor: "#fff"}, 11.6486);
+tl.set("#g14", {backgroundColor: "#7fb800"}, 11.7695);tl.set("#g13", {backgroundColor: "#fff"}, 11.7695);
+tl.set("#g15", {backgroundColor: "#7fb800"}, 11.8905);tl.set("#g14", {backgroundColor: "#fff"}, 11.8905);
+tl.fromTo("#ho-t0 .w", {opacity: 0, filter: "blur(6px)"}, {opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power3.out"}, 0);
+tl.fromTo("#ho-t1 .w", {opacity: 0, filter: "blur(6px)"}, {opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power3.out"}, 1.9352);
+tl.fromTo("#ho-t2 .w", {opacity: 0, filter: "blur(6px)"}, {opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power3.out"}, 3.8705);
+tl.fromTo("#ho-t3 .w", {opacity: 0, filter: "blur(6px)"}, {opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power3.out"}, 5.8057);
+tl.fromTo("#ho-t4 .w", {opacity: 0, filter: "blur(6px)"}, {opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power3.out"}, 7.741);
+tl.fromTo("#ho-t5 .w", {opacity: 0, filter: "blur(6px)"}, {opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power3.out"}, 9.6762);
+    window.__timelines["how"] = tl;
+  </script>
+</template>

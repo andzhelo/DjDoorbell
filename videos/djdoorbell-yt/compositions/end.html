@@ -1,0 +1,48 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #000; overflow: hidden; }
+    .media { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; transform-origin: 50% 50%; }
+    .pillar { position: absolute; top: 0; width: 608px; height: 1080px; object-fit: cover; }
+    .photo { background-size: cover; background-repeat: no-repeat; }
+    .shade { position: absolute; left: 0; right: 0; bottom: 0; height: 420px; z-index: 40 !important;
+             background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.62) 60%, rgba(0,0,0,0.72) 100%); }
+    .shade.top { top: 0; bottom: auto; height: 440px;
+             background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 55%, rgba(0,0,0,0.82) 100%); }
+    .title { position: absolute; left: 110px; width: 1100px; z-index: 60 !important; font-family: "League Gothic", "Oswald", sans-serif;
+             font-weight: 400; text-transform: uppercase; color: #fff; line-height: 0.92; letter-spacing: 0.01em;
+             text-shadow: 0 2px 10px rgba(0,0,0,0.6), 0 4px 40px rgba(0,0,0,0.5); }
+    .title.low { bottom: 120px; }
+    .title.top { top: 110px; }
+    .title .ln { display: block; }
+    .title .w { display: inline-block; will-change: filter, opacity; }
+    .title .acc { color: #c8ff2e; }
+    .title.paper { color: #15170f; text-shadow: none; }
+    .title.paper .acc { color: #5a8a00; }
+
+    #end-field { position: absolute; inset: 0; background: #c8ff2e; z-index: 20 !important; }
+    #end-name { position: absolute; left: 110px; top: 250px; z-index: 30 !important; font-family: "League Gothic", sans-serif;
+                 font-size: 360px; line-height: 0.86; text-transform: uppercase; color: #15170f; }
+    #end-link { position: absolute; left: 110px; top: 900px; z-index: 30 !important; font-family: "Inter", sans-serif;
+                 font-weight: 700; font-size: 52px; color: #15170f; letter-spacing: 0.01em; }
+    #end-sub { position: absolute; left: 110px; top: 150px; z-index: 30 !important; font-family: "Inter", sans-serif;
+                 font-weight: 700; font-size: 40px; color: #15170f; letter-spacing: 0.12em; text-transform: uppercase; }
+
+  </style>
+  <div id="root" data-composition-id="end" data-width="1920" data-height="1080" data-layout-allow-overlap>
+<video id="en-bg" class="clip media" muted playsinline preload="auto" src="assets/video/finished_7157_bg.mp4" data-start="0" data-duration="0.9676" data-media-start="13.3705" data-track-index="1" style="object-position:50% 50%;z-index:1"></video>
+<video id="en" class="clip pillar" data-left="1150" muted playsinline preload="auto" src="assets/video/finished_7157.mp4" data-start="0" data-duration="0.9676" data-media-start="13.3705" data-track-index="1" style="left:1150px;z-index:2"></video>
+<div id="end-field" class="clip" data-start="0" data-duration="7.741" data-track-index="3" data-layout-allow-overflow></div>
+<div id="end-sub" class="clip" data-start="0" data-duration="7.741" data-track-index="5">open source · esp32 · 3d printed</div>
+<div id="end-name" class="clip" data-start="0" data-duration="7.741" data-track-index="5"><div class="ln"><span class="w">DJ</span> <span class="w">Doorbell</span></div></div>
+<div id="end-link" class="clip" data-start="0" data-duration="7.741" data-track-index="5">github.com/andzhelo/DjDoorbell</div>
+ 
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+tl.fromTo("#end-field", {y: 1080}, {y: 0, duration: 0.4, ease: "power3.inOut"}, 0);
+tl.fromTo("#end-name .w", {opacity: 0, y: 40}, {opacity: 1, y: 0, duration: 0.3, stagger: 0.08, ease: "power4.out"}, 0.3);
+tl.fromTo("#end-sub", {opacity: 0}, {opacity: 1, duration: 0.2, ease: "power2.out"}, 0.55);
+tl.fromTo("#end-link", {opacity: 0}, {opacity: 1, duration: 0.2, ease: "power2.out"}, 0.7);
+    window.__timelines["end"] = tl;
+  </script>
+</template>

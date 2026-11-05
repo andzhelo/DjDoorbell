@@ -1,0 +1,44 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #000; overflow: hidden; }
+    .media { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; transform-origin: 50% 50%; }
+    .pillar { position: absolute; top: 0; width: 608px; height: 1080px; object-fit: cover; }
+    .photo { background-size: cover; background-repeat: no-repeat; }
+    .shade { position: absolute; left: 0; right: 0; bottom: 0; height: 420px; z-index: 40 !important;
+             background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.62) 60%, rgba(0,0,0,0.72) 100%); }
+    .shade.top { top: 0; bottom: auto; height: 440px;
+             background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 55%, rgba(0,0,0,0.82) 100%); }
+    .title { position: absolute; left: 110px; width: 1100px; z-index: 60 !important; font-family: "League Gothic", "Oswald", sans-serif;
+             font-weight: 400; text-transform: uppercase; color: #fff; line-height: 0.92; letter-spacing: 0.01em;
+             text-shadow: 0 2px 10px rgba(0,0,0,0.6), 0 4px 40px rgba(0,0,0,0.5); }
+    .title.low { bottom: 120px; }
+    .title.top { top: 110px; }
+    .title .ln { display: block; }
+    .title .w { display: inline-block; will-change: filter, opacity; }
+    .title .acc { color: #c8ff2e; }
+    .title.paper { color: #15170f; text-shadow: none; }
+    .title.paper .acc { color: #5a8a00; }
+
+  </style>
+  <div id="root" data-composition-id="install" data-width="1920" data-height="1080" data-layout-allow-overlap>
+<div id="in-p1" class="clip media photo" data-start="0" data-duration="1.9352" data-track-index="1" style="background-image:url(assets/photo/p7107.jpg);background-position:50% 50%;z-index:1"></div>
+<div id="in-p2" class="clip media photo" data-start="1.9352" data-duration="1.9352" data-track-index="1" style="background-image:url(assets/photo/p7111.jpg);background-position:50% 55%;z-index:1"></div>
+<video id="in-v3" class="clip media" muted playsinline preload="auto" src="assets/video/shellwall_6927.mp4" data-start="3.8705" data-duration="1.9352" data-media-start="1" data-track-index="1" style="object-position:60% 50%;z-index:1"></video>
+<video id="in-v4" class="clip media" muted playsinline preload="auto" src="assets/video/finished_7157.mp4" data-start="5.8057" data-duration="1.9352" data-media-start="0.3" data-track-index="1" style="object-position:50% 40%;z-index:1"></video>
+<div class="shade"></div>
+<div id="in-t1" class="clip title low " data-start="0" data-duration="1.9352" data-track-index="5" style="font-size:150px"><div class="ln"><span class="w acc">breaker</span> <span class="w">off.</span></div></div>
+<div id="in-t2" class="clip title low " data-start="1.9352" data-duration="1.9352" data-track-index="5" style="font-size:150px"><div class="ln"><span class="w">230</span> <span class="w">V</span> <span class="w">in.</span></div><div class="ln"><span class="w acc">12</span> <span class="w acc">V</span> <span class="w">out.</span></div></div>
+<div id="in-t3" class="clip title low " data-start="3.8705" data-duration="1.9352" data-track-index="5" style="font-size:150px"><div class="ln"><span class="w">12</span> <span class="w">V</span> <span class="w">on</span> <span class="w">the</span> <span class="w acc">pair</span></div></div>
+<div id="in-t4" class="clip title low " data-start="5.8057" data-duration="1.9352" data-track-index="5" style="font-size:170px"><div class="ln"><span class="w">on</span> <span class="w">the</span> <span class="w acc">wall</span></div></div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+tl.fromTo("#in-p1", {scale: 1}, {scale: 1.08, duration: 1.9352, ease: "none"}, 0);
+tl.fromTo("#in-p2", {scale: 1}, {scale: 1.08, duration: 1.9352, ease: "none"}, 1.9352);
+tl.fromTo("#in-t1 .w", {opacity: 0, filter: "blur(6px)"}, {opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power3.out"}, 0);
+tl.fromTo("#in-t2 .w", {opacity: 0, filter: "blur(6px)"}, {opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power3.out"}, 1.9352);
+tl.fromTo("#in-t3 .w", {opacity: 0, filter: "blur(6px)"}, {opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power3.out"}, 3.8705);
+tl.fromTo("#in-t4 .w", {opacity: 0, filter: "blur(6px)"}, {opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power3.out"}, 5.8057);
+    window.__timelines["install"] = tl;
+  </script>
+</template>

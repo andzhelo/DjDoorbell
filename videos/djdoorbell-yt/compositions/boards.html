@@ -1,0 +1,37 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #000; overflow: hidden; }
+    .media { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; transform-origin: 50% 50%; }
+    .pillar { position: absolute; top: 0; width: 608px; height: 1080px; object-fit: cover; }
+    .photo { background-size: cover; background-repeat: no-repeat; }
+    .shade { position: absolute; left: 0; right: 0; bottom: 0; height: 420px; z-index: 40 !important;
+             background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.62) 60%, rgba(0,0,0,0.72) 100%); }
+    .shade.top { top: 0; bottom: auto; height: 440px;
+             background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 55%, rgba(0,0,0,0.82) 100%); }
+    .title { position: absolute; left: 110px; width: 1100px; z-index: 60 !important; font-family: "League Gothic", "Oswald", sans-serif;
+             font-weight: 400; text-transform: uppercase; color: #fff; line-height: 0.92; letter-spacing: 0.01em;
+             text-shadow: 0 2px 10px rgba(0,0,0,0.6), 0 4px 40px rgba(0,0,0,0.5); }
+    .title.low { bottom: 120px; }
+    .title.top { top: 110px; }
+    .title .ln { display: block; }
+    .title .w { display: inline-block; will-change: filter, opacity; }
+    .title .acc { color: #c8ff2e; }
+    .title.paper { color: #15170f; text-shadow: none; }
+    .title.paper .acc { color: #5a8a00; }
+
+    #bo-t1 .acc { color: #ff2bd6; }
+  </style>
+  <div id="root" data-composition-id="boards" data-width="1920" data-height="1080" data-layout-allow-overlap>
+<div id="bo-p1" class="clip media photo" data-start="0" data-duration="1.9352" data-track-index="1" style="background-image:url(assets/photo/p7017.jpg);background-position:50% 45%;z-index:1"></div>
+<div id="bo-p2" class="clip media photo" data-start="1.9352" data-duration="1.9352" data-track-index="1" style="background-image:url(assets/photo/p7121.jpg);background-position:50% 50%;z-index:1"></div>
+<div class="shade"></div>
+<div id="bo-t1" class="clip title low " data-start="0" data-duration="3.8705" data-track-index="5" style="font-size:170px"><div class="ln"><span class="w acc">5</span> <span class="w">boards.</span></div><div class="ln"><span class="w">1</span> <span class="w">survived.</span></div></div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+tl.fromTo("#bo-p1", {scale: 1}, {scale: 1.12, duration: 1.9352, ease: "none"}, 0);
+tl.fromTo("#bo-p2", {scale: 1}, {scale: 1.08, duration: 1.9352, ease: "none"}, 1.9352);
+tl.fromTo("#bo-t1 .w", {opacity: 0, filter: "blur(6px)"}, {opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power3.out"}, 0);
+    window.__timelines["boards"] = tl;
+  </script>
+</template>
