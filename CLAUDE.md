@@ -309,7 +309,16 @@ The router comes back minutes after the units. The outside unit gives up WiFi
 20 s after boot and used to stay off it until the next reboot (no web page, no
 OTA, no clock, no notification; the doorbell itself kept working over ESP-NOW).
 Since 2026-11-07 it retries the router every 2 min while the pad is idle
-(`kWifiRetryMs` in src/radio.cpp). The inside unit always kept retrying.
+(`kWifiRetryMs` in src/radio.cpp); the inside unit restarts its attempt every
+20 s. Both units run this firmware (OTA'd 2026-11-07).
+
+If a unit is ever stuck off WiFi again and the doorbell shares the router's
+breaker: make an iPhone Personal Hotspot named exactly like the home SSID with
+the home WiFi password ("Maximize Compatibility" on, keep the hotspot screen
+open), flip the breaker, and OTA over the hotspot by IP
+(`pio run -e outside_ota -t upload --upload-port <ip>`; mDNS names do not
+resolve on the hotspot, find the IP with an ARP sweep of 172.20.10.0/28). The
+laptop joins the hotspot by itself when the router goes down.
 
 ## Remote presses (outside unit web listener, 2026-10-31)
 

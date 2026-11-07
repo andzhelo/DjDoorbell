@@ -173,6 +173,11 @@ void wifiLoop(uint32_t now) {
     wifiStartMs = now;
     Serial.println("WiFi:     trying the router again");
 #else
+    // Inside: nothing depends on this radio being quiet, so start a fresh
+    // attempt every 20 s rather than trusting auto-reconnect after a failed
+    // first connect (the router may not have existed when we booted).
+    WiFi.disconnect();
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
     wifiStartMs = now;
     Serial.println("WiFi:     still trying to connect");
 #endif
