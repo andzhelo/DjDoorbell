@@ -303,6 +303,14 @@ The SS34 on the strip's +5V lead drops pixel VDD so 3.3V data clears the
 - GAIN: outside tied to VIN (6 dB, quiet feedback); inside floating (9 dB).
 - Bridge-tied output: no speaker lead to ground, ever.
 
+## After a power cut (2026-11-07)
+
+The router comes back minutes after the units. The outside unit gives up WiFi
+20 s after boot and used to stay off it until the next reboot (no web page, no
+OTA, no clock, no notification; the doorbell itself kept working over ESP-NOW).
+Since 2026-11-07 it retries the router every 2 min while the pad is idle
+(`kWifiRetryMs` in src/radio.cpp). The inside unit always kept retrying.
+
 ## Remote presses (outside unit web listener, 2026-10-31)
 
 The outside unit serves plain HTTP on port 80 inside the home network:

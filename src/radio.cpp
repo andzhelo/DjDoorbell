@@ -26,6 +26,11 @@ namespace {
 constexpr uint8_t  kBroadcast[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 constexpr uint32_t kLinkTimeoutMs = 3000;
 constexpr uint32_t kWifiGiveUpMs  = 20000;
+// Outside: after giving up, try the router again this often while the pad is
+// idle. After a power cut the router comes back minutes after the unit does;
+// without this the unit stayed off WiFi (no OTA, no clock, no notification)
+// until the next reboot.
+constexpr uint32_t kWifiRetryMs   = 120000;
 constexpr int      kResends       = 2;
 
 portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED;
@@ -52,6 +57,7 @@ Wifi wifi = Wifi::Off;
 uint32_t wifiStartMs = 0;
 bool wifiWasUp = false;
 volatile bool ota = false;
+volatile bool busy = false;               // the bed is playing: no WiFi retries now
 uint8_t channel = LINK_CHANNEL;
 uint32_t lastHelloMs = 0;
 
@@ -157,8 +163,15 @@ void wifiLoop(uint32_t now) {
     WiFi.setAutoReconnect(false);
     WiFi.disconnect();
     wifi = Wifi::Off;
+    wifiStartMs = now;
     setChannel(LINK_CHANNEL);
-    Serial.println("WiFi:     router not reachable from here; ESP-NOW only, OTA off until reboot");
+    Serial.println("WiFi:     router not reachable; ESP-NOW only, will try again in 2 min");
+  } else if (wifi == Wifi::Off && !busy && now - wifiStartMs > kWifiRetryMs) {
+    WiFi.setAutoReconnect(true);
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    wifi = Wifi::Trying;
+    wifiStartMs = now;
+    Serial.println("WiFi:     trying the router again");
 #else
     wifiStartMs = now;
     Serial.println("WiFi:     still trying to connect");
@@ -263,6 +276,8 @@ bool send(const dj::Packet& p, bool reliable) {
   portEXIT_CRITICAL(&mux);
   return unicast(p, reliable);
 }
+
+void setBusy(bool playing) { busy = playing; }
 
 bool linked() { return lastHeardMs && millis() - lastHeardMs < kLinkTimeoutMs; }
 

@@ -515,6 +515,7 @@ static void updateLink(uint32_t now) {
   portENTER_CRITICAL(&clockMux);
   c = clockNow;
   portEXIT_CRITICAL(&clockMux);
+  radio::setBusy(c.running);
   if (now - lastSync >= (c.running ? kSyncPlayingMs : kSyncIdleMs)) {
     lastSync = now;
     dj::Packet p = {};
